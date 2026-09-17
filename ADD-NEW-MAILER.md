@@ -1,3 +1,5 @@
+[ADD-NEW-MAILER на русском языке](ADD-NEW-MAILER-ru.md)
+
 # How to use T-Hist to generate statistics for unsupported mailers
 
 To use `T-Hist` with unsupported mailers, you need to convert the mailer logs to one of the binary log formats supported by `T-Hist`.

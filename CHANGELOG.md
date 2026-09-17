@@ -1,3 +1,5 @@
+[CHANGELOG на русском языке](CHANGELOG-ru.md)
+
 # Changelog of new T-Hist and related utilities
 
 #### Terms used in this document

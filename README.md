@@ -1,3 +1,5 @@
+[README на русском языке](README-ru.md)
+
 This software is intended for use in the `FidoNet` computer network and other FTN-style networks (FTN &ndash; FidoNet Technology Network)
 
 ---
