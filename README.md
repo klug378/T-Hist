@@ -6,6 +6,12 @@ This software is intended for use in the `FidoNet` computer network and other FT
 
 # T-Hist for Linux x86_64/i686 and Windows 64/32
 
+[![Visitors](https://visitor-badge.laobi.icu/badge?page_id=klug378.T-Hist)](https://github.com/klug378/T-Hist)
+[![GitHub Release](https://img.shields.io/github/v/release/klug378/T-Hist)](https://github.com/klug378/T-Hist)
+[![Github All Releases](https://img.shields.io/github/downloads/klug378/T-Hist/total.svg)](https://github.com/klug378/T-Hist)
+[![Github Latest Release](https://img.shields.io/github/downloads/klug378/T-Hist/latest/total.svg)](https://github.com/klug378/T-Hist)
+[![GitHub Last commit](https://img.shields.io/github/last-commit/klug378/T-Hist.svg?style=dark)](https://github.com/klug378/T-Hist)
+
 The `T-Hist` utility creates text files with graphs and histograms of the FTN node load and with sessions and links statistics
 based on information stored in the mailer's binary logs (history files). The `T-Hist` supports binary logs of the following mailers:
 T-Mail, Binkd, Argus, Internet Rex, FrontDoor, Bink/+, FhMail, BinkleyTerm-XE, The Brake!, KittenMail, DVMmail, XMail32, BasicMail.
