@@ -11,13 +11,13 @@ T-Mail, Binkd, Argus, Internet Rex, FrontDoor, Bink/+, FhMail, BinkleyTerm-XE, T
 Development of the `T-Hist` began in 1996. The latest version of `T-Hist` 0.30.alpha7 for DOS, OS/2, NT (win32) was released in 2003.
 After 23 years, the new `T-Hist` (and related utilities `LnkStat` and `DmpHist`) were released for Linux and Windows.
 
-This archive contains executables in the following directories:
+The utilities are distributed as a ZIP archive containing executable files in the following directories:
 - `linux`&ensp;&ndash; Linux executables (x86_64 and i686 architectures);
 - `linux-static`&ensp;&ndash; Linux executables with static libraries (x86_64 and i686 architectures);
 - `windows`&ensp;&ndash; Windows 64-bit and 32-bit executables.
 
 The complete documentation for the new version is not yet ready. As a basis, you can use the documentation (in Russian only, UTF-8 encoded)
-and an example of a configuration file from the last older version `0.30.alpha7`, which are located in the `doc_old_2003` directory of this archive.
+and an example of a configuration file from the last older version `0.30.alpha7`, which are located in the `doc_old_2003` directory.
 
 The differences between new and older versions will be discussed below.
 
