@@ -1,0 +1,202 @@
+diff --git a/binlog.c b/binlog.c
+index 0fe0f08..5e02476 100644
+--- a/binlog.c
++++ b/binlog.c
+@@ -10,6 +10,8 @@
+ /*                             FIDONet 2:5020/79                      */
+ /*       FrontDoor stat (c) 1997 A&T Software                         */
+ /*                             2:5023/8@fidonet                       */
++/*       T-Mail new log stat (c) 2026 by Mikhail Markovskiy (klug)    */
++/*                             2:5020/378@fidonet                     */
+ /*                                                                    */
+ /*  This program is  free software;  you can  redistribute it and/or  */
+ /*  modify it  under  the terms of the GNU General Public License as  */ 
+@@ -17,6 +19,12 @@
+ /*  the License, or (at your option) any later version. See COPYING.  */
+ /*--------------------------------------------------------------------*/
+ 
++/*--------------------------------------------------------------------*/
++/* Сomment out following #define to disable use T-Mail new style log  */
++/*                instead of FrontDoor-style log                      */
++/*--------------------------------------------------------------------*/
++#define USE_NEW_TMAIL_LOG
++
+ /*--------------------------------------------------------------------*/
+ /*                        System include files                        */
+ /*--------------------------------------------------------------------*/
+@@ -35,6 +43,15 @@
+ #include "tools.h"
+ #include "sem.h"
+ 
++#ifdef USE_NEW_TMAIL_LOG
++/*--------------------------------------------------------------------*/
++/*        Additional include files for T-Mail new style log           */
++/*--------------------------------------------------------------------*/
++#include <string.h>
++#include <unistd.h>
++#include "protocol.h"
++#endif
++
+ /* Write 16-bit integer to file in intel bytes order */
+ static int fput16(u16 arg, FILE *file)
+ {
+@@ -130,6 +147,153 @@ static void TLogStat (int status, STATE *state, char *binlogpath, int tzoff)
+ 
+ }
+ 
++#ifdef USE_NEW_TMAIL_LOG
++
++/*--------------------------------------------------------------------*/
++/*    static void TNewLogStat (int, STATE*, char*, char*, int)        */
++/*                                                                    */
++/*    Add record to T-Mail new style binary log.                      */
++/*--------------------------------------------------------------------*/
++
++#define TMAIL_NEW_LOG_SIGNATURE 0x00F1
++#define FTN_NAME_SIZE 63
++
++static void TNewLogStat (int status, STATE *state, char *binlogpath, int tzoff)
++{
++	struct {
++		u16     fZone;
++		u16     fNet;
++		u16     fNode;
++		u16     fPoint;
++		u32     fSTime;
++		u32     fLTime;
++		u32     fBReceive;
++		u32     fBSent;
++		u8      fFReceive;
++		u8      fFSent;
++		u16     fStatus;
++		u8	unused[8];
++		u8	fNameLen;
++		char	sName[FTN_NAME_SIZE];
++	} TS;
++
++	FILE *fl;
++	int i;
++
++	if (binlogpath[0]) {
++		TS.fStatus = 0;
++
++		if (state->to) {
++			TS.fZone = (u16)state->to->fa.z;
++			TS.fNet = (u16)state->to->fa.net;
++			TS.fNode = (u16)state->to->fa.node;
++			TS.fPoint = (u16)state->to->fa.p;
++			TS.fStatus = 0x0002;			// outgoing session
++		} else if (state->fa) {
++			TS.fZone = (u16)state->fa->z;
++			TS.fNet = (u16)state->fa->net;
++			TS.fNode = (u16)state->fa->node;
++			TS.fPoint = (u16)state->fa->p;
++			TS.fStatus =0x0001; 			// incoming session
++		} else {
++			TS.fZone = 0;
++			TS.fNet = 0;
++			TS.fNode = 0;
++			TS.fPoint = 0;
++			TS.fStatus = 0;
++		}
++
++		TS.fBReceive = (u32)state->bytes_rcvd;
++		TS.fBSent = (u32)state->bytes_sent;
++		TS.fFReceive = (u8)state->files_rcvd;
++		TS.fFSent = (u8)state->files_sent;
++		TS.fSTime = (u32)(state->start_time + tz_off(state->start_time, tzoff)*60);
++		TS.fLTime = (u32)(safe_time() - state->start_time);
++
++		if (!status) {
++			TS.fStatus |= 0x0004;			// normal session (not aborted)
++		}
++		if (state->state == P_SECURE) {
++			TS.fStatus |= 0x0008;			// password-protected session
++		}
++
++		TS.sName[0] = 0;
++		if (state->ipaddr[0]) {
++			strnzcpy(TS.sName, state->ipaddr, FTN_NAME_SIZE);
++		}
++		if (state->peer_name[0] && strcmp(state->peer_name, state->ipaddr)) {
++			strnzcat(TS.sName, "; ", FTN_NAME_SIZE);
++			strnzcat(TS.sName, state->peer_name, FTN_NAME_SIZE);
++		}
++		if (state->sysname[0]) {
++			strnzcat(TS.sName, "; ", FTN_NAME_SIZE);
++			strnzcat(TS.sName, state->sysname, FTN_NAME_SIZE);
++		}
++		if(state->location[0]) {
++			strnzcat(TS.sName, "; ", FTN_NAME_SIZE);
++			strnzcat(TS.sName, state->location, FTN_NAME_SIZE);
++		}
++		i = strlen(TS.sName);
++		TS.fNameLen = (u8)i;
++		while(i < FTN_NAME_SIZE) TS.sName[i++] = 0;
++
++		LockSem(&blsem);
++#ifdef _WIN32
++		if( _access(binlogpath, 0) != 0 ) {			// log file does not exist
++			if( (fl = fopen(binlogpath, "wb")) != NULL ) {	// create new log file
++				fput16(TMAIL_NEW_LOG_SIGNATURE, fl);	// and write signature
++			}
++		}
++		else fl = fopen(binlogpath, "ab" );                     // open existing log file
++#else
++		if( access(binlogpath, F_OK) != 0 ) {                   // log file does not exist
++			if( (fl = fopen(binlogpath, "wb")) != NULL ) {  // create new log file
++				fput16(TMAIL_NEW_LOG_SIGNATURE, fl);	// and write signature
++			}
++		}
++		else fl = fopen(binlogpath, "ab" );                     // open existing log file
++#endif
++		if(fl != NULL) {
++			fput16(TS.fZone,     fl);
++			fput16(TS.fNet,      fl);
++			fput16(TS.fNode,     fl);
++			fput16(TS.fPoint,    fl);
++			fput32(TS.fSTime,    fl);
++			fput32(TS.fLTime,    fl);
++			fput32(TS.fBReceive, fl);
++			fput32(TS.fBSent,    fl);
++			fputc( TS.fFReceive, fl);
++			fputc( TS.fFSent,    fl);
++			fput16(TS.fStatus,   fl);
++			fput32(0,            fl);
++			fput32(0,            fl);
++			fputc( TS.fNameLen,  fl);
++			fwrite(TS.sName, FTN_NAME_SIZE, 1, fl);
++			fclose(fl);
++			ReleaseSem(&blsem);
++		} else {
++			ReleaseSem(&blsem);
++			Log(1,"unable to open binary log file `%s'",binlogpath);
++		}
++	}
++}
++
++/*--------------------------------------------------------------------*/
++/*    void BinLogStat (char*, STATE*, BINKD_CONFIG*)                  */
++/*                                                                    */
++/*    Add record to binary logs.                                      */
++/*--------------------------------------------------------------------*/
++
++void BinLogStat (int status, STATE *state, BINKD_CONFIG *config)
++{
++	TLogStat (status, state, config->binlogpath, config->tzoff);
++
++	if(config->fdouthist[0]) TNewLogStat(status, state, config->fdouthist, config->tzoff);
++	else if(config->fdinhist[0]) TNewLogStat(status, state, config->fdinhist, config->tzoff);
++}
++
++#else
++
+ /*--------------------------------------------------------------------*/
+ /*    static void FDLogStat (STATE*, char*, char*, int)               */
+ /*                                                                    */
+@@ -214,3 +378,4 @@ void BinLogStat (int status, STATE *state, BINKD_CONFIG *config)
+ 	FDLogStat (state, config->fdinhist, config->fdouthist, config->tzoff);
+ }
+ 
++#endif
+\ No newline at end of file

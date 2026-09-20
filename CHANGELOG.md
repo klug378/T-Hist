@@ -13,15 +13,56 @@ Addresses that use the wildcards `*` but do not contain `#` are not groups.
 
 - The terms `binary log` and `history file` are equivalent.
 
+## [1.4.0] - 2026-09-20
+
+#### Added
+
+- Developed and fully supported by `T-Hist` a new binary log format (`T-Hist` format) with 64-bit values for incoming and outgoing traffic,
+which allows you to correctly store data on traffic exceeding 4 gigabytes.
+
+  At the moment, none of the mailers supported by the `T-Hist` is able to store traffic values of more than 4 gigabytes in a binary log,
+since all existing formats use 32-bit values. Formats of the binary logs were developed in the dial-up era, when it was almost impossible
+to transfer such amounts of data in one session. But in the era of Fido-over-IP and high-speed networks, a session with more than 4 gigabytes
+of traffic is common, especially on large FTN hubs. Therefore, it becomes necessary to use new 64-bit formats.
+
+  I suggest that FTN mailer developers use the native `T-Hist` binary log format in their software products. In addition to correctly storing data
+about sessions with large volumes of traffic, the format allows you to save text strings that `T-Hist` will be printed in wide-screen mode
+to the right of the load graph and to the right of the tables with statistics.
+
+  For more information on native `T-Hist` binary log format, see [ADD-NEW-MAILER.md](ADD-NEW-MAILER.md).
+
+- Created patches for Binkd to add support for the `T-Hist` binary log format. The patches is located in the [binkd_patch](./binkd_patch) directory.
+For more information see [BINKD-PATCH.md](./binkd_patch/BINKD-PATCH.md).
+
+- Comments in the configuration file can now start not only from the character `;` inherited from old versions, but also from the `#` character,
+which is more familiar in the linux environment. A special case is the handling of a line containing the parameter `Addr`.
+Such a line can be commented out by putting `#` before `Addr`, but after `Addr` the character `#` will already be considered a macro
+for specifying a group of addresses, and not the beginning of a comment.
+
+#### Changed
+
+- If there are no `Addr` parameters defined in the configuration file, the default group `Addr #:#/#.#` will be used.
+
+- The parameters `Addr`, `AdvancedCPS`, `BrakeSesStat`, `BusyHist`, `Group`, `KeepAll`, `MiddLine`, `NoDrawZero`, `ProtectSummary`, `SupportNewFormat`, `SwapInOut`, `WideScreen`
+in the configuration file can now be used without specifying a value. In this case, the parameter `Addr` will be `#:#/#.#`, and all other listed parameters will be `Yes`.
+
+- Processing logic of the command line options `-g`, `-k`, `-n` is changed. In previous versions, setting these options without the following sign `+` or `-` changed the value
+of the corresponding parameter to the opposite. Now the ability to invert parameters is removed due to low demand, and the option without the following sign `+` or `-` is equivalent
+to the option with the sign `+`:
+
+  - `-g` the same as `-g+`;
+  - `-k` the same as `-k+`;
+  - `-n` the same as `-n+`.
+
 ## [1.3.1] - 2026-09-16
 
-### Changed
+#### Changed
 
 - Minor changes in formatting of statistics headers.
 
 ## [1.3.0] - 2026-09-14
 
-### Added
+#### Added
 
 - To control the wide-screen mode introduced in version `1.2.0`, the `WideScreen` parameter has been added with the following valid values:
   
@@ -42,40 +83,40 @@ Addresses that use the wildcards `*` but do not contain `#` are not groups.
   
   - `-w<N>` &emsp;&ndash; as `WideScreen <N>`.
 
-### Fixed
+#### Fixed
 
 - Fixed an error in the average CPS calculating in `AdvancedCPS Yes` mode, leading to abnormally high values
 in cases where the total duration of empty sessions exceeded the total duration of sessions with traffic.
 
-### Changed
+#### Changed
 
-- Both `AdvancedCPS` and `BusyHist` parameters are now set to `Yes` by default. (Previously, the default value was `No`.)
+- `AdvancedCPS`, `BrakeSesStat`, `BusyHist` and `SupportNewFormat` parameters are now set to `Yes` by default. (Previously, the default value was `No`.)
 
 ## [1.2.2] - 2026-09-10
 
-### Fixed
+#### Fixed
 
 - Fixed incorrect calculation of the average CPS for traffic values exceeding 4 gigabytes.
 
-### Changed
+#### Changed
 
 - When printing traffic values in whole kilobytes, megabytes, or gigabytes, rounding to the nearest integer is performed.
 
 ## [1.2.1] - 2026-09-09
 
-### Fixed
+#### Fixed
 
 - Fixed incorrect printing of traffic values exceeding 4 gigabytes.
 
 - Corrected minor errors in the design of the displayed information.
 
-### Changed
+#### Changed
 
 - Minor changes in the numbers output formats.
 
 ## [1.2.0] - 2026-09-01
 
-### Added
+#### Added
 
 - All utilities now have a wide-screen mode that allows you to display lines longer than 80 characters. This mode is enabled by default,
 however, if you process the old-format binary logs (for example, Binkd logs) and do not use comments (descriptions) in the `Addr` parameters,
@@ -103,7 +144,7 @@ This is an exact copy of the information printed after the load graph and histog
 
 - The `DmpHist` utility print before table not only the name of the binary log file, but also information about its format.
 
-### Changed
+#### Changed
 
 - Length of the comment (description) in the `Addr` parameters is not limited now. In previous versions, the comment was printed
 to the left of the load graph (if there is a dividing lines enabled by `MiddLine` parameters) with a length of no more than 15 characters.
@@ -131,7 +172,7 @@ Wildcards can now appear in non-group addresses only. For example, the address l
 
 ## [1.1.0] - 2026-08-27
 
-### Added
+#### Added
 
 - On histograms, the load level that is greater than 0% but less than 3% is now displayed using the `_` character.
 Previously, due to the lack of a suitable pseudo-graphic symbol, this load level was either displayed excessively large - as a level of 3-10%,
@@ -140,9 +181,9 @@ or not displayed at all.
 - Summary information about traffic and the number and duration of sessions is now printed after the tables with links and groups statistics.
 This is an exact copy of the information that printed after the load graph and histograms.
 
-- Quick guide "How to use T-Hist to generate statistics for unsupported mailers" is created (see the `ADD-NEW-MAILER.md` file).
+- Quick guide "How to use T-Hist to generate statistics for unsupported mailers" is created (see [ADD-NEW-MAILER.md](ADD-NEW-MAILER.md)).
 
-### Fixed
+#### Fixed
 
 - Completely fixed an issue when sessions with addresses not specified in the `Addr` parameters were mistakenly print in sessions table and always have "aborted" mark.
 In version `1.0.3`, this issue was fixed partially: only for explicitly excluded addresses. Now the sessions table contains only those addresses that correspond to the `Addr` parameters.
@@ -154,23 +195,23 @@ for the mailers that write the mark of a password session in the binary log.
 
 - Restored support for the mailers Internet Rex, FrontDoor, BinkleyTerm-XE, The Brake!, which was broken in versions `1.0.0` &ndash; `1.0.4`.
 
-### Changed
+#### Changed
 
 - The order of adresses and groups of addresses in `Addr` parameters is no longer important. Regardless of the order, when generating statistics,
 they will be sorted from less general to more general. And the excluded addresses and groups of addresses will be placed at the beginning of the adresses list,
 simultaneously deleting all present addresses that match the excluded ones. Re-specifying the same addresses will be ignored.
-For a more detailed description of the address sorting rules, see the `README.md` file.
+For a more detailed description of the address sorting rules, see [README.md](README.md).
 
 - The algorithm of browsing of the list of addresses specified by the `Addr` parameters has been changed. Previously, browsing the address list ended after the first match
 with the session address. Now, if the session address is not defined as excluded, the browsing will continue to the end of the list.
 Such an algorithm takes into account sessions with a separately specified addresses also in the statistics for the groups to which the addresses belongs.
-For a more detailed description of the address list browsing algorithm, see the `README.md` file.
+For a more detailed description of the address list browsing algorithm, see [README.md](README.md).
 
 - The `DmpHist` utility now ignores the `TimeShift` parameter and prints the start time of sessions exactly as it is written in the binary log, without any adjustments.
 
 ## [1.0.4] - 2026-08-21
 
-### Changed
+#### Changed
 
 - Minor resizing the columns width of the links and groups tables.
 
@@ -178,12 +219,12 @@ For a more detailed description of the address list browsing algorithm, see the 
 
 ## [1.0.3] - 2026-08-18
 
-### Fixed
+#### Fixed
 
 - Fixed processing of addresses excluded from statistics (specified with the character `!`, for example `Addr !2: 5020/378.1`).
 Previously, sessions with such addresses were mistakenly printed in sessions table, and always as aborted. Now such addresses are excluded from all types of statistics.
 
-### Changed
+#### Changed
 
 - Changing the format of the sessions tables. Now the session start time is printed with an accuracy of seconds (previously there was an accuracy of minutes).
 The session end time is excluded due to redundancy &ndash; statistics show the duration of sessions.
@@ -194,17 +235,17 @@ The session end time is excluded due to redundancy &ndash; statistics show the d
 
 ## [1.0.2] - 2026-08-14
 
-### Fixed
+#### Fixed
 
 - Fixed incorrect handling of `ShowValue` parameter and `-s` command line option.
 
-### Changed
+#### Changed
 
 - Minor changing of the diagnostic messages printed to `stderr`.
 
 ## [1.0.1] - 2026-08-13
 
-### Fixed
+#### Fixed
 
 - Fixed truncation of binary logs (if the `CutHistory` parameter is specified).
 
@@ -214,7 +255,7 @@ First new version. Added Linux support. Switch to UTF-8 encoding.
 
 **Attention!** This version truncate the binary logs incorrectly (if the `CutHistory` parameter is specified).
 
-### Added
+#### Added
 
 - Added Linux (x86_64 and i686) and Windows (x86_64 and i686) support.
 Executable files for each of the Linux architectures are compiled in two variants: with dynamic and with static libraries.
@@ -226,7 +267,7 @@ Variants with static libraries are further compressed by [UPX 4.2.4](https://upx
 
   - `-u-` &emsp;&emsp;&ndash; use ASCII 7-bit encoding without pseudo-graphics.
 
-### Changed
+#### Changed
 
 - All utilities now print information and create output text files in UTF-8 encoding.
 To post statistics in FTN echo conferences or netmail, text files must be converted to the appropriate encoding. For example, for Russian-language echo conferences with CP866 encoding:
@@ -245,8 +286,7 @@ For sessions shorter than a second, the utility will print a duration of 0 secon
 - The `NoDrawZero` parameter also affects the load histograms (previously this parameter only affected load graph).
 Now the busy histogram always corresponds to the "summation" of all load graph lines.
 
-
-### Removed
+#### Removed
 
 - DOS and OS/2 support removed. 
 

@@ -1,0 +1,230 @@
+diff --git a/binlog.c b/binlog.c
+index 0fe0f08..0ba1a2d 100644
+--- a/binlog.c
++++ b/binlog.c
+@@ -10,6 +10,8 @@
+ /*                             FIDONet 2:5020/79                      */
+ /*       FrontDoor stat (c) 1997 A&T Software                         */
+ /*                             2:5023/8@fidonet                       */
++/*       T-Hist log stat (c) 2026 by Mikhail Markovskiy (klug)        */
++/*                             2:5020/378@fidonet                     */
+ /*                                                                    */
+ /*  This program is  free software;  you can  redistribute it and/or  */
+ /*  modify it  under  the terms of the GNU General Public License as  */ 
+@@ -17,6 +19,12 @@
+ /*  the License, or (at your option) any later version. See COPYING.  */
+ /*--------------------------------------------------------------------*/
+ 
++/*--------------------------------------------------------------------*/
++/* Сomment out following #define to disable use T-Hist log instead of */
++/*                       of FrontDoor-style log                       */
++/*--------------------------------------------------------------------*/
++#define USE_NEW_FORMAT
++
+ /*--------------------------------------------------------------------*/
+ /*                        System include files                        */
+ /*--------------------------------------------------------------------*/
+@@ -35,6 +43,28 @@
+ #include "tools.h"
+ #include "sem.h"
+ 
++#ifdef USE_NEW_FORMAT
++/*--------------------------------------------------------------------*/
++/*              Additional include files for T-Hist log               */
++/*--------------------------------------------------------------------*/
++#include <string.h>
++#include <unistd.h>
++#include "protocol.h"
++
++#ifdef UINT64_MAX
++typedef uint64_t u64;
++#elif defined(SIZEOF_LONG) && SIZEOF_LONG==8
++typedef unsigned long int u64;
++#elif defined(__SIZEOF_LONG__) && __SIZEOF_LONG__==8
++typedef unsigned long int u64;
++#elif defined(__SIZEOF_LONG_LONG__) && __SIZEOF_LONG_LONG__==8
++typedef unsigned long long int u64;
++#else
++#error Cannot find type for 64-bit integer!
++#endif
++/*--------------------------------------------------------------------*/
++#endif
++
+ /* Write 16-bit integer to file in intel bytes order */
+ static int fput16(u16 arg, FILE *file)
+ {
+@@ -130,6 +160,168 @@ static void TLogStat (int status, STATE *state, char *binlogpath, int tzoff)
+ 
+ }
+ 
++#ifdef USE_NEW_FORMAT
++
++/*--------------------------------------------------------------------*/
++/*    static void THistLogStat (int, STATE*, char*, char*, int)       */
++/*                                                                    */
++/*    Add record to T-Hist binary log.                                */
++/*--------------------------------------------------------------------*/
++
++#define THIST_LOG_SIGNATURE "HIST\1"
++#define THIST_LOG_SIGNATURE_SIZE 5
++
++#define TH_TEXT_SIZE 206
++
++struct THistLogRecord			// 256 bytes
++{
++	u16     Zone;
++	u16     Net;
++	u16     Node;
++	u16     Point;
++	u64     SessionStart;		// unix timestamp of the session beginning
++	u64     BytesRcv;		// bytes received
++	u64     BytesSnt;		// bytes sent
++	u32     FilesRcv;		// files receieved
++	u32     FilesSnt;		// files sent
++	u32     SessionTime;		// session duration in seconds
++	u16     Status;			// bit-masked status
++	u8      Index[4];		// indexes of strings
++	char	Strings[TH_TEXT_SIZE];	// place for strings
++		// start index of ipaddr	0
++		// start index of peer_name	Index[0]
++		// start index of sysname	Index[1]
++		// start index of location	Index[2]
++		// start index of sysop		Index[3]
++};
++
++#define SESSION_IN  0x0001	// incoming
++#define SESSION_OUT 0x0002      // outgoing
++#define SESSION_OK  0x0004	// not aborted
++#define SESSION_PWD 0x0008	// password protected
++
++static void THistLogStat(int status, STATE *state, char *binlogpath, int tzoff)
++{
++	struct THistLogRecord TH;
++	FILE *fl;
++
++	if(binlogpath[0])
++	{
++		memset(&TH, 0, sizeof(struct THistLogRecord));
++
++		if(state->to)
++		{
++			TH.Zone  = (u16)state->to->fa.z;
++			TH.Net   = (u16)state->to->fa.net;
++			TH.Node  = (u16)state->to->fa.node;
++			TH.Point = (u16)state->to->fa.p;
++			TH.Status = SESSION_OUT;
++		}
++		else if(state->fa)
++		{
++			TH.Zone  = (u16)state->fa->z;
++			TH.Net   = (u16)state->fa->net;
++			TH.Node  = (u16)state->fa->node;
++			TH.Point = (u16)state->fa->p;
++			TH.Status = SESSION_IN;
++		}
++
++		if(!status) TH.Status |= SESSION_OK;
++
++		if(state->state == P_SECURE) TH.Status |= SESSION_PWD;
++
++		TH.SessionStart = (u64)(state->start_time + tz_off(state->start_time, tzoff)*60);
++		TH.SessionTime  = (u32)(safe_time() - state->start_time);
++
++		TH.BytesRcv = (u64)state->bytes_rcvd;
++		TH.BytesSnt = (u64)state->bytes_sent;
++		TH.FilesRcv = (u32)state->files_rcvd;
++		TH.FilesSnt = (u32)state->files_sent;
++
++		if(state->ipaddr[0]) strnzcpy(TH.Strings, state->ipaddr, TH_TEXT_SIZE);
++
++		if(strcmp(state->peer_name, state->ipaddr))
++		{
++			TH.Index[0] = strlen(TH.Strings);
++			if(state->peer_name[0] && (TH.Index[0] < TH_TEXT_SIZE - 1))
++			{
++				TH.Index[0]++;
++				strnzcpy(TH.Strings + TH.Index[0], state->peer_name, TH_TEXT_SIZE - TH.Index[0]);
++			}
++		}
++		else TH.Index[0] = 0;
++
++		TH.Index[1] = TH.Index[0] + strlen(TH.Strings + TH.Index[0]);
++		if(state->sysname[0] && (TH.Index[1] < TH_TEXT_SIZE - 1))
++		{
++			TH.Index[1]++;
++			strnzcpy(TH.Strings + TH.Index[1], state->sysname, TH_TEXT_SIZE - TH.Index[1]);
++		}
++
++		TH.Index[2] = TH.Index[1] + strlen(TH.Strings + TH.Index[1]);
++		if(state->location[0] && (TH.Index[2] < TH_TEXT_SIZE - 1))
++		{
++			TH.Index[2]++;
++			strnzcpy(TH.Strings + TH.Index[2], state->location, TH_TEXT_SIZE - TH.Index[2]);
++		}
++
++		TH.Index[3] = TH.Index[2] + strlen(TH.Strings + TH.Index[2]);
++		if(state->sysop[0] && (TH.Index[3] < TH_TEXT_SIZE - 1))
++		{
++			TH.Index[3]++;
++			strnzcpy(TH.Strings + TH.Index[3], state->sysop, TH_TEXT_SIZE - TH.Index[3]);
++		}
++
++		LockSem(&blsem);
++#ifdef _WIN32
++		if( _access(binlogpath, 0) != 0 )
++		{							// log file does not exist
++			if( (fl = fopen(binlogpath, "wb")) != NULL )	// create new log file
++			{						// and write signature
++				fwrite(THIST_LOG_SIGNATURE, THIST_LOG_SIGNATURE_SIZE, 1, fl);
++			}
++		}
++		else fl = fopen(binlogpath, "ab" );                     // open existing log file
++#else
++		if( access(binlogpath, F_OK) != 0 )
++		{                   					// log file does not exist
++			if( (fl = fopen(binlogpath, "wb")) != NULL )	// create new log file
++			{						// and write signature
++				fwrite(THIST_LOG_SIGNATURE, THIST_LOG_SIGNATURE_SIZE, 1, fl);
++			}
++		}
++		else fl = fopen(binlogpath, "ab" );                     // open existing log file
++#endif
++		if(fl != NULL)
++		{
++			fwrite(&TH, sizeof(struct THistLogRecord), 1, fl);
++			fclose(fl);
++			ReleaseSem(&blsem);
++		}
++		else
++		{
++			ReleaseSem(&blsem);
++			Log(1,"unable to open binary log file `%s'",binlogpath);
++		}
++	}
++}
++
++/*--------------------------------------------------------------------*/
++/*    void BinLogStat (char*, STATE*, BINKD_CONFIG*)                  */
++/*                                                                    */
++/*    Add record to binary logs.                                      */
++/*--------------------------------------------------------------------*/
++
++void BinLogStat (int status, STATE *state, BINKD_CONFIG *config)
++{
++	TLogStat (status, state, config->binlogpath, config->tzoff);
++
++	if(config->fdouthist[0]) THistLogStat(status, state, config->fdouthist, config->tzoff);
++	else if(config->fdinhist[0]) THistLogStat(status, state, config->fdinhist, config->tzoff);
++}
++
++#else
++
+ /*--------------------------------------------------------------------*/
+ /*    static void FDLogStat (STATE*, char*, char*, int)               */
+ /*                                                                    */
+@@ -214,3 +406,4 @@ void BinLogStat (int status, STATE *state, BINKD_CONFIG *config)
+ 	FDLogStat (state, config->fdinhist, config->fdouthist, config->tzoff);
+ }
+ 
++#endif
+\ No newline at end of file
