@@ -13,6 +13,20 @@ Addresses that use the wildcards `*` but do not contain `#` are not groups.
 
 - The terms `binary log` and `history file` are equivalent.
 
+## [1.4.1] - 2026-09-22
+
+#### Added
+
+- Added Linux executables for arm64 architecture.
+
+#### Fixed
+
+- Fixed the shift of some lines of histograms when the total number of aborted and/or password-protected sessions exceeded 9999.
+
+- Fixed incorrect printing of the total number of sessions when these values exceeded 65535.
+
+- Fixed incorrect printing of traffic values exceeding 4 gigabytes in summary statistics for password protected and unprotected sessions.
+
 ## [1.4.0] - 2026-09-20
 
 #### Added
@@ -108,7 +122,7 @@ in cases where the total duration of empty sessions exceeded the total duration 
 
 - Fixed incorrect printing of traffic values exceeding 4 gigabytes.
 
-- Corrected minor errors in the design of the displayed information.
+- Corrected minor errors in the design of the printed information.
 
 #### Changed
 
@@ -118,20 +132,20 @@ in cases where the total duration of empty sessions exceeded the total duration 
 
 #### Added
 
-- All utilities now have a wide-screen mode that allows you to display lines longer than 80 characters. This mode is enabled by default,
+- All utilities have now a wide-screen mode that allows them to print lines longer than 80 characters. This mode is enabled by default,
 however, if you process the old-format binary logs (for example, Binkd logs) and do not use comments (descriptions) in the `Addr` parameters,
 then the generated statistics will still be no more than 80 characters wide.
 
   But if at least one of the conditions is met:
   
-  - the binary log contains information about the names of FTN systems
-  (such binary logs have, for example, Internet Rex, FrontDoor, Bink/+, FhMail, BinkleyTerm-XE);
+  - the binary log contains text information about the FTN systems (such logs are: logs of Internet Rex, FrontDoor, Bink/+, FhMail, BinkleyTerm-XE,
+logs of some mailers compatible with T-Mail new format, as well as binary logs of the native `T-Hist` format);
   
   - at least one of the parameters `Addr` has a comment (description),
   
-  the FTN-system names (from binary log) or comments (from `Addr`  parameters) will be printed in wide-screen mode
-  to the right of the load graph and to the right of the tables with statistics. If both the FTN-system name from the binary log and
-  the comment (description) in the `Addr` parameter exist for the address, then the FTN-system name takes precedence.
+  the text information about FTN systems from binary log or comments (descriptions) from `Addr` parameters will be printed in wide-screen mode
+to the right of the load graph and to the right of the tables with statistics. If both the text information from binary log and the comment (description)
+in the `Addr` parameter exist for the address, then the information from binary log takes precedence.
 
 - All utilities now have the `-w` command line option to control wide-screen mode:
 
@@ -168,7 +182,7 @@ Wildcards can now appear in non-group addresses only. For example, the address l
   and the statistics will contain one common line for all points of node `2:5020/378` and separate lines for other addresses from zone 2,
   with which sessions were held.
 
-- Minor changes in the design of tables with statistics and other displayed information.
+- Minor changes in the design of tables with statistics and other printed information.
 
 ## [1.1.0] - 2026-08-27
 
@@ -277,7 +291,7 @@ To post statistics in FTN echo conferences or netmail, text files must be conver
 	```
 
 - The `T-Hist` and `LnkStat` utilities assign a duration of 1 second to sessions read from a binary log with a duration of 0 seconds.
-This allows you to correctly take into account short sessions lasting less than 1 second in statistics. The zero value of the duration of such sessions
+This makes it possible to correctly take into account short sessions lasting less than 1 second in statistics. The zero value of the duration of such sessions
 occurs due to the time intervals in binary logs are recorded with an accuracy of a second.
 
   The `DmpHist` utility continues to work as before. It prints raw data from binary logs without any adjustment.

@@ -4,7 +4,7 @@ This software is intended for use in the `FidoNet` computer network and other FT
 
 ---
 
-# T-Hist for Linux x86_64/i686 and Windows 64/32
+# T-Hist for Linux and Windows
 
 [![Visitors](https://visitor-badge.laobi.icu/badge?page_id=klug378.T-Hist)](https://github.com/klug378/T-Hist)
 [![GitHub Release](https://img.shields.io/github/v/release/klug378/T-Hist)](https://github.com/klug378/T-Hist)
@@ -21,8 +21,8 @@ Development of the `T-Hist` began in 1996. The latest version of `T-Hist` 0.30.a
 After 23 years, the new `T-Hist` (and related utilities `LnkStat` and `DmpHist`) were released for Linux and Windows.
 
 The utilities are distributed as a ZIP archive containing executable files in the following directories:
-- `linux`&ensp;&ndash; Linux executables (x86_64 and i686 architectures);
-- `linux-static`&ensp;&ndash; Linux executables with static libraries (x86_64 and i686 architectures);
+- `linux`&ensp;&ndash; Linux executables (x86_64, i686 and arm64 architectures);
+- `linux-static`&ensp;&ndash; Linux executables with static libraries (x86_64, i686 and arm64 architectures);
 - `windows`&ensp;&ndash; Windows 64-bit and 32-bit executables.
 
 Linux executables with static libraries are compressed by [UPX 4.2.4](https://upx.github.io) executable packer to reduce their size.
@@ -59,20 +59,20 @@ For example, for Russian-language echo conferences with CP866 encoding:
 
   - `-u-`&ensp;&emsp;&emsp;&ndash; use ASCII 7-bit encoding without pseudo-graphics.
 
-- All utilities have a wide-screen mode that allows you to display lines longer than 80 characters. This mode is enabled by default,
+- All utilities have a wide-screen mode that allows them to print lines longer than 80 characters. This mode is enabled by default,
 however, if you process the old-format binary logs (for example, Binkd logs) and do not use comments (descriptions) in the `Addr` parameters,
 then the generated statistics will still be no more than 80 characters wide.
 
   But if at least one of the conditions is met:
   
-  - the binary log contains text information about the FTN systems (for example, binary logs of Internet Rex, FrontDoor, Bink/+, FhMail,
-BinkleyTerm-XE, logs of some mailers compatible with T-Mail new format, as well as binary logs of the native `T-Hist` format);
+  - the binary log contains text information about the FTN systems (such logs are: logs of Internet Rex, FrontDoor, Bink/+, FhMail, BinkleyTerm-XE,
+logs of some mailers compatible with T-Mail new format, as well as binary logs of the native `T-Hist` format);
   
   - at least one of the parameters `Addr` has a comment (description),
   
-  the FTN-system names (from binary log) or comments (from `Addr`  parameters) will be printed in wide-screen mode
-  to the right of the load graph and to the right of the tables with statistics. If both the FTN-system name from the binary log and
-  the comment (description) in the `Addr` parameter exist for the address, then the FTN-system name takes precedence.
+  the text information about FTN systems from binary log or comments (descriptions) from `Addr` parameters will be printed in wide-screen mode
+to the right of the load graph and to the right of the tables with statistics. If both the text information from binary log and the comment (description)
+in the `Addr` parameter exist for the address, then the information from binary log takes precedence.
 
   To control the wide-screen mode, the `WideScreen` parameter has been added with the following valid values:
   
@@ -130,7 +130,7 @@ simultaneously deleting all present addresses that match the excluded ones. Re-s
 
   If there are no `Addr` parameters defined in the configuration file, the default group `Addr #:#/#.#` will be used.
 
-- If the group of addresses in `Addr` paramter have both macros `#` and wildcards `*`, then wildcards will be automatically replaced with macros.
+- If the group of addresses in `Addr` parameter have both macros `#` and wildcards `*`, then wildcards will be automatically replaced with macros.
 Wildcards can appear in non-group addresses only. For example, the address list:
 
 	```
@@ -160,19 +160,19 @@ sessions with a separately specified addresses also in the statistics for the gr
 
   the sessions with address `2:5020/378.0` will be taken into account not only in separate statistics for this address, but also in group statistics of sessions
 with addresses of the net `2:5020`, in group statistics of sessions with addresses of the zone `2` and in group statistics of sessions with any addresses.
-And sessions with address `2:5020/1132.0` will be ignored.
+Sessions with address `2:5020/1132.0` will be ignored.
 
 - Fixed processing of addresses excluded from statistics (for example, `Addr !2:5020/1132.0`).
 In the old versions, sessions with such addresses were mistakenly printed in sessions table, and always as aborted. Now such addresses are excluded from all types of statistics.
 
 - The `T-Hist` and `LnkStat` utilities assign a duration of 1 second to sessions read from a binary log with a duration of 0 seconds.
-This allows you to correctly take into account short sessions lasting less than 1 second in statistics. The zero value of the duration of such sessions
+This makes it possible to correctly take into account short sessions lasting less than 1 second in statistics. The zero value of the duration of such sessions
 occurs due to the time intervals in binary logs are recorded with an accuracy of a second.
 
   The `DmpHist` utility continues to work as before. It prints raw data from binary logs without any adjustment.
 For sessions shorter than a second, the utility will print a duration of 0 seconds, as recorded in the binary log.
 
-- Format of the sessions table is changed. The session start time is printed with an accuracy of seconds (the old versions print it with an accuracy of minutes).
+- Format of the sessions table has been changed. The session start time is printed with an accuracy of seconds (the old versions print it with an accuracy of minutes).
 The session end time is excluded due to redundancy &ndash; the table contains the duration of sessions.
 
 - Aborted Binkd sessions are marked in the sessions table with `A` character after address. The old versions were not place this mark for the aborted Binkd sessions.
