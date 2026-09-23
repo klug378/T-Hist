@@ -7,7 +7,7 @@ This document reviews the following formats:
 
   - `Binkd` binary log format, which is also the format of `T-Mail` before version 2603 (`T-Mail` old format);
   - binary log format of `T-Mail` since version 2603 (`T-Mail` new format).
-  - native `T-Hist` format of binary log with 64-bit traffic values and the ability to store multiple text strings.
+  - native `T-Hist` format of binary log with 64-bit traffic values and the ability to store multiple text strings (the format is supported starting from version `T-Hist` `1.4.0`).
 
   A comparison of the capabilities provided by each of the formats is given in the Table.
   

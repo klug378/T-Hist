@@ -187,10 +187,28 @@ And after the tables, `DmpHist` prints a more detailed description of sessions s
 
 - Parameter names and their values in the configuration file are case-insensitive, with the exception of file names in Linux.
 
-- `AdvancedCPS`, `BrakeSesStat`, `BusyHist` and `SupportNewFormat` parameters are set to `Yes` by default. (In the old versions, the default value was `No`.)
+- If the parameter is not specified either in the configuration file or through the command line option, then it will receive the default value given in the following table:
+
+  |   Parameter    |       Default value       |
+  | :------------- | :------------------------ |
+  | `Output`       | `t-hist.out`              | 
+  | `LinkStat`     | `t-hist.lnk`              |
+  | `SessionStat`  | `t-hist.ses`              |
+  | `Date`         | today's date              |
+  | `Time`         | `0:00:00-23:59:59`        |
+  | `TimeShift`    | `0`                       |
+  | `CutHistory`   | `0` (do not cut log file) |
+  | `Name`         | empty string              |
+  | `Addr`         | `#:#/#.#`                 |
+  | `BinkdAborted` | `In`                      |
+  | `ShowValue`	   | `Ses`                     |
+  | `SupportNewFormat`, `BusyHist`,<br>`AdvancedCPS`, `WideScreen` | `Yes` |
+  | `Group`, `MiddLine`, `KeepAll`,<br>`NoDrawZero`, `ProtectSummary`,<br>`BrakeSesStat`, `SwapInOut` | `No` |
+
+  (There are differences from the default values for old versions.)
 
 - The parameters `Addr`, `AdvancedCPS`, `BrakeSesStat`, `BusyHist`, `Group`, `KeepAll`, `MiddLine`, `NoDrawZero`, `ProtectSummary`, `SupportNewFormat`, `SwapInOut`, `WideScreen`
-in the configuration file can now be used without specifying a value. In this case, the parameter `Addr` will be `#:#/#.#`, and all other listed parameters will be `Yes`.
+in the configuration file can be used without specifying a value. In this case, the parameter `Addr` will be `#:#/#.#`, and all other listed parameters will be `Yes`.
 
 - Processing logic of the command line options `-g`, `-k`, `-n` is changed. In old versions, setting these options without the following sign `+` or `-` changed the value
 of the corresponding parameter to the opposite. Now the ability to invert parameters is removed due to low demand, and the option without the following sign `+` or `-` is equivalent

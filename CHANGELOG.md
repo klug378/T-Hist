@@ -13,6 +13,12 @@ Addresses that use the wildcards `*` but do not contain `#` are not groups.
 
 - The terms `binary log` and `history file` are equivalent.
 
+## [1.4.2] - 2026-09-23
+
+#### Fixed
+
+- Fixed formatting corruption of the last row of the table with sessions statistics when the number of sessions exceeds 9999.
+
 ## [1.4.1] - 2026-09-22
 
 #### Added

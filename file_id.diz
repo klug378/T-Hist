@@ -1,4 +1,4 @@
-T-Hist 1.4.1 History Utility - Mailer load statistics.
+T-Hist 1.4.2 History Utility - Mailer load statistics.
 Executables for Linux and Windows.  Creates FTN-system
 load statistics based on data in mailer's binary logs. 
 Supported mailers: T-Mail, Binkd, Argus, Internet Rex, 
