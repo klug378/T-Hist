@@ -1350,7 +1350,7 @@ Group,  BrakeSesStat,  AdvancedCPS,  SwapInOut,  BinkdAborted, Addr. Остал�
                                         предыдущего месяца
 
   LnkStat -b-40                       - получить статистику за последние 40
-                                        суток                                       предыдущего месяца
+                                        суток предыдущего месяца
 
   LnkStat -b-40 -d25                  - получить статистику, начиная за 40 дней
                                         от текущего числа, продолжительностью
@@ -1391,7 +1391,6 @@ Group,  BrakeSesStat,  AdvancedCPS,  SwapInOut,  BinkdAborted, Addr. Остал�
 под DOS и OS/2, в которых поддерживаются 64-битные целые числа).
 
 
-
                                 Благодарности
                                 =============
 
@@ -1410,13 +1409,6 @@ Mikel Lavrentyev (2:5020/35) за  bink/+ links statistics utility,  послу�
   Новые  версии  T-Hist  помещаются  в  файлэхи  AFTNMISC и T-MAIL. По файлэхе
 AFTNMISC  проходят  все  версии  T-Hist,  по  T-MAIL - только те,  изменения в
 которых затрагивают пользователей T-Mail.
-
-  Кроме того, свежий T-Hist можно взять на:
-        http://www.stopka.ru/klug/t-hist.htm
-        http://www.stopka.ru/klug/koi8/t-hist.htm
-
-  Ну и, наконец, свежий T-Hist можно фрекнуть с 2:5020/378  по алиасу T-HIST с
-1:00 до 5:30 московского времени.
 
 
                                  Дистрибутив

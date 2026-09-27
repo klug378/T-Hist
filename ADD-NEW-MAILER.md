@@ -7,18 +7,18 @@ This document reviews the following formats:
 
   - `Binkd` binary log format, which is also the format of `T-Mail` before version 2603 (`T-Mail` old format);
   - binary log format of `T-Mail` since version 2603 (`T-Mail` new format).
-  - native `T-Hist` format of binary log with 64-bit traffic values and the ability to store multiple text strings (the format is supported starting from version `T-Hist` `1.4.0`).
+  - two versions of the native `T-Hist` format of binary log with 64-bit traffic values and the ability to store multiple text strings.
 
   A comparison of the capabilities provided by each of the formats is given in the Table.
   
-|                                                 | `Binkd` format<br>(`T-Mail` old format) | `T-Mail` new format | `T-Hist` format |
-| :---------------------------------------------- | :-------------------------------------: | :------------------:| :-------------: |
-| Size of one record                              |                 28 bytes                |      100 bytes      |    256 bytes    |
-| Ability to store traffic values<br>greater than 4 GiB |            **No**                 |       **No**        |     **Yes**     |
-| Mark password protected sessions                |                  **No**                 |       **Yes**       |     **Yes**     |
-| Mark aborted sessions     | **Yes**<br>(`Binkd` loss of session<br>direction information) |       **Yes**       |     **Yes**     |
-| Ability to store text strings                   |  **No**  | **Yes**<br>(up to 63 characters) | **Yes**<br>(up to 206 characters) |
-| Ratio of the size of log file<br>to the size of `Binkd` log file<br>with the same number of records | 1 : 1 | 3.57 : 1 | 9.14 : 1 |
+|                                     | `Binkd` / `T-Mail`<br>old format | `T-Mail`<br>new format | `T-Hist` format<br>version 1 | `T-Hist` format<br>version 2 |
+| :---------------------------------- | :------------------------------: | :---------------------:| :--------------------------: | :--------------------------: |
+| Size of one record                  |               28 bytes           |         100 bytes      |           256 bytes          |         46 - 256 bytes       |
+| Ability to store traffic<br>values greater than 4 GiB |     **No**     |          **No**        |            **Yes**           |            **Yes**           |
+| Mark password<br>protected sessions |                       **No**     |          **Yes**       |            **Yes**           |            **Yes**           |
+| Mark aborted sessions               | **Yes**<br>`Binkd` loss of<br>session direction information |   **Yes**   |   **Yes**    |            **Yes**           |
+| Ability to store<br>text strings    |  **No**  |  **Yes**<br>up to 63 characters  |    **Yes**<br>up to 206 characters    |  **Yes**<br>up to 205 characters  |
+| Ratio of the size of<br>log file to the size<br>of `Binkd` log file<br>with the same number of records  | 1 : 1 | 3.57 : 1 | 9.14 : 1 |  1.64 : 1 - 9.14 : 1  |
 
 Each of the binary log formats will be reviewed in detail below.
 
@@ -142,9 +142,9 @@ the name of FTN-system and its location.
 0000000060: 00 00 00 00 00 00       │                          ......
 ```
 
-## Native `T-Hist` format
+## Native `T-Hist` formats
 
-The disadvantage of the binary log formats of all mailers supported by `T-Hist` is that information about traffic is recorded as 32-bit values.
+The disadvantage of the binary log formats of all mailers supported by `T-Hist` is using 32-bit values to store information about traffic.
 In such binary logs, it is impossible to correctly store information if more than 4 gigabytes have been sent or received.
 
 Formats of the binary logs were developed in the dial-up era, when it was almost impossible to transfer more than 4 gigabytes in one session.
@@ -155,11 +155,14 @@ using 64-bit variables. But when writing to a binary log, `Binkd` is forced to a
 
 Therefore, the development and use of new binary log formats with 64-bit traffic values is a relevant task.
 
-`T-Hist`, starting with version `1.4.0`, implements support for its own binary log format with 64-bit traffic values,
-which is proposed to be used by FTN mailer developers.
+`T-Hist` implements support for its own binary log formats with 64-bit traffic values, which is proposed to be used by FTN mailer developers.
+
+### Version 1 of the native `T-Hist` format
+
+Supported since `T-Hist` `1.4.0`.
 
 The first five bytes of `T-Hist` format binary log contain the signature consisting of four characters `H`, `I`, `S`, `T` and one byte with
-the format version number (currently format version is 1). Signature as a sequence of hexadecimal values: `0x48`, `0x49`, `0x53`, `0x54`, `0x01`.
+the format version number. Signature as a sequence of hexadecimal values: `0x48`, `0x49`, `0x53`, `0x54`, `0x01`.
   
 Next are records 256 bytes long. Each record has the following structure:
 
@@ -199,13 +202,12 @@ struct {
 //  string 2 - starts with Strings[Index[1]] if Index[1] < 206, otherwise absent
 //  string 3 - starts with Strings[Index[2]] if Index[2] < 206, otherwise absent
 //  string 4 - starts with Strings[Index[3]] if Index[3] < 206, otherwise absent
-
 ```
 
 The strings can contain text information about FTN system. For example, string 0 &ndash; IP address, string 1 &ndash; domain name,
 string 2 &ndash; name of FTN system, string 3 &ndash; location of FTN system, string 4 &ndash; sysop name.
 
-Below is an example of a dump of `T-Hist` format binary log file containing one record. At the beginning of the file are
+Below is an example of a dump of `T-Hist` format (version 1) binary log file containing one record. At the beginning of the file are
 five bytes of the signature: `0x48`, `0x49`, `0x53`, `0x54`, `0x01`. Next is a 256 byte record with information about the session
 with node 2:5020/715.0, started at 2026-09-14 22:15:06, with a duration of 4 seconds, during which 2528361 bytes were received
 by three files and 336 bytes were sent by one file. The session was ougoing, password protected, and ended normally. 
@@ -231,9 +233,57 @@ The record also contains 5 null-terminated strings with IP address, domain name,
 0000000100: 00 00 00 00 00          ¦                          .....
 ```
 
-As a drawback of `T-Hist` format, a noticeable increase in the size of the binary log file should be noted:
+As a drawback of the first version of `T-Hist` format, a noticeable increase in the size of the binary log file should be noted:
   - more than 2 and a half times compared to `T-Mail` new format (256 bytes per record versus 100 bytes per record);
   - more than 9 times compared to `Binkd` format (256 bytes per record versus 28 bytes per record).
+
+This disadvantage is significantly reduced in the second version of the format, the records of which have a variable length.
+
+### Version 2 of the native `T-Hist` format
+
+Supported since `T-Hist` `1.5.0`.
+
+The first five bytes of `T-Hist` format binary log contain the signature consisting of four characters `H`, `I`, `S`, `T` and one byte with
+the format version number. Signature as a sequence of hexadecimal values: `0x48`, `0x49`, `0x53`, `0x54`, `0x02`.
+
+Next are records of variable length, but not more than 256 bytes each. The algorithm for constructing a record is:
+
+1. Fill the 256-byte buffer with zeros.
+
+2. Create the record in this buffer whose structure is described in the first version of the format.
+Required: byte with index 255 (counting from zero) must remain zero.
+
+3. Determine the index of the last non-zero byte, increase by one and use the resulting value as the size of the record. Sample code:
+```C
+struct THistLogRecord TH;
+memset(&TH, 0, 256);	// filling the record with zeros
+/*
+Creating the record of the first version of T-Hist format
+*/
+char* p = (char*)&TH;
+uint8_t len = 254;
+while( (len > 0) && (p[len] == 0) ) len--;
+len++;
+```
+4. Write to the binary log file the value `len` (one byte) and len bytes, starting with the address `&TH`.
+
+Below is an example of a dump of `T-Hist` format (version 2) binary log file containing one record for the same session as the example above
+for the first version of the format. At the beginning of the file are five bytes of the signature: `0x48`, `0x49`, `0x53`, `0x54`, `0x02`.
+Next are the one byte of the record length (`0x73` == 115) and 115 bytes record for session with node 2:5020/715.0, started at 2026-09-14 22:15:06,
+with a duration of 4 seconds, during which 2528361 bytes were received by three files and 336 bytes were sent by one file.
+The session was ougoing, password protected, and ended normally. The record also contains 5 strings with IP address, domain name, name of FTN system,
+location of FTN system and sysop name.
+
+```
+0000000000: 48 49 53 54 02 73 02 00 │ 9C 13 CB 02 00 00 EA 71  HIST...........q
+0000000010: A8 6A 00 00 00 00 69 94 │ 26 00 00 00 00 00 50 01  .j....i.&.....P.
+0000000020: 00 00 00 00 00 00 03 00 │ 00 00 01 00 00 00 04 00  ................
+0000000030: 00 00 0E 00 0F 1F 29 35 │ 39 35 2E 31 34 33 2E 32  ......)595.143.2
+0000000040: 31 37 2E 32 34 36 00 66 │ 69 64 6F 2E 68 75 62 61  17.246 fido.huba
+0000000050: 37 31 35 2E 72 75 00 4E │ 65 77 20 57 6F 72 6C 64  715.ru New World
+0000000060: 00 4D 6F 73 63 6F 77 2C │ 55 53 53 52 00 41 6C 65   Moscow,USSR Ale
+0000000070: 78 20 42 61 72 69 6E 6F │ 76                       x Barinov
+```
 
 ---
 

@@ -13,6 +13,66 @@ Addresses that use the wildcards `*` but do not contain `#` are not groups.
 
 - The terms `binary log` and `history file` are equivalent.
 
+## [1.5.0] - 2026-09-27
+
+#### Added
+
+- All utilities can now work without a configuration file if at least one binary log file is specified in the command line.
+Log processing parameters are determined according to the following rules:
+
+  - If the config file is not specified explicitly using the command line option `-c` and no config file named `t-hist.ctl` is found in the current directory,
+the specified binary logs will be processed, and all parameters that were not specified by other command line options will receive default values.
+(See the table with the default parameter values in the file [README.md](README.md).)
+
+  - If the configuration file is specified explicitly using the `-c` command line option, or there is a configuration file named `t-hist.ctl` in the current directory,
+the specified binary logs will be processed together with the logs from the configuration file, and parameters that were not specified by other command line options
+will receive the values from the configuration file.
+
+  Examples:
+  ```text
+  t-hist  /home/user/fido/logs/binkd.sts
+  t-hist  /home/user/fido/logs/binkd.sts -d-1 -t12-24 -bTIO$ -g -k -mg 
+  t-hist  /home/user/fido/logs/binkd.sts -с/home/user/fido/config/t-hist.conf -w120
+  lnkstat /home/user/fido/logs/binkd.sts -b1.9.2026 -e20.9.2026 -g 
+  dmphist /home/user/fido/logs/binkd1.sts /home/user/fido/logs/binkd2.sts -w- -u-
+  ```
+
+- Added the ability to cut the KittenMail binary logs when the `CutHistory` parameter is not zero. At the moment, `T-Hist` can cut the binary logs of the following
+formats/mailers: Binkd, T-Mail old and new formats, KittenMail and the binary logs of all versions of the native 'T-Hist' format. Other supported formats are
+not cutted and the `CutHistory` parameter is ignored.
+
+- Developed and fully supported by the all utilities the 2nd version of the 64-bit native `T-Hist` format of binary logs (`T-Hist` format, version 2). Possessing all
+the advantages of the 1st version of the format, the 2nd version significantly reduce the size of the binary log file thanks to variable-length records.
+For more information, see [ADD-NEW-MAILER.md](ADD-NEW-MAILER.md).
+
+- Created patch for Binkd to add support for the 2nd version of `T-Hist` binary log format. The patch is located in the [binkd_patch](./binkd_patch) directory.
+For more information, see [BINKD-PATCH.md](./binkd_patch/BINKD-PATCH.md).
+
+- A new utility has been created: `HistConv` binary log formats converter. The utility creates for a specified binary log file the same log in a different format.
+The source file can be the binary log file of any mailer supported by `T-Hist`. The format of the source binary log is determined automatically.
+To select a target format, use the `-f` command line option to specify one of the following formats:
+  - native `T-Hist` format of versions 1 and 2;
+  - format of T-Mail since version 2603 (T-Mail new format);
+  - format of T-Mail before version 2603 (T-Mail old format);
+  - Binkd format (T-Mail old format with inverted mark of session direction).
+
+  If the target format is not specified using the `-f` option, then the binary log will be converted to the 2nd version of the native `T-Hist` format.
+
+  Use the program help to get valid target format names:
+  ```shell
+  histconv -h
+  ```
+
+#### Changed
+
+- The `-h` command-line option is no longer needed to specify a binary log in the command-line. The binary logs are set by simply specifying the file names.
+
+- The `-h` command-line option now displays the program's help.
+
+#### Removed
+
+- The `SupportNewFormat` parameter is deprecated and ignored when reading the configuration file. All binary log formats are fully supported.
+
 ## [1.4.2] - 2026-09-23
 
 #### Fixed
@@ -37,7 +97,7 @@ Addresses that use the wildcards `*` but do not contain `#` are not groups.
 
 #### Added
 
-- Developed and fully supported by `T-Hist` a new binary log format (`T-Hist` format) with 64-bit values for incoming and outgoing traffic,
+- Developed and fully supported by all utilities a new binary log format (`T-Hist` format) with 64-bit values for incoming and outgoing traffic,
 which allows you to correctly store data on traffic exceeding 4 gigabytes.
 
   At the moment, none of the mailers supported by the `T-Hist` is able to store traffic values of more than 4 gigabytes in a binary log,
@@ -51,8 +111,8 @@ to the right of the load graph and to the right of the tables with statistics.
 
   For more information on native `T-Hist` binary log format, see [ADD-NEW-MAILER.md](ADD-NEW-MAILER.md).
 
-- Created patches for Binkd to add support for the `T-Hist` binary log format. The patches is located in the [binkd_patch](./binkd_patch) directory.
-For more information see [BINKD-PATCH.md](./binkd_patch/BINKD-PATCH.md).
+- Created patches for Binkd to add support for the `T-Hist` binary log format. The patches are located in the [binkd_patch](./binkd_patch) directory.
+For more information, see [BINKD-PATCH.md](./binkd_patch/BINKD-PATCH.md).
 
 - Comments in the configuration file can now start not only from the character `;` inherited from old versions, but also from the `#` character,
 which is more familiar in the linux environment. A special case is the handling of a line containing the parameter `Addr`.
@@ -66,7 +126,7 @@ for specifying a group of addresses, and not the beginning of a comment.
 - The parameters `Addr`, `AdvancedCPS`, `BrakeSesStat`, `BusyHist`, `Group`, `KeepAll`, `MiddLine`, `NoDrawZero`, `ProtectSummary`, `SupportNewFormat`, `SwapInOut`, `WideScreen`
 in the configuration file can now be used without specifying a value. In this case, the parameter `Addr` will be `#:#/#.#`, and all other listed parameters will be `Yes`.
 
-- Processing logic of the command line options `-g`, `-k`, `-n` is changed. In previous versions, setting these options without the following sign `+` or `-` changed the value
+- Processing logic of the command-line options `-g`, `-k`, `-n` is changed. In previous versions, setting these options without the following sign `+` or `-` changed the value
 of the corresponding parameter to the opposite. Now the ability to invert parameters is removed due to low demand, and the option without the following sign `+` or `-` is equivalent
 to the option with the sign `+`:
 
@@ -95,7 +155,7 @@ to the option with the sign `+`:
   
   The default setting is `WideScreen Yes`.
 
-- Extended valid values of the `-w` command line option:
+- Extended valid values of the `-w` command-line option:
 
   - `-w`, `-w+` &ndash; as `WideScreen Yes`;
 
@@ -153,7 +213,7 @@ logs of some mailers compatible with T-Mail new format, as well as binary logs o
 to the right of the load graph and to the right of the tables with statistics. If both the text information from binary log and the comment (description)
 in the `Addr` parameter exist for the address, then the information from binary log takes precedence.
 
-- All utilities now have the `-w` command line option to control wide-screen mode:
+- All utilities now have the `-w` command-line option to control wide-screen mode:
 
   - `-w`, `-w+` &ndash; enable wide-screen mode (default);
 
@@ -257,7 +317,7 @@ The session end time is excluded due to redundancy &ndash; statistics show the d
 
 #### Fixed
 
-- Fixed incorrect handling of `ShowValue` parameter and `-s` command line option.
+- Fixed incorrect handling of `ShowValue` parameter and `-s` command-line option.
 
 #### Changed
 
@@ -281,7 +341,7 @@ First new version. Added Linux support. Switch to UTF-8 encoding.
 Executable files for each of the Linux architectures are compiled in two variants: with dynamic and with static libraries.
 Variants with static libraries are further compressed by [UPX 4.2.4](https://upx.github.io) executable packer to reduce their size.
 
-- `LnkStat` and `DmpHist` utilities (but not `T-Hist`) now have the `-u` command line option to select the encoding of the printed information:
+- `LnkStat` and `DmpHist` utilities (but not `T-Hist`) now have the `-u` command-line option to select the encoding of the printed information:
 
   - `-u`, `-u+` &ndash; use UTF-8 encoding (default);
 

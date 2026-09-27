@@ -1,5 +1,5 @@
 diff --git a/binlog.c b/binlog.c
-index 0fe0f08..0ba1a2d 100644
+index 0fe0f08..2600226 100644
 --- a/binlog.c
 +++ b/binlog.c
 @@ -10,6 +10,8 @@
@@ -53,7 +53,7 @@ index 0fe0f08..0ba1a2d 100644
  /* Write 16-bit integer to file in intel bytes order */
  static int fput16(u16 arg, FILE *file)
  {
-@@ -130,6 +160,168 @@ static void TLogStat (int status, STATE *state, char *binlogpath, int tzoff)
+@@ -130,6 +160,175 @@ static void TLogStat (int status, STATE *state, char *binlogpath, int tzoff)
  
  }
  
@@ -65,7 +65,7 @@ index 0fe0f08..0ba1a2d 100644
 +/*    Add record to T-Hist binary log.                                */
 +/*--------------------------------------------------------------------*/
 +
-+#define THIST_LOG_SIGNATURE "HIST\1"
++#define THIST_LOG_SIGNATURE "HIST\2"
 +#define THIST_LOG_SIGNATURE_SIZE 5
 +
 +#define TH_TEXT_SIZE 206
@@ -101,6 +101,7 @@ index 0fe0f08..0ba1a2d 100644
 +{
 +	struct THistLogRecord TH;
 +	FILE *fl;
++	u8 RecordLen;
 +
 +	if(binlogpath[0])
 +	{
@@ -169,6 +170,11 @@ index 0fe0f08..0ba1a2d 100644
 +			strnzcpy(TH.Strings + TH.Index[3], state->sysop, TH_TEXT_SIZE - TH.Index[3]);
 +		}
 +
++		// calculate bytes amount from record start to last non-zero byte
++		RecordLen = TH.Index[3] + strlen(TH.Strings + TH.Index[3]);
++		if(RecordLen > TH_TEXT_SIZE - 1) RecordLen = TH_TEXT_SIZE - 1;
++		RecordLen += 50;
++
 +		LockSem(&blsem);
 +#ifdef _WIN32
 +		if( _access(binlogpath, 0) != 0 )
@@ -191,7 +197,8 @@ index 0fe0f08..0ba1a2d 100644
 +#endif
 +		if(fl != NULL)
 +		{
-+			fwrite(&TH, sizeof(struct THistLogRecord), 1, fl);
++			fputc(RecordLen, fl);
++			fwrite(&TH, RecordLen, 1, fl);
 +			fclose(fl);
 +			ReleaseSem(&blsem);
 +		}
@@ -222,7 +229,7 @@ index 0fe0f08..0ba1a2d 100644
  /*--------------------------------------------------------------------*/
  /*    static void FDLogStat (STATE*, char*, char*, int)               */
  /*                                                                    */
-@@ -214,3 +406,4 @@ void BinLogStat (int status, STATE *state, BINKD_CONFIG *config)
+@@ -214,3 +413,4 @@ void BinLogStat (int status, STATE *state, BINKD_CONFIG *config)
  	FDLogStat (state, config->fdinhist, config->fdouthist, config->tzoff);
  }
  

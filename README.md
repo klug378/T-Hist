@@ -53,7 +53,7 @@ For example, for Russian-language echo conferences with CP866 encoding:
 	iconv -f UTF-8 -t CP866 in.txt -o out.txt
 	```
 
-  The `LnkStat` and `DmpHist` utilities (but not `T-Hist`) have the `-u` command line option to select the encoding of the printed information:
+  The `LnkStat` and `DmpHist` utilities (but not `T-Hist`) have the `-u` command-line option to select the encoding of the printed information:
 
   - `-u`, `-u+`&ensp;&ndash; use UTF-8 encoding (default);
 
@@ -85,13 +85,33 @@ in the `Addr` parameter exist for the address, then the information from binary 
   
   The default setting is `WideScreen Yes`.
 
-  Also all utilities have the `-w` command line option to control wide-screen mode:
+  Also all utilities have the `-w` command-line option to control wide-screen mode:
 
   - `-w`, `-w+` &ndash; as `WideScreen Yes`;
 
   - `-w-` &emsp;&emsp;&ndash; as `WideScreen No`;
   
   - `-w<N>` &emsp;&ndash; as `WideScreen <N>`.
+
+- All utilities can work without a configuration file if at least one binary log file is specified in the command line.
+Log processing parameters are determined according to the following rules:
+
+  - If the config file is not specified explicitly using the command line option `-c` and no config file named `t-hist.ctl` is found in the current directory,
+the specified binary logs will be processed, and all parameters that were not specified by other command line options will receive default values.
+(See the table with the default parameter values in the file [README.md](README.md).)
+
+  - If the configuration file is specified explicitly using the `-c` command line option, or there is a configuration file named `t-hist.ctl` in the current directory,
+the specified binary logs will be processed together with the logs from the configuration file, and parameters that were not specified by other command line options
+will receive the values from the configuration file.
+
+  Examples:
+  ```text
+  t-hist  /home/user/fido/logs/binkd.sts
+  t-hist  /home/user/fido/logs/binkd.sts -d-1 -t12-24 -bTIO$ -g -k -mg 
+  t-hist  /home/user/fido/logs/binkd.sts -с/home/user/fido/config/t-hist.conf -w120
+  lnkstat /home/user/fido/logs/binkd.sts -b1.9.2026 -e20.9.2026 -g 
+  dmphist /home/user/fido/logs/binkd1.sts /home/user/fido/logs/binkd2.sts -w- -u-
+  ```
 
 - On histograms, the load level that is greater than 0% but less than 3% is displayed using the `_` character.
 In the old versions, this load level was either displayed excessively large &ndash; as a level of 3-10%, or not displayed at all due to the lack of a suitable pseudo-graphic symbol.
@@ -187,7 +207,7 @@ And after the tables, `DmpHist` prints a more detailed description of sessions s
 
 - Parameter names and their values in the configuration file are case-insensitive, with the exception of file names in Linux.
 
-- If the parameter is not specified either in the configuration file or through the command line option, then it will receive the default value given in the following table:
+- If the parameter is not specified either in the configuration file or through the command-line option, then it will receive the default value given in the following table:
 
   |   Parameter    |       Default value       |
   | :------------- | :------------------------ |
@@ -202,33 +222,56 @@ And after the tables, `DmpHist` prints a more detailed description of sessions s
   | `Addr`         | `#:#/#.#`                 |
   | `BinkdAborted` | `In`                      |
   | `ShowValue`	   | `Ses`                     |
-  | `SupportNewFormat`, `BusyHist`,<br>`AdvancedCPS`, `WideScreen` | `Yes` |
+  | `AdvancedCPS`, `WideScreen`,<br>`BusyHist` | `Yes` |
   | `Group`, `MiddLine`, `KeepAll`,<br>`NoDrawZero`, `ProtectSummary`,<br>`BrakeSesStat`, `SwapInOut` | `No` |
 
   (There are differences from the default values for old versions.)
 
-- The parameters `Addr`, `AdvancedCPS`, `BrakeSesStat`, `BusyHist`, `Group`, `KeepAll`, `MiddLine`, `NoDrawZero`, `ProtectSummary`, `SupportNewFormat`, `SwapInOut`, `WideScreen`
+- The parameters `Addr`, `AdvancedCPS`, `BrakeSesStat`, `BusyHist`, `Group`, `KeepAll`, `MiddLine`, `NoDrawZero`, `ProtectSummary`, `SwapInOut`, `WideScreen`
 in the configuration file can be used without specifying a value. In this case, the parameter `Addr` will be `#:#/#.#`, and all other listed parameters will be `Yes`.
 
-- Processing logic of the command line options `-g`, `-k`, `-n` is changed. In old versions, setting these options without the following sign `+` or `-` changed the value
+- The `SupportNewFormat` parameter is deprecated and ignored when reading the configuration file. All binary log formats are fully supported.
+
+- Processing logic of the command-line options `-g`, `-k`, `-n` is changed. In old versions, setting these options without the following sign `+` or `-` changed the value
 of the corresponding parameter to the opposite. Now the ability to invert parameters is removed due to low demand, and the option without the following sign `+` or `-` is equivalent
 to the option with the sign `+`.
 
-- Developed and fully supported by `T-Hist` a new binary log format (`T-Hist` format) with 64-bit values for incoming and outgoing traffic,
+- The `-h` command-line option displays the program's help. Binary logs in the command line are set by simply specifying the file names.
+
+- The ability to cut the binary log with a non-zero value of the `CutHistory` parameter is implemented for logs of the following formats/mailers:
+Binkd, T-Mail old and new formats, KittenMail and the binary logs of all versions of the native `T-Hist` format. Other supported formats are
+not cutted and the `CutHistory` parameter is ignored.
+
+- Developed and fully supported by the all utilities the new binary log formats (native `T-Hist` formats) with 64-bit values for incoming and outgoing traffic,
 which allows you to correctly store data on traffic exceeding 4 gigabytes.
 
-  The disadvantage of the binary log formats of all mailers supported by `T-Hist` is that information about traffic is recorded as 32-bit values.
+  The disadvantage of the binary log formats of all mailers supported by `T-Hist` is using 32-bit values to store information about traffic.
 This formats were developed in the dial-up era, when it was almost impossible to transfer more than 4 gigabytes in one session.
 But in the era of Fido-over-IP and high-speed networks, a session with more than 4 gigabytes of traffic is common, especially on large FTN hubs.
 
-  I suggest that FTN mailer developers use the native `T-Hist` binary log format in their software products. In addition to correctly storing data
-about sessions with large volumes of traffic, the format allows you to save text strings that `T-Hist` will be printed in wide-screen mode
+  I suggest that FTN mailer developers use the native `T-Hist` binary log formats in their software products. In addition to correctly storing data
+about sessions with large volumes of traffic, the formats allows you to save text strings that `T-Hist` will be printed in wide-screen mode
 to the right of the load graph and to the right of the tables with statistics.
 
-  For more information on native `T-Hist` binary log format, see [ADD-NEW-MAILER.md](ADD-NEW-MAILER.md).
+  For more information on native `T-Hist` binary log formats, see [ADD-NEW-MAILER.md](ADD-NEW-MAILER.md).
 
 - Created patches for Binkd to add support for the `T-Hist` binary log format. The patches is located in [binkd_patch](./binkd_patch).
 For more information see [BINKD-PATCH.md](./binkd_patch/BINKD-PATCH.md).
+
+- A new utility has been created: `HistConv` binary log formats converter. The utility creates for a specified binary log file the same log in a different format.
+The source file can be the binary log file of any mailer supported by `T-Hist`. The format of the source binary log is determined automatically.
+To select a target format, use the `-f` command line option to specify one of the following formats:
+  - native `T-Hist` format of versions 1 and 2;
+  - format of T-Mail since version 2603 (T-Mail new format);
+  - format of T-Mail before version 2603 (T-Mail old format);
+  - Binkd format (T-Mail old format with inverted mark of session direction).
+
+  If the target format is not specified using the `-f` option, then the binary log will be converted to the 2nd version of the native `T-Hist` format.
+
+  Use the program help to get valid target format names:
+  ```shell
+  histconv -h
+  ```
 
 ## How to add support of a new mailer
 

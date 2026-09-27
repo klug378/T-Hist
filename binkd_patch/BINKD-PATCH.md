@@ -19,8 +19,8 @@ the `fdouthist`/`fdinhist` parameters is written in a different format with exte
 
 The [binkd_patch](../binkd_patch) directory of `T-Hist` repository contains two patches for `binlog.c`:
 
+  - [binlog-thist.patch](binlog-thist.patch) &ndash; use native `T-Hist` format (2nd version) for `fdouthist`/`fdinhist` binary log.
   - [binlog-tmail.patch](binlog-tmail.patch) &ndash; use T-Mail new format for `fdouthist`/`fdinhist` binary log;
-  - [binlog-thist.patch](binlog-thist.patch) &ndash; use native `T-Hist` format for `fdouthist`/`fdinhist` binary log.
 
 Both of these formats have advanced capabilities to compare with the Binkd binary log format. In particular, the formats allows you to mark
 whether the session was password protected or not, allowing `T-Hist` to generate statistics on protected and unprotected sessions.
@@ -41,9 +41,11 @@ Use a patch with the native `T-Hist` format if:
 
 Use a patch with the T-Mail new format if:
 
+  - you have no sessions with more than 4 gigabytes sent or received;
+
   - you need no more than 63 characters to display information about FTN systems, or you disable wide-screen mode in `T-Hist`;
 
-  - you want to have a smaller binary log than log in the `T-Hist` format.
+  - you want to use any other utilities that process T-Mail binary logs.
 
 ### Using the patch
 
