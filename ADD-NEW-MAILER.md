@@ -190,10 +190,12 @@ struct {
 //  uint64_t - unsigned int 64 bit
 
 // Status - session status as a bit set:
-//  Bit 0 is set for incoming session
-//  Bit 1 is set for outgoing session
-//  Bit 2 is set for correctly terminated session (not aborted)
-//  Bit 3 is set for password protected session
+//  Bit 0 is ON for incoming session
+//  Bit 1 is ON for outgoing session
+//  Bit 2 is ON if session was terminated correctly (not aborted)
+//  Bit 3 is ON if session was password protected
+//  Bit 4 is ON if address is listed (is in the nodelists
+//                 specified in the mailer configuration)
 
 // Index and Strings arrays allow you to store up to 5 null-terminated
 // strings with total size of no more than 206 bytes
@@ -204,8 +206,8 @@ struct {
 //  string 4 - starts with Strings[Index[3]] if Index[3] < 206, otherwise absent
 ```
 
-The strings can contain text information about FTN system. For example, string 0 &ndash; IP address, string 1 &ndash; domain name,
-string 2 &ndash; name of FTN system, string 3 &ndash; location of FTN system, string 4 &ndash; sysop name.
+The strings can contain text information about FTN system. For example, string 0 – IP address, string 1 – domain name,
+string 2 – name of FTN system, string 3 – location of FTN system, string 4 – sysop name.
 
 Below is an example of a dump of `T-Hist` format (version 1) binary log file containing one record. At the beginning of the file are
 five bytes of the signature: `0x48`, `0x49`, `0x53`, `0x54`, `0x01`. Next is a 256 byte record with information about the session

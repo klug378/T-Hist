@@ -13,6 +13,65 @@ Addresses that use the wildcards `*` but do not contain `#` are not groups.
 
 - The terms `binary log` and `history file` are equivalent.
 
+## [1.6.0] - 2026-10-02
+
+#### Added
+
+- Added the ability to print traffic values using units based on decimal powers. In previous versions, the single-letter designations `K`, `M` and `G`
+after traffic values meant units based on binary powers, i.e. `KiB` – 1,024 bytes, `MiB` – 1,048,576 bytes and `GiB` – 1,073,741,824 bytes.
+Now it is possible to print traffic values in `kB` – 1,000 bytes, `MB` – 1,000,000 bytes and `GB` – 1,000,000,000 bytes.
+
+  Use the new parameter `DecimalUnits` in the configuration file to select units. The valid values are:
+    - `DecimalUnits Yes` – use decimal units `kB`, `MB` и `GB`;
+    - `DecimalUnits No` &ensp;– use binary units `KiB`, `MiB` и `GiB`;
+    - `DecimalUnits` &emsp;&emsp;– the same as `DecimalUnits Yes`.
+
+  The default value is `DecimalUnits No`. Thus, if this parameter is not specified, then utilities will print traffic values in binary units.
+
+  In order to keep right formatting, the designations after traffic values in the statistics remain single-letter (`K`, `M`, `G`). And after the summary information,
+a decryption is printed whether they mean binary units (`KiB`, `MiB`, `GiB`) or decimal (`kB`, `MB`, `GB`).
+
+- All utilities now have the `-r` command-line option that matches the `DecimalUnits` parameter. The option has the following values:
+  - `-r`, `-r+` – as `DecimalUnits Yes`;
+  - `-r-` &emsp;&emsp;– as `DecimalUnits No`.
+
+- `T-Hist` and `LnkStat` utilities (but not `DmpHist`) now have the `-z` command-line option that matches the `TimeShift` parameter.
+The option has the following values:
+  - `-z` &nbsp;&emsp;– as `TimeShift Auto` (shift the start time of each session by the difference between local time and UTC which was at the time of the session);
+  - `-z<N>` – as `TimeShift <N>` (shift the start time of each session by `N` hours; `N` can be negative).
+
+  The option sets the time shift globally for all processed binary logs. If you want to set time shift individually for each binary log,
+use the `TimeShift` parameter in the `[LINE]` 'sections for this binary log instead of the command-line option.
+
+  If the `-z` option is not specified in the command line and the `TimeShift` parameter is not specified in the configuration file,
+the sessions start time is not shifted.
+
+  The `DmpHist` utility does not have this option and does not take into account the `TimeShift` parameter if it is present in the configuration file.
+It prints the start time of sessions exactly as it is stored in the binary log, without any adjustments.
+
+#### Fixed
+
+- Fixed errors in calculating the difference between local time and UTC when using the `TimeShift Auto` parameter. Thanks to the help of Alexey Matrosov `2:203/910`.
+
+#### Changed
+
+- Format specifiers that can be used when specifying output file names (in the `Output`, `LinkStat`, `SessionStat` parameters and corresponding command-line
+options `-o`, `-l`, `-e`, as well as in the `-o` option of the `LnkStat` utility), are matched to the `strftime()` function specifiers.
+The following format specifiers are allowed:
+
+  - `%Y` – year as a four-digit number (e.g. 2026);
+  - `%y` – year as a number without a century (00 to 99);
+  - `%m` – month as a decimal number (range 01 to 12);
+  - `%d` – day of the month as a decimal number (range 01 to 31);
+  - `%j` – day of the year as a decimal number (range 001 to 366);
+  - `%w` – day of the week as a decimal, range 0 to 6, Sunday being 0;
+  - `%u` – day of the week as a decimal, range 1 to 7, Monday being 1, Sunday being 7;
+  - `%H` – hour as a decimal number using a 24-hour clock (range 00 to 23);
+  - `%M` – minute as a decimal number (range 00 to 59);
+  - `%S` – second as a decimal number (range 00 to 60).
+
+- Changes in the formats of printing traffic and CPS values to improve the readability of statistics.
+
 ## [1.5.0] - 2026-09-27
 
 #### Added
@@ -20,12 +79,12 @@ Addresses that use the wildcards `*` but do not contain `#` are not groups.
 - All utilities can now work without a configuration file if at least one binary log file is specified in the command line.
 Log processing parameters are determined according to the following rules:
 
-  - If the config file is not specified explicitly using the command line option `-c` and no config file named `t-hist.ctl` is found in the current directory,
-the specified binary logs will be processed, and all parameters that were not specified by other command line options will receive default values.
+  - If the config file is not specified explicitly using the `-c` command-line option and no config file named `t-hist.ctl` is found in the current directory,
+the specified binary logs will be processed, and all parameters that were not specified by other command-line options will receive default values.
 (See the table with the default parameter values in the file [README.md](README.md).)
 
-  - If the configuration file is specified explicitly using the `-c` command line option, or there is a configuration file named `t-hist.ctl` in the current directory,
-the specified binary logs will be processed together with the logs from the configuration file, and parameters that were not specified by other command line options
+  - If the configuration file is specified explicitly using the `-c` command-line option, or there is a configuration file named `t-hist.ctl` in the current directory,
+the specified binary logs will be processed together with the logs from the configuration file, and parameters that were not specified by other command-line options
 will receive the values from the configuration file.
 
   Examples:
@@ -50,7 +109,7 @@ For more information, see [BINKD-PATCH.md](./binkd_patch/BINKD-PATCH.md).
 
 - A new utility has been created: `HistConv` binary log formats converter. The utility creates for a specified binary log file the same log in a different format.
 The source file can be the binary log file of any mailer supported by `T-Hist`. The format of the source binary log is determined automatically.
-To select a target format, use the `-f` command line option to specify one of the following formats:
+To select a target format, use the `-f` command-line option to specify one of the following formats:
   - native `T-Hist` format of versions 1 and 2;
   - format of T-Mail since version 2603 (T-Mail new format);
   - format of T-Mail before version 2603 (T-Mail old format);
@@ -129,7 +188,6 @@ in the configuration file can now be used without specifying a value. In this ca
 - Processing logic of the command-line options `-g`, `-k`, `-n` is changed. In previous versions, setting these options without the following sign `+` or `-` changed the value
 of the corresponding parameter to the opposite. Now the ability to invert parameters is removed due to low demand, and the option without the following sign `+` or `-` is equivalent
 to the option with the sign `+`:
-
   - `-g` the same as `-g+`;
   - `-k` the same as `-k+`;
   - `-n` the same as `-n+`.
@@ -145,23 +203,17 @@ to the option with the sign `+`:
 #### Added
 
 - To control the wide-screen mode introduced in version `1.2.0`, the `WideScreen` parameter has been added with the following valid values:
-  
-  - `WideScreen Yes` &ensp;&ndash; enable wide-screen mode with no limit of the length of printed lines;
-  
-  - `WideScreen No` &emsp;&ndash; disable wide-screen mode; the length of all printed lines will not exceed 80 characters;
-  
-  - `WideScreen <N>` &ensp;&ndash; enable wide-screen mode and set the length of printed lines to no more than `N` characters (`N` is a positive integer;
+  - `WideScreen Yes` &ensp;– enable wide-screen mode with no limit of the length of printed lines;
+  - `WideScreen No` &emsp;– disable wide-screen mode; the length of all printed lines will not exceed 80 characters;
+  - `WideScreen <N>` &ensp;– enable wide-screen mode and set the length of printed lines to no more than `N` characters (`N` is a positive integer;
   if you set `N` to less than 80, the wide-screen mode will be disabled and length of the lines will be limited to 80 characters).
   
   The default setting is `WideScreen Yes`.
 
 - Extended valid values of the `-w` command-line option:
-
-  - `-w`, `-w+` &ndash; as `WideScreen Yes`;
-
-  - `-w-` &emsp;&emsp;&ndash; as `WideScreen No`;
-  
-  - `-w<N>` &emsp;&ndash; as `WideScreen <N>`.
+  - `-w`, `-w+` – as `WideScreen Yes`;
+  - `-w-` &emsp;&emsp;– as `WideScreen No`;
+  - `-w<N>` &emsp;– as `WideScreen <N>`.
 
 #### Fixed
 
@@ -204,8 +256,8 @@ then the generated statistics will still be no more than 80 characters wide.
 
   But if at least one of the conditions is met:
   
-  - the binary log contains text information about the FTN systems (such logs are: logs of Internet Rex, FrontDoor, Bink/+, FhMail, BinkleyTerm-XE,
-logs of some mailers compatible with T-Mail new format, as well as binary logs of the native `T-Hist` format);
+  - the binary log contains text information about the FTN systems or about the protocol of connection (such logs are: logs of Internet Rex, FrontDoor,
+Bink/+, FhMail, BinkleyTerm-XE, KittenMail, logs of some mailers compatible with T-Mail new format);
   
   - at least one of the parameters `Addr` has a comment (description),
   
@@ -214,10 +266,8 @@ to the right of the load graph and to the right of the tables with statistics. I
 in the `Addr` parameter exist for the address, then the information from binary log takes precedence.
 
 - All utilities now have the `-w` command-line option to control wide-screen mode:
-
-  - `-w`, `-w+` &ndash; enable wide-screen mode (default);
-
-  - `-w-` &emsp;&emsp;&ndash; disable wide-screen mode.
+  - `-w`, `-w+` – enable wide-screen mode (default);
+  - `-w-` &emsp;&emsp;– disable wide-screen mode.
 
 - Summary information about traffic and the number and duration of sessions is now printed after the sessions tables.
 This is an exact copy of the information printed after the load graph and histograms and after the tables with links and groups statistics.
@@ -273,7 +323,7 @@ for the mailers that write the mark of a password session in the binary log.
 
 - Fixed an issue during binary log truncation (if the `CutHistory` parameter is specified) when the 0-second duration sessions were recorded with a duration of 1 second.
 
-- Restored support for the mailers Internet Rex, FrontDoor, BinkleyTerm-XE, The Brake!, which was broken in versions `1.0.0` &ndash; `1.0.4`.
+- Restored support for the mailers Internet Rex, FrontDoor, BinkleyTerm-XE, The Brake!, which was broken in versions `1.0.0` – `1.0.4`.
 
 #### Changed
 
@@ -287,7 +337,8 @@ with the session address. Now, if the session address is not defined as excluded
 Such an algorithm takes into account sessions with a separately specified addresses also in the statistics for the groups to which the addresses belongs.
 For a more detailed description of the address list browsing algorithm, see [README.md](README.md).
 
-- The `DmpHist` utility now ignores the `TimeShift` parameter and prints the start time of sessions exactly as it is written in the binary log, without any adjustments.
+- The `DmpHist` utility does not take into account the `TimeShift` parameter if it is present in the configuration file. It prints the start time of sessions exactly
+as it is stored in the binary log, without any adjustments.
 
 ## [1.0.4] - 2026-08-21
 
@@ -307,7 +358,7 @@ Previously, sessions with such addresses were mistakenly printed in sessions tab
 #### Changed
 
 - Changing the format of the sessions tables. Now the session start time is printed with an accuracy of seconds (previously there was an accuracy of minutes).
-The session end time is excluded due to redundancy &ndash; statistics show the duration of sessions.
+The session end time is excluded due to redundancy – statistics show the duration of sessions.
 
 - Aborted Binkd sessions now are marked in the sessions table with `A` character after address. Previously, they were not marked.
 
@@ -342,10 +393,8 @@ Executable files for each of the Linux architectures are compiled in two variant
 Variants with static libraries are further compressed by [UPX 4.2.4](https://upx.github.io) executable packer to reduce their size.
 
 - `LnkStat` and `DmpHist` utilities (but not `T-Hist`) now have the `-u` command-line option to select the encoding of the printed information:
-
-  - `-u`, `-u+` &ndash; use UTF-8 encoding (default);
-
-  - `-u-` &emsp;&emsp;&ndash; use ASCII 7-bit encoding without pseudo-graphics.
+  - `-u`, `-u+` – use UTF-8 encoding (default);
+  - `-u-` &emsp;&emsp;– use ASCII 7-bit encoding without pseudo-graphics.
 
 #### Changed
 

@@ -1,6 +1,6 @@
 [README на русском языке](README-ru.md)
 
-This software is intended for use in the `FidoNet` computer network and other FTN-style networks (FTN &ndash; FidoNet Technology Network)
+This software is intended for use in the `FidoNet` computer network and other FTN-style networks (FTN – FidoNet Technology Network)
 
 ---
 
@@ -14,16 +14,16 @@ This software is intended for use in the `FidoNet` computer network and other FT
 
 The `T-Hist` utility creates text files with graphs and histograms of the FTN node load and with sessions and links statistics
 based on information stored in the mailer's binary logs (history files). The `T-Hist` supports binary logs of the following mailers:
-T-Mail, Binkd, Argus, Internet Rex, FrontDoor, Bink/+, FhMail, BinkleyTerm-XE, The Brake!, KittenMail, DVMmail, XMail32, BasicMail,
+Binkd, T-Mail, Argus, Internet Rex, FrontDoor, Bink/+, FhMail, BinkleyTerm-XE, The Brake!, KittenMail, DVMmail, XMail32, BasicMail,
 as well as its own binary log format (starting from version `1.4.0`).
 
 Development of the `T-Hist` began in 1996. The latest version of `T-Hist` 0.30.alpha7 for DOS, OS/2, NT (win32) was released in 2003.
 After 23 years, the new `T-Hist` (and related utilities `LnkStat` and `DmpHist`) were released for Linux and Windows.
 
 The utilities are distributed as a ZIP archive containing executable files in the following directories:
-- `linux`&ensp;&ndash; Linux executables (x86_64, i686 and arm64 architectures);
-- `linux-static`&ensp;&ndash; Linux executables with static libraries (x86_64, i686 and arm64 architectures);
-- `windows`&ensp;&ndash; Windows 64-bit and 32-bit executables.
+- `linux`&ensp;– Linux executables (x86_64, i686 and arm64 architectures);
+- `linux-static`&ensp;– Linux executables with static libraries (x86_64, i686 and arm64 architectures);
+- `windows`&ensp;– Windows 64-bit and 32-bit executables.
 
 Linux executables with static libraries are compressed by [UPX 4.2.4](https://upx.github.io) executable packer to reduce their size.
 
@@ -54,10 +54,8 @@ For example, for Russian-language echo conferences with CP866 encoding:
 	```
 
   The `LnkStat` and `DmpHist` utilities (but not `T-Hist`) have the `-u` command-line option to select the encoding of the printed information:
-
-  - `-u`, `-u+`&ensp;&ndash; use UTF-8 encoding (default);
-
-  - `-u-`&ensp;&emsp;&emsp;&ndash; use ASCII 7-bit encoding without pseudo-graphics.
+  - `-u`, `-u+`&ensp;– use UTF-8 encoding (default);
+  - `-u-`&ensp;&emsp;&emsp;– use ASCII 7-bit encoding without pseudo-graphics.
 
 - All utilities have a wide-screen mode that allows them to print lines longer than 80 characters. This mode is enabled by default,
 however, if you process the old-format binary logs (for example, Binkd logs) and do not use comments (descriptions) in the `Addr` parameters,
@@ -65,8 +63,8 @@ then the generated statistics will still be no more than 80 characters wide.
 
   But if at least one of the conditions is met:
   
-  - the binary log contains text information about the FTN systems (such logs are: logs of Internet Rex, FrontDoor, Bink/+, FhMail, BinkleyTerm-XE,
-logs of some mailers compatible with T-Mail new format, as well as binary logs of the native `T-Hist` format);
+  - the binary log contains text information about the FTN systems or about the protocol of connection (such logs are: logs of Internet Rex, FrontDoor,
+Bink/+, FhMail, BinkleyTerm-XE, KittenMail, logs of some mailers compatible with T-Mail new format, as well as binary logs of the native `T-Hist` format);
   
   - at least one of the parameters `Addr` has a comment (description),
   
@@ -75,33 +73,46 @@ to the right of the load graph and to the right of the tables with statistics. I
 in the `Addr` parameter exist for the address, then the information from binary log takes precedence.
 
   To control the wide-screen mode, the `WideScreen` parameter has been added with the following valid values:
-  
-  - `WideScreen Yes` &ensp;&ndash; enable wide-screen mode with no limit of the length of printed lines;
-  
-  - `WideScreen No` &emsp;&ndash; disable wide-screen mode; the length of all printed lines will not exceed 80 characters;
-  
-  - `WideScreen <N>` &ensp;&ndash; enable wide-screen mode and set the length of printed lines to no more than `N` characters (`N` is a positive integer;
+  - `WideScreen Yes` &ensp;– enable wide-screen mode with no limit of the length of printed lines;
+  - `WideScreen No` &emsp;– disable wide-screen mode; the length of all printed lines will not exceed 80 characters;
+  - `WideScreen <N>` &ensp;– enable wide-screen mode and set the length of printed lines to no more than `N` characters (`N` is a positive integer;
   if you set `N` to less than 80, the wide-screen mode will be disabled and length of the lines will be limited to 80 characters).
+  - `WideScreen` &emsp;&emsp;– the same as `WideScreen Yes`.
   
   The default setting is `WideScreen Yes`.
 
   Also all utilities have the `-w` command-line option to control wide-screen mode:
+  - `-w`, `-w+` – as `WideScreen Yes`;
+  - `-w-` &emsp;&emsp;– as `WideScreen No`;
+  - `-w<N>` &emsp;– as `WideScreen <N>`.
 
-  - `-w`, `-w+` &ndash; as `WideScreen Yes`;
+- All utilities can print traffic values using units based on both binary powers and decimal. In old versions, the single-letter designations `K`, `M` and `G`
+after traffic values meant units based on binary powers, i.e. `KiB` – 1,024 bytes, `MiB` – 1,048,576 bytes and `GiB` – 1,073,741,824 bytes.
+Now it is possible to print traffic values in `kB` – 1,000 bytes, `MB` – 1,000,000 bytes and `GB` – 1,000,000,000 bytes.
 
-  - `-w-` &emsp;&emsp;&ndash; as `WideScreen No`;
-  
-  - `-w<N>` &emsp;&ndash; as `WideScreen <N>`.
+  To select units, use `DecimalUnits` parameter in the configuration file with the following valid values:
+    - `DecimalUnits Yes` – use decimal units `kB`, `MB` и `GB`;
+    - `DecimalUnits No` &ensp;– use binary units `KiB`, `MiB` и `GiB`;
+    - `DecimalUnits` &emsp;&emsp;– the same as `DecimalUnits Yes`.
+
+  The default value is `DecimalUnits No`. Thus, if this parameter is not specified, then utilities will print traffic values in binary units.
+
+  In order to keep right formatting, the designations after traffic values in the statisticsq remain single-letter (`K`, `M`, `G`). And after the summary information,
+a decryption is printed whether they mean binary units (`KiB`, `MiB`, `GiB`) or decimal (`kB`, `MB`, `GB`).
+
+  Also all utilities have the `-r` command-line option that matches the `DecimalUnits` parameter. The option has the following values:
+  - `-r`, `-r+` – as `DecimalUnits Yes`;
+  - `-r-` &emsp;&emsp;– as `DecimalUnits No`.
 
 - All utilities can work without a configuration file if at least one binary log file is specified in the command line.
 Log processing parameters are determined according to the following rules:
 
-  - If the config file is not specified explicitly using the command line option `-c` and no config file named `t-hist.ctl` is found in the current directory,
-the specified binary logs will be processed, and all parameters that were not specified by other command line options will receive default values.
+  - If the config file is not specified explicitly using the `-c` command-line option and no config file named `t-hist.ctl` is found in the current directory,
+the specified binary logs will be processed, and all parameters that were not specified by other command-line options will receive default values.
 (See the table with the default parameter values in the file [README.md](README.md).)
 
-  - If the configuration file is specified explicitly using the `-c` command line option, or there is a configuration file named `t-hist.ctl` in the current directory,
-the specified binary logs will be processed together with the logs from the configuration file, and parameters that were not specified by other command line options
+  - If the configuration file is specified explicitly using the `-c` command-line option, or there is a configuration file named `t-hist.ctl` in the current directory,
+the specified binary logs will be processed together with the logs from the configuration file, and parameters that were not specified by other command-line options
 will receive the values from the configuration file.
 
   Examples:
@@ -114,7 +125,7 @@ will receive the values from the configuration file.
   ```
 
 - On histograms, the load level that is greater than 0% but less than 3% is displayed using the `_` character.
-In the old versions, this load level was either displayed excessively large &ndash; as a level of 3-10%, or not displayed at all due to the lack of a suitable pseudo-graphic symbol.
+In the old versions, this load level was either displayed excessively large – as a level of 3-10%, or not displayed at all due to the lack of a suitable pseudo-graphic symbol.
 
 - The order of adresses and groups of addresses in `Addr` parameters is no longer important. Regardless of the order, when generating statistics,
 they will be sorted from less general to more general. And the excluded addresses and groups of addresses will be placed at the beginning of the adresses list,
@@ -193,14 +204,15 @@ occurs due to the time intervals in binary logs are recorded with an accuracy of
 For sessions shorter than a second, the utility will print a duration of 0 seconds, as recorded in the binary log.
 
 - Format of the sessions table has been changed. The session start time is printed with an accuracy of seconds (the old versions print it with an accuracy of minutes).
-The session end time is excluded due to redundancy &ndash; the table contains the duration of sessions.
+The session end time is excluded due to redundancy – the table contains the duration of sessions.
 
 - Aborted Binkd sessions are marked in the sessions table with `A` character after address. The old versions were not place this mark for the aborted Binkd sessions.
 
 - Summary information about traffic and the number and duration of sessions is now printed after the sessions tables and after tables with links and groups statistics.
 This is an exact copy of the information that printed after the load graph and histograms.
 
-- The `DmpHist` utility prints the start time of sessions exactly as it is written in the binary log, without any adjustments. The `TimeShift` parameter is ignored.
+- The `DmpHist` utility does not take into account the `TimeShift` parameter if it is present in the configuration file. It prints the start time of sessions exactly
+as it is stored in the binary log, without any adjustments.
 
 - The `DmpHist` utility prints before table not only the name of the binary log file, but also information about its format.
 And after the tables, `DmpHist` prints a more detailed description of sessions status bits.
@@ -223,20 +235,45 @@ And after the tables, `DmpHist` prints a more detailed description of sessions s
   | `BinkdAborted` | `In`                      |
   | `ShowValue`	   | `Ses`                     |
   | `AdvancedCPS`, `WideScreen`,<br>`BusyHist` | `Yes` |
-  | `Group`, `MiddLine`, `KeepAll`,<br>`NoDrawZero`, `ProtectSummary`,<br>`BrakeSesStat`, `SwapInOut` | `No` |
+  | `Group`, `KeepAll`, `MiddLine`, `NoDrawZero`,<br>`ProtectSummary`, `BrakeSesStat`,<br>`SwapInOut`, `DecimalUnits` | `No` |
 
   (There are differences from the default values for old versions.)
 
-- The parameters `Addr`, `AdvancedCPS`, `BrakeSesStat`, `BusyHist`, `Group`, `KeepAll`, `MiddLine`, `NoDrawZero`, `ProtectSummary`, `SwapInOut`, `WideScreen`
+- The parameters `Addr`, `AdvancedCPS`, `BrakeSesStat`, `BusyHist`, `DecimalUnits`, `Group`, `KeepAll`, `MiddLine`, `NoDrawZero`, `ProtectSummary`, `SwapInOut`, `WideScreen`
 in the configuration file can be used without specifying a value. In this case, the parameter `Addr` will be `#:#/#.#`, and all other listed parameters will be `Yes`.
 
 - The `SupportNewFormat` parameter is deprecated and ignored when reading the configuration file. All binary log formats are fully supported.
+
+- Format specifiers that can be used when specifying output file names (in the `Output`, `LinkStat`, `SessionStat` parameters and corresponding command-line
+options `-o`, `-l`, `-e`, as well as in the `-o` option of the `LnkStat` utility), are matched to the `strftime()` function specifiers.
+The following format specifiers are allowed:
+
+  - `%Y` – year as a four-digit number (e.g. 2026);
+  - `%y` – year as a number without a century (00 to 99);
+  - `%m` – month as a decimal number (range 01 to 12);
+  - `%d` – day of the month as a decimal number (range 01 to 31);
+  - `%j` – day of the year as a decimal number (range 001 to 366);
+  - `%w` – day of the week as a decimal, range 0 to 6, Sunday being 0;
+  - `%u` – day of the week as a decimal, range 1 to 7, Monday being 1, Sunday being 7;
+  - `%H` – hour as a decimal number using a 24-hour clock (range 00 to 23);
+  - `%M` – minute as a decimal number (range 00 to 59);
+  - `%S` – second as a decimal number (range 00 to 60).
+
+- Comments in the configuration file can start not only from the character `;` inherited from old versions, but also from the `#` character,
+which is more familiar in the linux environment. A special case is the handling of a line containing the parameter `Addr`.
+Such a line can be commented out by putting `#` before `Addr`, but after `Addr` the character `#` will already be considered a macro
+for specifying a group of addresses, and not the beginning of a comment.
 
 - Processing logic of the command-line options `-g`, `-k`, `-n` is changed. In old versions, setting these options without the following sign `+` or `-` changed the value
 of the corresponding parameter to the opposite. Now the ability to invert parameters is removed due to low demand, and the option without the following sign `+` or `-` is equivalent
 to the option with the sign `+`.
 
 - The `-h` command-line option displays the program's help. Binary logs in the command line are set by simply specifying the file names.
+
+- `T-Hist` and `LnkStat` utilities (but not `DmpHist`) have the `-z` command-line option that matches the `TimeShift` parameter.
+The option has the following values:
+  - `-z` &nbsp;&emsp;– as `TimeShift Auto` (shift the start time of each session by the difference between local time and UTC which was at the time of the session);
+  - `-z<N>` – as `TimeShift <N>` (shift the start time of each session by `N` hours; `N` can be negative).
 
 - The ability to cut the binary log with a non-zero value of the `CutHistory` parameter is implemented for logs of the following formats/mailers:
 Binkd, T-Mail old and new formats, KittenMail and the binary logs of all versions of the native `T-Hist` format. Other supported formats are
@@ -260,7 +297,7 @@ For more information see [BINKD-PATCH.md](./binkd_patch/BINKD-PATCH.md).
 
 - A new utility has been created: `HistConv` binary log formats converter. The utility creates for a specified binary log file the same log in a different format.
 The source file can be the binary log file of any mailer supported by `T-Hist`. The format of the source binary log is determined automatically.
-To select a target format, use the `-f` command line option to specify one of the following formats:
+To select a target format, use the `-f` command-line option to specify one of the following formats:
   - native `T-Hist` format of versions 1 and 2;
   - format of T-Mail since version 2603 (T-Mail new format);
   - format of T-Mail before version 2603 (T-Mail old format);
@@ -282,8 +319,8 @@ Read more in [ADD-NEW-MAILER.md](ADD-NEW-MAILER.md).
 
 ## Gratitudes
 
-I would like to thank Alex Barinov `2:5020/715`, `2:50/0` for testing the new versions of `T-Hist` on its FTN-system.
-I also thank everyone whose ideas, suggestions and help in testing allowed me to create and develop this project.
+I would like to thank Alex Barinov `2:5020/715`, `2:50/0` for testing the new versions of `T-Hist` on its FTN-system, Alexey Matrosov `2:203/910` for new ideas
+and help with timestams processing, as well as everyone whose ideas, suggestions and help in testing allowed me to create and develop this project.
 The names of some of these people are listed in the old documentation file.
 
 ---
