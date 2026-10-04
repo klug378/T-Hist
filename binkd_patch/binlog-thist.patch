@@ -1,5 +1,5 @@
 diff --git a/binlog.c b/binlog.c
-index 0fe0f08..2600226 100644
+index 0fe0f08..61cff12 100644
 --- a/binlog.c
 +++ b/binlog.c
 @@ -10,6 +10,8 @@
@@ -53,7 +53,7 @@ index 0fe0f08..2600226 100644
  /* Write 16-bit integer to file in intel bytes order */
  static int fput16(u16 arg, FILE *file)
  {
-@@ -130,6 +160,175 @@ static void TLogStat (int status, STATE *state, char *binlogpath, int tzoff)
+@@ -130,6 +160,178 @@ static void TLogStat (int status, STATE *state, char *binlogpath, int tzoff)
  
  }
  
@@ -96,6 +96,7 @@ index 0fe0f08..2600226 100644
 +#define SESSION_OUT 0x0002      // outgoing
 +#define SESSION_OK  0x0004	// not aborted
 +#define SESSION_PWD 0x0008	// password protected
++#define SESSION_LST 0x0010	// address listed
 +
 +static void THistLogStat(int status, STATE *state, char *binlogpath, int tzoff)
 +{
@@ -127,6 +128,8 @@ index 0fe0f08..2600226 100644
 +		if(!status) TH.Status |= SESSION_OK;
 +
 +		if(state->state == P_SECURE) TH.Status |= SESSION_PWD;
++
++		if(state->listed_flag) TH.Status |= SESSION_LST;
 +
 +		TH.SessionStart = (u64)(state->start_time + tz_off(state->start_time, tzoff)*60);
 +		TH.SessionTime  = (u32)(safe_time() - state->start_time);
@@ -229,7 +232,7 @@ index 0fe0f08..2600226 100644
  /*--------------------------------------------------------------------*/
  /*    static void FDLogStat (STATE*, char*, char*, int)               */
  /*                                                                    */
-@@ -214,3 +413,4 @@ void BinLogStat (int status, STATE *state, BINKD_CONFIG *config)
+@@ -214,3 +416,4 @@ void BinLogStat (int status, STATE *state, BINKD_CONFIG *config)
  	FDLogStat (state, config->fdinhist, config->fdouthist, config->tzoff);
  }
  

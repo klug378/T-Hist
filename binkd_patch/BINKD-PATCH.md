@@ -37,7 +37,9 @@ Use a patch with the native `T-Hist` format if:
 
   - you have sessions with more than 4 gigabytes sent or received (native `T-Hist` format has 64-bit values for incoming and outgoing traffic);
 
-  - you want to see more text information about FTN systems that `T-Hist` can printed in wide-screen mode.
+  - you want to see more text information about FTN systems that `T-Hist` can printed in wide-screen mode;
+
+  - you want to see in the session status whether the address was `Listed` or not.
 
 Use a patch with the T-Mail new format if:
 

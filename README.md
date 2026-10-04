@@ -63,8 +63,8 @@ then the generated statistics will still be no more than 80 characters wide.
 
   But if at least one of the conditions is met:
   
-  - the binary log contains text information about the FTN systems or about the protocol of connection (such logs are: logs of Internet Rex, FrontDoor,
-Bink/+, FhMail, BinkleyTerm-XE, KittenMail, logs of some mailers compatible with T-Mail new format, as well as binary logs of the native `T-Hist` format);
+  - the binary log contains text information about the FTN systems or about the protocol of connection (such logs are: logs of Internet Rex, FrontDoor, Bink/+,
+FhMail, BinkleyTerm-XE, KittenMail, The Brake!, logs of some mailers compatible with T-Mail new format, as well as binary logs of the native `T-Hist` format);
   
   - at least one of the parameters `Addr` has a comment (description),
   
@@ -123,9 +123,6 @@ will receive the values from the configuration file.
   lnkstat /home/user/fido/logs/binkd.sts -b1.9.2026 -e20.9.2026 -g 
   dmphist /home/user/fido/logs/binkd1.sts /home/user/fido/logs/binkd2.sts -w- -u-
   ```
-
-- On histograms, the load level that is greater than 0% but less than 3% is displayed using the `_` character.
-In the old versions, this load level was either displayed excessively large – as a level of 3-10%, or not displayed at all due to the lack of a suitable pseudo-graphic symbol.
 
 - The order of adresses and groups of addresses in `Addr` parameters is no longer important. Regardless of the order, when generating statistics,
 they will be sorted from less general to more general. And the excluded addresses and groups of addresses will be placed at the beginning of the adresses list,
@@ -193,9 +190,6 @@ sessions with a separately specified addresses also in the statistics for the gr
 with addresses of the net `2:5020`, in group statistics of sessions with addresses of the zone `2` and in group statistics of sessions with any addresses.
 Sessions with address `2:5020/1132.0` will be ignored.
 
-- Fixed processing of addresses excluded from statistics (for example, `Addr !2:5020/1132.0`).
-In the old versions, sessions with such addresses were mistakenly printed in sessions table, and always as aborted. Now such addresses are excluded from all types of statistics.
-
 - The `T-Hist` and `LnkStat` utilities assign a duration of 1 second to sessions read from a binary log with a duration of 0 seconds.
 This makes it possible to correctly take into account short sessions lasting less than 1 second in statistics. The zero value of the duration of such sessions
 occurs due to the time intervals in binary logs are recorded with an accuracy of a second.
@@ -206,10 +200,14 @@ For sessions shorter than a second, the utility will print a duration of 0 secon
 - Format of the sessions table has been changed. The session start time is printed with an accuracy of seconds (the old versions print it with an accuracy of minutes).
 The session end time is excluded due to redundancy – the table contains the duration of sessions.
 
-- Aborted Binkd sessions are marked in the sessions table with `A` character after address. The old versions were not place this mark for the aborted Binkd sessions.
+- FTN-nodes addresses (that have a zero value in the `Point` field) are now printed without ending `.0` to improve the readability of statistics.
+The `Point` number is printed only if it is non-zero. This change does not affect the `DmpHist` utility.
 
 - Summary information about traffic and the number and duration of sessions is now printed after the sessions tables and after tables with links and groups statistics.
 This is an exact copy of the information that printed after the load graph and histograms.
+
+- On histograms, the load level that is greater than 0% but less than 3% is displayed using the `_` character.
+In the old versions, this load level was either displayed excessively large – as a level of 3-10%, or not displayed at all due to the lack of a suitable pseudo-graphic symbol.
 
 - The `DmpHist` utility does not take into account the `TimeShift` parameter if it is present in the configuration file. It prints the start time of sessions exactly
 as it is stored in the binary log, without any adjustments.
@@ -288,7 +286,8 @@ But in the era of Fido-over-IP and high-speed networks, a session with more than
 
   I suggest that FTN mailer developers use the native `T-Hist` binary log formats in their software products. In addition to correctly storing data
 about sessions with large volumes of traffic, the formats allows you to save text strings that `T-Hist` will be printed in wide-screen mode
-to the right of the load graph and to the right of the tables with statistics.
+to the right of the load graph and to the right of the tables with statistics. Also, the native `T-Hist` formats allow to save the `Listed` mark for sessions,
+which FTN-address is specified in the configuration files of the mailer or is present in the nodlists specified in the mailer configuration.
 
   For more information on native `T-Hist` binary log formats, see [ADD-NEW-MAILER.md](ADD-NEW-MAILER.md).
 

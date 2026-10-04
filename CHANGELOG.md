@@ -13,6 +13,36 @@ Addresses that use the wildcards `*` but do not contain `#` are not groups.
 
 - The terms `binary log` and `history file` are equivalent.
 
+## [1.6.1] - 2026-10-04
+
+#### Added
+
+- In the specifications of the native `T-Hist` formats of binary logs, an additional `Listed` bit is used for session status. The bit is set
+if the address is specified in the configuration files of the mailer or is present in the nodlists specified in the mailer configuration.
+(The native `T-Hist` formats are described in the file [ADD-NEW-MAILER.md](ADD-NEW-MAILER.md).)
+
+  Currently, the `Listed` status is printed in the sessions statistics for binary logs of the native `T-Hist` formats.
+For binary logs of other formats, the `Listed` status is not printed.
+
+  Also updated patch for Binkd, which adds ability to save the `Listed` mark to the log when using the binary log of the native `T-Hist` format.
+The patch is located in the [binkd_patch](./binkd_patch) directory. For more information, see [BINKD-PATCH.md](./binkd_patch/BINKD-PATCH.md).
+
+#### Fixed
+
+- Fixed zeroing the numbers of sent and received files when converting binary logs with some combinations of input and output formats in the `HistConv` utility.
+(`T-Hist` does not use this information, but it must be saved when converting logs.)
+
+#### Changed
+
+- Changed the format of the sessions statistics table for binary logs of the native `T-Hist` formats. For sessions stored in such logs, status information
+is printed in a separate column in the form of letter combinations: `P` - Password protected, `L` - Listed, `A` - Aborted. For binary logs of other formats,
+the sessions statistics table is not changed.
+
+- FTN-nodes addresses (that have a zero value in the `Point` field) are now printed without ending `.0` to improve the readability of statistics.
+The `Point` number is printed only if it is non-zero. This change does not affect the `DmpHist` utility.
+
+- Improved algorithm for calculating of the average CPS values in the link statistics when `AdvancedCPS Yes` is specified in the configuration file.
+
 ## [1.6.0] - 2026-10-02
 
 #### Added
@@ -257,7 +287,7 @@ then the generated statistics will still be no more than 80 characters wide.
   But if at least one of the conditions is met:
   
   - the binary log contains text information about the FTN systems or about the protocol of connection (such logs are: logs of Internet Rex, FrontDoor,
-Bink/+, FhMail, BinkleyTerm-XE, KittenMail, logs of some mailers compatible with T-Mail new format);
+Bink/+, FhMail, BinkleyTerm-XE, KittenMail, The Brake!, logs of some mailers compatible with T-Mail new format);
   
   - at least one of the parameters `Addr` has a comment (description),
   
