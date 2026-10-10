@@ -1,5 +1,5 @@
 diff --git a/binlog.c b/binlog.c
-index 0fe0f08..61cff12 100644
+index 0fe0f08..d8d6cd4 100644
 --- a/binlog.c
 +++ b/binlog.c
 @@ -10,6 +10,8 @@
@@ -53,7 +53,7 @@ index 0fe0f08..61cff12 100644
  /* Write 16-bit integer to file in intel bytes order */
  static int fput16(u16 arg, FILE *file)
  {
-@@ -130,6 +160,178 @@ static void TLogStat (int status, STATE *state, char *binlogpath, int tzoff)
+@@ -130,6 +160,181 @@ static void TLogStat (int status, STATE *state, char *binlogpath, int tzoff)
  
  }
  
@@ -68,7 +68,7 @@ index 0fe0f08..61cff12 100644
 +#define THIST_LOG_SIGNATURE "HIST\2"
 +#define THIST_LOG_SIGNATURE_SIZE 5
 +
-+#define TH_TEXT_SIZE 206
++#define TH_TEXT_SIZE 205
 +
 +struct THistLogRecord			// 256 bytes
 +{
@@ -116,12 +116,15 @@ index 0fe0f08..61cff12 100644
 +			TH.Point = (u16)state->to->fa.p;
 +			TH.Status = SESSION_OUT;
 +		}
-+		else if(state->fa)
++		else
 +		{
-+			TH.Zone  = (u16)state->fa->z;
-+			TH.Net   = (u16)state->fa->net;
-+			TH.Node  = (u16)state->fa->node;
-+			TH.Point = (u16)state->fa->p;
++			if(state->fa)
++			{
++				TH.Zone  = (u16)state->fa->z;
++				TH.Net   = (u16)state->fa->net;
++				TH.Node  = (u16)state->fa->node;
++				TH.Point = (u16)state->fa->p;
++			}
 +			TH.Status = SESSION_IN;
 +		}
 +
@@ -232,7 +235,7 @@ index 0fe0f08..61cff12 100644
  /*--------------------------------------------------------------------*/
  /*    static void FDLogStat (STATE*, char*, char*, int)               */
  /*                                                                    */
-@@ -214,3 +416,4 @@ void BinLogStat (int status, STATE *state, BINKD_CONFIG *config)
+@@ -214,3 +419,4 @@ void BinLogStat (int status, STATE *state, BINKD_CONFIG *config)
  	FDLogStat (state, config->fdinhist, config->fdouthist, config->tzoff);
  }
  

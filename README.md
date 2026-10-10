@@ -14,11 +14,24 @@ This software is intended for use in the `FidoNet` computer network and other FT
 
 The `T-Hist` utility creates text files with graphs and histograms of the FTN node load and with sessions and links statistics
 based on information stored in the mailer's binary logs (history files). The `T-Hist` supports binary logs of the following mailers:
-Binkd, T-Mail, Argus, Internet Rex, FrontDoor, Bink/+, FhMail, BinkleyTerm-XE, The Brake!, KittenMail, DVMmail, XMail32, BasicMail,
-as well as its own binary log format (starting from version `1.4.0`).
+Binkd, qico 0.60.2+, T-Mail, Argus, Internet Rex, FrontDoor, Bink/+, FhMail, BinkleyTerm-XE, The Brake!, KittenMail, DVMmail, XMail32,
+BasicMail, as well as its own binary log format (starting from version `1.4.0`).
 
 Development of the `T-Hist` began in 1996. The latest version of `T-Hist` 0.30.alpha7 for DOS, OS/2, NT (win32) was released in 2003.
 After 23 years, the new `T-Hist` (and related utilities `LnkStat` and `DmpHist`) were released for Linux and Windows.
+
+## Table of Contents
+
+- [Structure of ZIP archive with programs](#structure-of-zip-archive-with-programs)
+- [Capabilities and features of the new versions](#capabilities-and-features-of-the-new-versions)
+   - [Terms used](#terms-used)
+   - [Appearance](#appearance)
+   - [Configuration file, parameter values, command-line options](#configuration-file-parameter-values-command-line-options)
+   - [Rules for specifying and processing addresses](#rules-for-specifying-and-processing-addresses)
+   - [Binary log formats, format conversions, support for new mailers](#binary-log-formats-format-conversions-support-for-new-mailers)
+- [Gratitudes](#gratitudes)
+
+## Structure of ZIP archive with programs
 
 The utilities are distributed as a ZIP archive containing executable files in the following directories:
 - `linux`&ensp;– Linux executables (x86_64, i686 and arm64 architectures);
@@ -32,7 +45,9 @@ and an example of a configuration file from the last older version `0.30.alpha7`
 
 The differences between new and older versions will be discussed below.
 
-## Terms used in this document
+## Capabilities and features of the new versions
+
+### Terms used
 
 - The term `old versions` means `T-Hist` `0.30.alpha7` from 2003, and earlier versions.
 
@@ -43,7 +58,7 @@ Addresses that use the wildcards `*` are not groups.
 
 - The terms `binary log` and `history file` are equivalent.
 
-## Main features of the new `T-Hist` and related utilities
+### Appearance
 
 - All utilities print information and create output text files in UTF-8 encoding.
 To post statistics in FTN echo conferences or netmail, text files must be converted to the appropriate encoding.
@@ -104,29 +119,156 @@ a decryption is printed whether they mean binary units (`KiB`, `MiB`, `GiB`) or 
   - `-r`, `-r+` – as `DecimalUnits Yes`;
   - `-r-` &emsp;&emsp;– as `DecimalUnits No`.
 
+- FTN-nodes addresses (that have a zero value in the `Point` field) are printed without ending `.0` to improve the readability of statistics.
+The `Point` number is printed only if it is non-zero. This change does not affect the `DmpHist` utility.
+
+- Sessions that ended unsuccessfully due to handshake fail are displayed in statistics if the mailer writes information about such sessions to a binary log.
+Technically, if the handshake failed, then the FTN-address is unresolved, and the address `0:0/0.0` is written to the log. Older versions skipped records
+with this address, although it is wrong. Waiting for handshake completion can be lengthy. A session with failed handshake can last a noticeable time before the
+connection is broken. But this time has not yet been displayed in the statistics and has not been taken into account when calculating the load of the FTN-system.
+
+  New versions are printed the sessions with an unresolved address in the session table, in the last line of the link table, in the last line of the graph,
+and their duration is taken into account when building histograms. For better readability of statistics, `T-Hist` and `LnkStat` instead of `0:0/0.0` print
+the word `Unresolved` as the address. The `DmpHist` utility does not make such a replacement and prints `0:0/0.0`.
+
+  If you do not want to see such sessions in the statistics, then exclude the address `0:0/0.0` from processing:
+
+  `Addr !0:0/0.0`
+
+- On histograms, the load level that is greater than 0% but less than 3% is displayed using the `_` character. In the old versions, this load level was
+either displayed excessively large – as a level of 3-10%, or not displayed at all due to the lack of a suitable pseudo-graphic symbol.
+
+- Time intervals longer than 23 hours 59 minutes 59 seconds are displayed as: number of days, number of hours, number of minutes. Such time intervals
+in daily statistics may appear when calculating the total duration of sessions on high-load FTN-nodes that support several parallel connections.
+Also, large total sessions durations can be in the multi-day statistics generated by the `LnkStat` utility.
+
+- The session start time in the sessions table is printed with an accuracy of seconds (the old versions print it with an accuracy of minutes).
+The session end time is excluded due to redundancy – the table contains the duration of sessions.
+
+- Summary information about traffic and the number and duration of sessions is printed after the sessions tables and after tables with links and groups statistics.
+
+- The `T-Hist` and `LnkStat` utilities assign a duration of 1 second to sessions read from a binary log with a duration of 0 seconds.
+This makes it possible to correctly take into account short sessions lasting less than 1 second in statistics. The zero value of the duration of such sessions
+occurs due to the time intervals in binary logs are recorded with an accuracy of a second.
+
+  The `DmpHist` utility continues to work as before. It prints raw data from binary logs without any adjustment.
+For sessions shorter than a second, the utility will print a duration of 0 seconds, as recorded in the binary log.
+
+- The `DmpHist` utility prints before table not only the name of the binary log file, but also information about its format.
+And after the tables, `DmpHist` prints a more detailed description of sessions status bits.
+
+### Configuration file, parameter values, command-line options
+
+- Parameter names and their values in the configuration file are case-insensitive, with the exception of file names in Linux.
+
+- Comments in the configuration file can start not only from the character `;` inherited from old versions, but also from the `#` character,
+which is more familiar in the linux environment. A special case is the handling of a line containing the parameter `Addr`.
+To keep compatibility with old versions, such a line can be fully commented out by putting `#` before `Addr`. The character `#` after `Addr`
+will be considered a macro for specifying a group of addresses, and not the beginning of a comment.
+
 - All utilities can work without a configuration file if at least one binary log file is specified in the command line.
 Log processing parameters are determined according to the following rules:
 
-  - If the config file is not specified explicitly using the `-c` command-line option and no config file named `t-hist.ctl` is found in the current directory,
-the specified binary logs will be processed, and all parameters that were not specified by other command-line options will receive default values.
-(See the table with the default parameter values in the file [README.md](README.md).)
+  - If the configuration file is not specified explicitly using the `-c` command-line option and no configuration file with default name `t-hist.ctl` is found
+in the current directory, the specified binary logs will be processed, and all parameters that were not specified by other command-line options will receive
+default values. (See the table with the default parameter values below.)
 
-  - If the configuration file is specified explicitly using the `-c` command-line option, or there is a configuration file named `t-hist.ctl` in the current directory,
-the specified binary logs will be processed together with the logs from the configuration file, and parameters that were not specified by other command-line options
-will receive the values from the configuration file.
+  - If the configuration file is specified explicitly using the `-c` command-line option, or there is a configuration file with default name `t-hist.ctl`
+in the current directory, the specified binary logs will be processed together with the logs from the configuration file, and parameters that were not specified
+by other command-line options will receive the values from the configuration file.
 
   Examples:
   ```text
-  t-hist  /home/user/fido/logs/binkd.sts
-  t-hist  /home/user/fido/logs/binkd.sts -d-1 -t12-24 -bTIO$ -g -k -mg 
-  t-hist  /home/user/fido/logs/binkd.sts -с/home/user/fido/config/t-hist.conf -w120
-  lnkstat /home/user/fido/logs/binkd.sts -b1.9.2026 -e20.9.2026 -g 
-  dmphist /home/user/fido/logs/binkd1.sts /home/user/fido/logs/binkd2.sts -w- -u-
+  t-hist  /var/log/fido/binlog.bin
+  t-hist  /var/log/fido/binlog.bin -d-1 -t12-24 -bTIO$ -g -k -mg 
+  t-hist  /var/log/fido/binlog.bin -с/home/user/fido/config/t-hist.conf -w120
+  lnkstat /var/log/fido/binlog.bin -b1.9.2026 -e20.9.2026 -g 
+  dmphist /var/log/fido/binlog1.bin /var/log/fido/binlog2.bin -w- -u-
   ```
 
-- The order of adresses and groups of addresses in `Addr` parameters is no longer important. Regardless of the order, when generating statistics,
-they will be sorted from less general to more general. And the excluded addresses and groups of addresses will be placed at the beginning of the adresses list,
-simultaneously deleting all present addresses that match the excluded ones. Re-specifying the same addresses will be ignored. For example, if in the configuration file specified:
+- If the parameter is not specified either in the configuration file or through the command-line option, then it will receive the default value given in the following table:
+
+  |   Parameter    |       Default value       |
+  | :------------- | :------------------------ |
+  | `Output`       | `t-hist.out`              | 
+  | `LinkStat`     | `t-hist.lnk`              |
+  | `SessionStat`  | `t-hist.ses`              |
+  | `Date`         | today's date              |
+  | `Time`         | `0:00:00-23:59:59`        |
+  | `TimeShift`    | `0`                       |
+  | `CutHistory`   | `0` (do not cut log file) |
+  | `Name`         | empty string              |
+  | `Addr`         | `#:#/#.#`                 |
+  | `BinkdAborted` | `In`                      |
+  | `ShowValue`	   | `Ses`                     |
+  | `AdvancedCPS`, `WideScreen`,<br>`BusyHist` | `Yes` |
+  | `Group`, `KeepAll`, `MiddLine`, `NoDrawZero`,<br>`ProtectSummary`, `BrakeSesStat`,<br>`SwapInOut`, `DecimalUnits` | `No` |
+
+- The parameters `Addr`, `AdvancedCPS`, `BrakeSesStat`, `BusyHist`, `DecimalUnits`, `Group`, `KeepAll`, `MiddLine`, `NoDrawZero`, `ProtectSummary`, `SwapInOut`, `WideScreen`
+in the configuration file can be used without specifying a value. In this case, the parameter `Addr` will be `#:#/#.#`, and all other listed parameters will be `Yes`.
+
+- Format specifiers that can be used when specifying output file names (in the `Output`, `LinkStat`, `SessionStat` parameters and corresponding command-line
+options `-o`, `-l`, `-e`, as well as in the `-o` option of the `LnkStat` utility), are matched to the `strftime()` function specifiers.
+The following format specifiers are allowed:
+
+  - `%Y` – year as a four-digit number (e.g. 2026);
+  - `%y` – year as a number without a century (00 to 99);
+  - `%m` – month as a decimal number (range 01 to 12);
+  - `%d` – day of the month as a decimal number (range 01 to 31);
+  - `%j` – day of the year as a decimal number (range 001 to 366);
+  - `%w` – day of the week as a decimal, range 0 to 6, Sunday being 0;
+  - `%u` – day of the week as a decimal, range 1 to 7, Monday being 1, Sunday being 7;
+  - `%H` – hour as a decimal number using a 24-hour clock (range 00 to 23);
+  - `%M` – minute as a decimal number (range 00 to 59);
+  - `%S` – second as a decimal number (range 00 to 60).
+
+- The ability to cut the binary log with a non-zero value of the `CutHistory` parameter is implemented for logs of the following formats/mailers:
+Binkd, T-Mail old and new formats, KittenMail and the binary logs of all versions of the native `T-Hist` format. Other supported formats are
+not cutted and the `CutHistory` parameter is ignored.
+
+- `T-Hist` and `LnkStat` utilities have the `-z` command-line option that matches the `TimeShift` parameter.
+The option has the following values:
+  - `-z` &nbsp;&emsp;– as `TimeShift Auto` (shift the start time of each session by the difference between local time and UTC which was at the time of the session);
+  - `-z<N>` – as `TimeShift <N>` (shift the start time of each session by `N` hours; `N` can be negative).
+
+- The `DmpHist` utility does not take into account the `TimeShift` parameter if it is present in the configuration file. It prints the start time of sessions exactly
+as it is stored in the binary log, without any adjustments.
+
+- Processing logic of the command-line options `-g`, `-k`, `-n` is changed. In old versions, setting these options without the following sign `+` or `-` changed the value
+of the corresponding parameter to the opposite. Now the ability to invert parameters is removed due to low demand, and the option without the following sign `+` or `-` is equivalent
+to the option with the sign `+`.
+
+- The `-h` command-line option displays the program's help. Binary logs in the command line are set by simply specifying the file names.
+
+- The `SupportNewFormat` parameter is deprecated and ignored when reading the configuration file. All binary log formats are fully supported.
+
+### Rules for specifying and processing addresses
+
+- When specifying addresses in the `Addr` parameters, you can omit address fields. Missing fields will be replaced with macro `#`. For example,
+
+  |     Specified     |     Will be used    |
+  | :---------------- | :------------------ |
+  | `Addr 2:5020/378` | `Addr 2:5020/378.#` |
+  | `Addr 2:5020`     | `Addr 2:5020/#.#`   |
+  | `Addr 2:`         | `Addr 2:#/#.#`      |
+  | `Addr 2:5020.378` | `Addr 2:5020/#.378` |
+  | `Addr 2:/378`     | `Addr 2:#/378.#`    |
+  | `Addr 2:/.378`    | `Addr 2:#/#.378`    |
+  | `Addr 2:.378`     | `Addr 2:#/#.378`    |
+  | `Addr :5020/378`  | `Addr #:5020/378.#` |
+  | `Addr :5020.378`  | `Addr #:5020/#.378` |
+  | `Addr :5020`      | `Addr #:5020/#.#`   |
+  | `Addr 5020/`      | `Addr #:5020/#.#`   |
+  | `Addr 5020/378`   | `Addr #:5020/378.#` |
+  | `Addr 5020.378`   | `Addr #:#/5020.378` |
+  | `Addr /378.0`     | `Addr #:#/378.0`    |
+  | `Addr 378.0`      | `Addr #:#/378.0`    |
+  | `Addr 378`        | `Addr #:#/378.#`    |
+  | `Addr`            | `Addr #:#/#.#`      |
+
+- The order of adresses and groups of addresses in `Addr` parameters is no important. Regardless of the order, when generating statistics, they will be
+sorted from less general to more general. And the excluded addresses and groups of addresses will be placed at the beginning of the adresses list, simultaneously
+deleting all present addresses that match the excluded ones. Re-specifying the same addresses will be ignored. For example, if in the configuration file specified:
 
 	```
 	Addr 2:5020/#.#
@@ -185,119 +327,62 @@ sessions with a separately specified addresses also in the statistics for the gr
 	Addr 2:#/#.#
 	Addr #:#/#.#
 	```
-
   the sessions with address `2:5020/378.0` will be taken into account not only in separate statistics for this address, but also in group statistics of sessions
 with addresses of the net `2:5020`, in group statistics of sessions with addresses of the zone `2` and in group statistics of sessions with any addresses.
 Sessions with address `2:5020/1132.0` will be ignored.
 
-- The `T-Hist` and `LnkStat` utilities assign a duration of 1 second to sessions read from a binary log with a duration of 0 seconds.
-This makes it possible to correctly take into account short sessions lasting less than 1 second in statistics. The zero value of the duration of such sessions
-occurs due to the time intervals in binary logs are recorded with an accuracy of a second.
+- `T-Hist` and `LnkStat` utilities now have the `-a` command-line option that matches the `Addr` parameter. The option can be specified multiple times.
+The rules for specifying addresses are the same as for the `Addr` parameter, including the ability to specify a comment (description) of the address.
 
-  The `DmpHist` utility continues to work as before. It prints raw data from binary logs without any adjustment.
-For sessions shorter than a second, the utility will print a duration of 0 seconds, as recorded in the binary log.
+  If the configuration file is specified explicitly using the `-c` command-line option, or there is a configuration file with default name `t-hist.ctl` in the
+current directory, the addresses specified by the `-a` options will be added to the addresses from the `Addr` parameters of the configuration file.
+If the configuration file is not specified explicitly and no file with default name `t-hist.ctl` is found, but binary log (logs) is specified in the command line,
+then statistics will be generated only for the addresses specified by the `-a` options.
 
-- Format of the sessions table has been changed. The session start time is printed with an accuracy of seconds (the old versions print it with an accuracy of minutes).
-The session end time is excluded due to redundancy – the table contains the duration of sessions.
+  In the following example,
+  ```text
+  t-hist /var/log/fido/binlog.bin -a2:5020/378.* -a2:5020 -a"2:\"Group description\""
+  ```
+  the `-a` options specify three addresses/groups:
+  ```
+  Addr 2:5020/378.*
+  Addr 2:5020/#.#
+  Addr 2:#/#.#     "Group description"
+  ```
+  If there is a configuration file with default name `t-hist.ctl` in the current directory, the binary log `/var/log/fido/binlog.bin` and the specified addresses
+will be added to ones in configuration file. If the configuration file is missing, then only the binary log `/var/log/fido/binlog.bin` will be processed,
+and statistics will be generated for only three specified addresses/groups.
 
-- FTN-nodes addresses (that have a zero value in the `Point` field) are now printed without ending `.0` to improve the readability of statistics.
-The `Point` number is printed only if it is non-zero. This change does not affect the `DmpHist` utility.
+  Specifying such parameters:
+  ```text
+  t-hist /var/log/fido/binlog.bin -c -a0:0/0.0
+  ```
+  will allow you to get statistics only for sessions with failed handshake stored in the binary log `/var/log/fido/binlog.bin`. Here the empty option '-c'
+prevents reading the configuration file even if it is present in the current directory (`T-Hist` will report that default parameter values will be used).
+Statistics will be generated for a single address `0: 0/0.0` corresponding to sessions with a failed handshake.
 
-- Summary information about traffic and the number and duration of sessions is now printed after the sessions tables and after tables with links and groups statistics.
-This is an exact copy of the information that printed after the load graph and histograms.
+  Similarly, the `-a` option is used in the `LnkStat` utility.
 
-- On histograms, the load level that is greater than 0% but less than 3% is displayed using the `_` character.
-In the old versions, this load level was either displayed excessively large – as a level of 3-10%, or not displayed at all due to the lack of a suitable pseudo-graphic symbol.
+### Binary log formats, format conversions, support for new mailers
 
-- The `DmpHist` utility does not take into account the `TimeShift` parameter if it is present in the configuration file. It prints the start time of sessions exactly
-as it is stored in the binary log, without any adjustments.
+- Developed and fully supported by the all utilities the several versions of the new binary log format (native `T-Hist` format) with 64-bit values for
+incoming and outgoing traffic, which allows to correctly store data on traffic exceeding 4 gigabytes.
 
-- The `DmpHist` utility prints before table not only the name of the binary log file, but also information about its format.
-And after the tables, `DmpHist` prints a more detailed description of sessions status bits.
-
-- Parameter names and their values in the configuration file are case-insensitive, with the exception of file names in Linux.
-
-- If the parameter is not specified either in the configuration file or through the command-line option, then it will receive the default value given in the following table:
-
-  |   Parameter    |       Default value       |
-  | :------------- | :------------------------ |
-  | `Output`       | `t-hist.out`              | 
-  | `LinkStat`     | `t-hist.lnk`              |
-  | `SessionStat`  | `t-hist.ses`              |
-  | `Date`         | today's date              |
-  | `Time`         | `0:00:00-23:59:59`        |
-  | `TimeShift`    | `0`                       |
-  | `CutHistory`   | `0` (do not cut log file) |
-  | `Name`         | empty string              |
-  | `Addr`         | `#:#/#.#`                 |
-  | `BinkdAborted` | `In`                      |
-  | `ShowValue`	   | `Ses`                     |
-  | `AdvancedCPS`, `WideScreen`,<br>`BusyHist` | `Yes` |
-  | `Group`, `KeepAll`, `MiddLine`, `NoDrawZero`,<br>`ProtectSummary`, `BrakeSesStat`,<br>`SwapInOut`, `DecimalUnits` | `No` |
-
-  (There are differences from the default values for old versions.)
-
-- The parameters `Addr`, `AdvancedCPS`, `BrakeSesStat`, `BusyHist`, `DecimalUnits`, `Group`, `KeepAll`, `MiddLine`, `NoDrawZero`, `ProtectSummary`, `SwapInOut`, `WideScreen`
-in the configuration file can be used without specifying a value. In this case, the parameter `Addr` will be `#:#/#.#`, and all other listed parameters will be `Yes`.
-
-- The `SupportNewFormat` parameter is deprecated and ignored when reading the configuration file. All binary log formats are fully supported.
-
-- Format specifiers that can be used when specifying output file names (in the `Output`, `LinkStat`, `SessionStat` parameters and corresponding command-line
-options `-o`, `-l`, `-e`, as well as in the `-o` option of the `LnkStat` utility), are matched to the `strftime()` function specifiers.
-The following format specifiers are allowed:
-
-  - `%Y` – year as a four-digit number (e.g. 2026);
-  - `%y` – year as a number without a century (00 to 99);
-  - `%m` – month as a decimal number (range 01 to 12);
-  - `%d` – day of the month as a decimal number (range 01 to 31);
-  - `%j` – day of the year as a decimal number (range 001 to 366);
-  - `%w` – day of the week as a decimal, range 0 to 6, Sunday being 0;
-  - `%u` – day of the week as a decimal, range 1 to 7, Monday being 1, Sunday being 7;
-  - `%H` – hour as a decimal number using a 24-hour clock (range 00 to 23);
-  - `%M` – minute as a decimal number (range 00 to 59);
-  - `%S` – second as a decimal number (range 00 to 60).
-
-- Comments in the configuration file can start not only from the character `;` inherited from old versions, but also from the `#` character,
-which is more familiar in the linux environment. A special case is the handling of a line containing the parameter `Addr`.
-Such a line can be commented out by putting `#` before `Addr`, but after `Addr` the character `#` will already be considered a macro
-for specifying a group of addresses, and not the beginning of a comment.
-
-- Processing logic of the command-line options `-g`, `-k`, `-n` is changed. In old versions, setting these options without the following sign `+` or `-` changed the value
-of the corresponding parameter to the opposite. Now the ability to invert parameters is removed due to low demand, and the option without the following sign `+` or `-` is equivalent
-to the option with the sign `+`.
-
-- The `-h` command-line option displays the program's help. Binary logs in the command line are set by simply specifying the file names.
-
-- `T-Hist` and `LnkStat` utilities (but not `DmpHist`) have the `-z` command-line option that matches the `TimeShift` parameter.
-The option has the following values:
-  - `-z` &nbsp;&emsp;– as `TimeShift Auto` (shift the start time of each session by the difference between local time and UTC which was at the time of the session);
-  - `-z<N>` – as `TimeShift <N>` (shift the start time of each session by `N` hours; `N` can be negative).
-
-- The ability to cut the binary log with a non-zero value of the `CutHistory` parameter is implemented for logs of the following formats/mailers:
-Binkd, T-Mail old and new formats, KittenMail and the binary logs of all versions of the native `T-Hist` format. Other supported formats are
-not cutted and the `CutHistory` parameter is ignored.
-
-- Developed and fully supported by the all utilities the new binary log formats (native `T-Hist` formats) with 64-bit values for incoming and outgoing traffic,
-which allows you to correctly store data on traffic exceeding 4 gigabytes.
-
-  The disadvantage of the binary log formats of all mailers supported by `T-Hist` is using 32-bit values to store information about traffic.
+  The disadvantage of the binary log formats of all mailers supported by old versionss of `T-Hist` is using 32-bit values to store information about traffic.
 This formats were developed in the dial-up era, when it was almost impossible to transfer more than 4 gigabytes in one session.
 But in the era of Fido-over-IP and high-speed networks, a session with more than 4 gigabytes of traffic is common, especially on large FTN hubs.
 
-  I suggest that FTN mailer developers use the native `T-Hist` binary log formats in their software products. In addition to correctly storing data
-about sessions with large volumes of traffic, the formats allows you to save text strings that `T-Hist` will be printed in wide-screen mode
-to the right of the load graph and to the right of the tables with statistics. Also, the native `T-Hist` formats allow to save the `Listed` mark for sessions,
+  I suggest that FTN mailer developers use the native `T-Hist` binary log format in their software products. In addition to correctly storing data
+about sessions with large volumes of traffic, the format allows you to save text strings that `T-Hist` will be printed in wide-screen mode
+to the right of the load graph and to the right of the tables with statistics. Also, the native `T-Hist` format allow to save the `Listed` mark for sessions,
 which FTN-address is specified in the configuration files of the mailer or is present in the nodlists specified in the mailer configuration.
 
-  For more information on native `T-Hist` binary log formats, see [ADD-NEW-MAILER.md](ADD-NEW-MAILER.md).
-
-- Created patches for Binkd to add support for the `T-Hist` binary log format. The patches is located in [binkd_patch](./binkd_patch).
-For more information see [BINKD-PATCH.md](./binkd_patch/BINKD-PATCH.md).
+  In detail, all versions of the native `T-Hist` binary log format are considered in the file [FORMATS.md](FORMATS.md).
 
 - A new utility has been created: `HistConv` binary log formats converter. The utility creates for a specified binary log file the same log in a different format.
 The source file can be the binary log file of any mailer supported by `T-Hist`. The format of the source binary log is determined automatically.
 To select a target format, use the `-f` command-line option to specify one of the following formats:
-  - native `T-Hist` format of versions 1 and 2;
+  - native `T-Hist` format of any versions;
   - format of T-Mail since version 2603 (T-Mail new format);
   - format of T-Mail before version 2603 (T-Mail old format);
   - Binkd format (T-Mail old format with inverted mark of session direction).
@@ -308,19 +393,20 @@ To select a target format, use the `-f` command-line option to specify one of th
   ```shell
   histconv -h
   ```
+  When converting, only session records are saved in the output log. Records of other events that may be present in the binary logs of some mailers
+(for example, dialing periods, work in terminal, BBS using, etc.) are skipped.
 
-## How to add support of a new mailer
+- Created patches for Binkd to add support for the `T-Hist` binary log format. The patches is located in [binkd_patch](./binkd_patch).
+For more information see [BINKD-PATCH.md](./binkd_patch/BINKD-PATCH.md).
 
-To use `T-Hist` with unsupported mailers, you need to convert the mailer logs to one of the binary log formats supported by `T-Hist`.
-For example, use the Binkd binary log format, which is also the format of T-Mail before version 2603 (T-Mail old format),
-the binary log format of T-Mail since version 2603 (T-Mail new format), or the native `T-Hist` binary log format.
-Read more in [ADD-NEW-MAILER.md](ADD-NEW-MAILER.md).
+- To use `T-Hist` with unsupported mailers, you need to convert the mailer logs to one of the binary log formats supported by `T-Hist`.
+Use the formats descriptions in the file [FORMATS.md](FORMATS.md).
 
 ## Gratitudes
 
-I would like to thank Alex Barinov `2:5020/715`, `2:50/0` for testing the new versions of `T-Hist` on its FTN-system, Alexey Matrosov `2:203/910` for new ideas
-and help with timestams processing, as well as everyone whose ideas, suggestions and help in testing allowed me to create and develop this project.
-The names of some of these people are listed in the old documentation file.
+I would like to thank Alex Barinov `2:5020/715`, `2:50/0` for testing the new versions of `T-Hist` on its FTN-system, Alexey Matrosov `2:203/910` for
+binary log format suggestions, help with timestapms processing and new ideas for `T-Hist`, as well as everyone whose ideas, suggestions and tests
+allowed me to create and develop this project. The names of some of these people are listed in the old documentation file.
 
 ---
 

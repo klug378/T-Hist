@@ -1,24 +1,36 @@
-[ADD-NEW-MAILER на русском языке](ADD-NEW-MAILER-ru.md)
+[FORMATS на русском языке](FORMATS-ru.md)
 
-# How to use T-Hist to generate statistics for unsupported mailers
+# Formats of binary logs
 
 To use `T-Hist` with unsupported mailers, you need to convert the mailer logs to one of the binary log formats supported by `T-Hist`.
 This document reviews the following formats:
 
   - `Binkd` binary log format, which is also the format of `T-Mail` before version 2603 (`T-Mail` old format);
   - binary log format of `T-Mail` since version 2603 (`T-Mail` new format).
-  - two versions of the native `T-Hist` format of binary log with 64-bit traffic values and the ability to store multiple text strings.
+  - three versions of the native `T-Hist` format of binary log with 64-bit traffic values, ability to store multiple text strings, and other benefits.
 
-  A comparison of the capabilities provided by each of the formats is given in the Table.
+## Table of Contents
+
+- [Comparison of the binary log formats](#comparison-of-the-binary-log-formats)
+- [Binkd binary log format (T-Mail old format)](#binkd-binary-log-format-t-mail-old-format)
+- [T-Mail new binary log format](#t-mail-new-binary-log-format)
+- [Native T-Hist formats](#native-t-hist-formats)
+   - [Version 1 of the native T-Hist format](#version-1-of-the-native-t-hist-format)
+   - [Version 2 of the native T-Hist format](#version-2-of-the-native-t-hist-format)
+   - [Version 3 of the native T-Hist format](#version-3-of-the-native-t-hist-format)
+
+## Comparison of the binary log formats
   
-|                                     | `Binkd` / `T-Mail`<br>old format | `T-Mail`<br>new format | `T-Hist` format<br>version 1 | `T-Hist` format<br>version 2 |
-| :---------------------------------- | :------------------------------: | :---------------------:| :--------------------------: | :--------------------------: |
-| Size of one record                  |               28 bytes           |         100 bytes      |           256 bytes          |         46 - 256 bytes       |
-| Ability to store traffic<br>values greater than 4 GiB |     **No**     |          **No**        |            **Yes**           |            **Yes**           |
-| Mark password<br>protected sessions |                       **No**     |          **Yes**       |            **Yes**           |            **Yes**           |
-| Mark aborted sessions               | **Yes**<br>`Binkd` loss of<br>session direction information |   **Yes**   |   **Yes**    |            **Yes**           |
-| Ability to store<br>text strings    |  **No**  |  **Yes**<br>up to 63 characters  |    **Yes**<br>up to 206 characters    |  **Yes**<br>up to 205 characters  |
-| Ratio of the size of<br>log file to the size<br>of `Binkd` log file<br>with the same number of records  | 1 : 1 | 3.57 : 1 | 9.14 : 1 |  1.64 : 1 - 9.14 : 1  |
+|                                     | `Binkd` /<br>`T-Mail`<br>old format | `T-Mail`<br>new format | `T-Hist`<br>format<br>version 1 | `T-Hist`<br>format<br>version 2 | `T-Hist`<br>format<br>version 3 |
+| :---------------------------------- | :---------------------------------: | :---------------------:| :-----------------------------: | :-----------------------------: | :-----------------------------: |
+| Size of one record                  |               28 bytes              |        100 bytes       |            256 bytes            |          46 - 256 bytes         |           51 - 261 bytes        |
+| Ability to store<br>traffic values<br>greater than<br>4 GiB |     **No**     |         **No**         |             **Yes**             |             **Yes**             |              **Yes**            |
+| Mark password<br>protected sessions |                **No**               |         **Yes**        |             **Yes**             |             **Yes**             |              **Yes**            |
+| Mark aborted sessions   | **Yes**<br>`Binkd` loss<br>of session direction |         **Yes**        |             **Yes**             |             **Yes**             |              **Yes**            |
+| Mark sessions<br>with `Listed`<br>addresses |        **No**               |         **No**         |             **Yes**             |             **Yes**             |              **Yes**            |
+| Checksum of<br>records              |                **No**               |         **No**         |             **No**              |             **No**              |              **Yes**            |
+| Ability to store<br>text strings    |  **No**  |  **Yes**<br>up to 63 characters  |    **Yes**<br>up to 206 characters    | **Yes**<br>up to 205 characters            | **Yes**<br>up to 205 characters |
+| Ratio of the size<br>of log file to the<br>size of `Binkd`<br>log file with the<br>same number<br>of records | 1 : 1 |  3.57 : 1 |  9.14 : 1 |  1.64 : 1 -<br>9.14 : 1 |      1.82 : 1 -<br>9.32 : 1     |
 
 Each of the binary log formats will be reviewed in detail below.
 
@@ -155,14 +167,17 @@ using 64-bit variables. But when writing to a binary log, `Binkd` is forced to a
 
 Therefore, the development and use of new binary log formats with 64-bit traffic values is a relevant task.
 
-`T-Hist` implements support for its own binary log formats with 64-bit traffic values, which is proposed to be used by FTN mailer developers.
+`T-Hist` implements support for several versions of its own binary log format (native `T-Hist` format) with 64-bit traffic values, which is proposed
+to be used by FTN mailer developers. In addition to correctly storing data about sessions with large volumes of traffic, the format allows you
+to save text strings that `T-Hist` will be printed in wide-screen mode. Also, the native `T-Hist` format allow to save the `Listed` mark for sessions,
+which FTN-address is specified in the configuration files of the mailer or is present in the nodlists specified in the mailer configuration.
 
 ### Version 1 of the native `T-Hist` format
 
 Supported since `T-Hist` `1.4.0`.
 
-The first five bytes of `T-Hist` format binary log contain the signature consisting of four characters `H`, `I`, `S`, `T` and one byte with
-the format version number. Signature as a sequence of hexadecimal values: `0x48`, `0x49`, `0x53`, `0x54`, `0x01`.
+The first 5 bytes of the binary log of the first version of the `T-Hist` format contain a signature consisting of four characters `H`, `I`, `S`, `T`
+and one byte with the format version number. Signature as a sequence of hexadecimal values: `0x48`, `0x49`, `0x53`, `0x54`, `0x01`.
   
 Next are records 256 bytes long. Each record has the following structure:
 
@@ -239,35 +254,48 @@ As a drawback of the first version of `T-Hist` format, a noticeable increase in 
   - more than 2 and a half times compared to `T-Mail` new format (256 bytes per record versus 100 bytes per record);
   - more than 9 times compared to `Binkd` format (256 bytes per record versus 28 bytes per record).
 
-This disadvantage is significantly reduced in the second version of the format, the records of which have a variable length.
+This disadvantage is significantly reduced in next versions of the format due to the use of variable-length records.
 
 ### Version 2 of the native `T-Hist` format
 
 Supported since `T-Hist` `1.5.0`.
 
-The first five bytes of `T-Hist` format binary log contain the signature consisting of four characters `H`, `I`, `S`, `T` and one byte with
-the format version number. Signature as a sequence of hexadecimal values: `0x48`, `0x49`, `0x53`, `0x54`, `0x02`.
+Possessing all the advantages of the first version of the format, the second version significantly reduce the size of the binary log file
+thanks to variable-length records.
 
-Next are records of variable length, but not more than 256 bytes each. The algorithm for constructing a record is:
+The first 5 bytes of the binary log of the second version of the `T-Hist` format contain a signature consisting of four characters `H`, `I`, `S`, `T`
+and one byte with the format version number. Signature as a sequence of hexadecimal values: `0x48`, `0x49`, `0x53`, `0x54`, `0x02`.
 
-1. Fill the 256-byte buffer with zeros.
+Next are records of variable length, but not more than 256 bytes each. Each record begins with a byte containing its length (excluding this byte itself).
+Next are the record fields in the same order as the records of the first version of the format. The algorithm for constructing a record is:
 
-2. Create the record in this buffer whose structure is described in the first version of the format.
-Required: byte with index 255 (counting from zero) must remain zero.
+  1. Fill the 256-byte buffer with zeros.
+  ```C
+  uint8_t* buffer[256];
+  memset(buffer, 0, 256);
+  ```
+  2. Starting with the byte at index 1, create a record of the first version of the format, with the only difference: the `Strings` array has a size
+of 205 bytes, not 206. (Do not touch the byte at index 0 yet.)
+  ```C
+  struct THistLogRecord* pRecord = (struct THistLogRecord*)&buffer[1];
+  /* fill in the record fields, for example:
+  pRecord->Zone  = 2;
+  pRecord->Net   = 5020;
+  pRecord->Node  = 378;
+  pRecord->Point = 0;
+  ...
+  */
+  ```
+  3. Determine the index of the last non-zero byte - this will be the length of the record - and place it in the buffer at index 0:
+  ```C
+  uint8_t len = 255;
+  while( (len > 1) && (buffer[len] == 0) ) len--;
+  buffer[0] = len;
+  ```
+  4. Write to the binary log file `len + 1` bytes, starting with the address `buffer`.
 
-3. Determine the index of the last non-zero byte, increase by one and use the resulting value as the size of the record. Sample code:
-```C
-struct THistLogRecord TH;
-memset(&TH, 0, 256);	// filling the record with zeros
-/*
-Creating the record of the first version of T-Hist format
-*/
-char* p = (char*)&TH;
-uint8_t len = 254;
-while( (len > 0) && (p[len] == 0) ) len--;
-len++;
-```
-4. Write to the binary log file the value `len` (one byte) and len bytes, starting with the address `&TH`.
+When reading records from a binary log, one byte of the record length `len` is first read, and then `len` bytes of the record itself are read
+into a pre-zeroed buffer.
 
 Below is an example of a dump of `T-Hist` format (version 2) binary log file containing one record for the same session as the example above
 for the first version of the format. At the beginning of the file are five bytes of the signature: `0x48`, `0x49`, `0x53`, `0x54`, `0x02`.
@@ -277,7 +305,7 @@ The session was ougoing, password protected, and ended normally. The record also
 location of FTN system and sysop name.
 
 ```
-0000000000: 48 49 53 54 02 73 02 00 │ 9C 13 CB 02 00 00 EA 71  HIST...........q
+0000000000: 48 49 53 54 02 73 02 00 │ 9C 13 CB 02 00 00 EA 71  HIST.s.........q
 0000000010: A8 6A 00 00 00 00 69 94 │ 26 00 00 00 00 00 50 01  .j....i.&.....P.
 0000000020: 00 00 00 00 00 00 03 00 │ 00 00 01 00 00 00 04 00  ................
 0000000030: 00 00 0E 00 0F 1F 29 35 │ 39 35 2E 31 34 33 2E 32  ......)595.143.2
@@ -287,6 +315,96 @@ location of FTN system and sysop name.
 0000000070: 78 20 42 61 72 69 6E 6F │ 76                       x Barinov
 ```
 
+### Version 3 of the native `T-Hist` format
+
+Supported since `T-Hist` `1.7.0`.
+
+Possessing all the advantages of the second version of the format, the third version allows checking the integrity of the binary log
+due to the checksum of each record. This allows mailer to fix situations where the previous record was not completely saved to the binary log
+due to a program crash or for some other reason. At the next start, the mailer can check the last record in the log, and if it is invalid,
+then delete it by going to the last valid record. `T-Hist`, processing binary logs of the 3rd version of the format, correctly skips broken
+records even if they are in the middle of the file.
+
+The recording structure of the third version of the format and the algorithm for calculating checksums were proposed by Alexey Matrosov `2: 203/910`,
+the developer of the `qico` mailer fork (see [GitHub](https://github.com/glasslike/qico)), that uses, starting from version 0.60.2, the binary log
+of the third version of the `T-Hist` format.
+
+The first 5 bytes of the binary log of the third version of the `T-Hist` format contain a signature consisting of four characters `H`, `I`, `S`, `T`
+and one byte with the format version number. Signature as a sequence of hexadecimal values: `0x48`, `0x49`, `0x53`, `0x54`, `0x03`.
+
+Next are records of variable length, but not more than 261 bytes each. Records of the third version of the format are obtained from records
+of the second version by adding an additional 5 bytes:
+- 4 bytes checksum;
+- 1 byte equal to the starting byte of the record (its length).
+
+The `CRC-32/ISO-HDLC` algorithm is used to calculate the checksum. In C/C++ programs, you can use the `crc32()` function of the `zlib` library.
+
+The algorithm for constructing a record is:
+
+  1. Fill the 261-byte buffer with zeros.
+  ```C
+  uint8_t* buffer[261];
+  memset(buffer, 0, 261);
+  ```
+  2. Create in this buffer a record exactly according to the algorithm for the second version of the format without any changes.
+As a result, `buffer [0]` will contain the length of the record, and starting with `buffer[1]` there will be record fields with
+the last non-zero byte `buffer[buffer[0]]`:
+  ```C
+  struct THistLogRecord* pRecord = (struct THistLogRecord*)&buffer[1];
+  /* fill in the record fields, for example:
+  pRecord->Zone  = 2;
+  pRecord->Net   = 5020;
+  pRecord->Node  = 378;
+  pRecord->Point = 0;
+  ...
+  */
+  uint8_t len = 255;
+  while( (len > 1) && (buffer[len] == 0) ) len--;
+  buffer[0] = len;
+  ```
+  3. Using the `CRC-32/ISO-HDLC` algorithm, calculate the checksum of the memory section from the beginning of the `buffer` array
+with a length of `len + 1` bytes (that is, the checksum of the entire record, including the initial byte of its length).
+When using the `zlib` library, this can be done like this:
+  ```C
+  uLong crc = crc32(0L, Z_NULL, 0); 
+  crc = crc32(crc, buffer, len + 1);
+  ```
+  4. Save 4 bytes of the checksum to the `buffer` array, starting with the index `len + 1`. And in byte with index `len + 5`,
+save the record length `len` again.
+  ```C
+  memcpy(&buffer[len + 1], &crc, 4);
+  buffer[len + 5] = len;
+  ```
+  5. Write to the binary log file `len + 6` bytes, starting with the address `buffer`.
+
+Reading records from the binary log of the third version of the format is performed as follows:
+
+  1. Read one byte of the record length `len` and save it to `buffer [0]`.
+  2. Read `len + 5` bytes and save them starting with `buffer [1]`.
+  3. Compare `buffer[0]` and `buffer[len + 5]`. If they are not equal, the record is considered a broken due to mismatched start and end lengths.
+  4. Calculate the checksum from the beginning of the array `buffer` with a length of `len + 1` bytes. If it is not equal to 4 checksum bytes
+located starting with `buffer [len + 1]`, then the entry is considered a broken due to a checksum mismatch.
+  5. If both the length bytes and the checksum match, then put zero in `buffer[len + 1]` and process the record. (`buffer[len + 1]` must contain
+zero to handle strings correctly.)
+
+The presence of a byte with a record length not only at the beginning, but also at the end of the record, allows you to process the binary log
+both from beginning to end and from end to beginning.
+
+Below is an example of a dump of `T-Hist` format (version 3) binary log file containing one record for the same session as the examples above
+for the first and second versions of the format. At the beginning of the file are five bytes of the signature: `0x48`, `0x49`, `0x53`, `0x54`, `0x03`.
+Next are the one byte of the record length (`0x73` == 115), 115 bytes of session record, four bytes of checksum `0x7EDC9667` and one byte repeating
+the value of the record length (`0x73`).
+
+```
+0000000000: 48 49 53 54 03 73 02 00 │ 9C 13 CB 02 00 00 EA 71  HIST.s.........q
+0000000010: A8 6A 00 00 00 00 69 94 │ 26 00 00 00 00 00 50 01  .j....i.&.....P.
+0000000020: 00 00 00 00 00 00 03 00 │ 00 00 01 00 00 00 04 00  ................
+0000000030: 00 00 0E 00 0F 1F 29 35 │ 39 35 2E 31 34 33 2E 32  ......)595.143.2
+0000000040: 31 37 2E 32 34 36 00 66 │ 69 64 6F 2E 68 75 62 61  17.246 fido.huba
+0000000050: 37 31 35 2E 72 75 00 4E │ 65 77 20 57 6F 72 6C 64  715.ru New World
+0000000060: 00 4D 6F 73 63 6F 77 2C │ 55 53 53 52 00 41 6C 65   Moscow,USSR Ale
+0000000070: 78 20 42 61 72 69 6E 6F │ 76 67 96 DC 7E 73        x Barinovg..~s
+```
 ---
 
 Mikhail Markovskiy (klug), 2:5020/378

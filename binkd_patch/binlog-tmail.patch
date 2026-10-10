@@ -1,5 +1,5 @@
 diff --git a/binlog.c b/binlog.c
-index 0fe0f08..5e02476 100644
+index 0fe0f08..86b3257 100644
 --- a/binlog.c
 +++ b/binlog.c
 @@ -10,6 +10,8 @@
@@ -97,7 +97,7 @@ index 0fe0f08..5e02476 100644
 +			TS.fNet = 0;
 +			TS.fNode = 0;
 +			TS.fPoint = 0;
-+			TS.fStatus = 0;
++			TS.fStatus =0x0001; 			// incoming session
 +		}
 +
 +		TS.fBReceive = (u32)state->bytes_rcvd;
