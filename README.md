@@ -14,8 +14,8 @@ This software is intended for use in the `FidoNet` computer network and other FT
 
 The `T-Hist` utility creates text files with graphs and histograms of the FTN node load and with sessions and links statistics
 based on information stored in the mailer's binary logs (history files). The `T-Hist` supports binary logs of the following mailers:
-Binkd, qico 0.60.2+, T-Mail, Argus, Internet Rex, FrontDoor, Bink/+, FhMail, BinkleyTerm-XE, The Brake!, KittenMail, DVMmail, XMail32,
-BasicMail, as well as its own binary log format (starting from version `1.4.0`).
+[Binkd](https://github.com/pgul/binkd), [qico 0.60.2+](https://github.com/glasslike/qico), T-Mail, Argus, Internet Rex, FrontDoor, Bink/+,
+FhMail, BinkleyTerm-XE, The Brake!, KittenMail, DVMmail, XMail32, BasicMail, as well as its own binary log format (starting from version `1.4.0`).
 
 Development of the `T-Hist` began in 1996. The latest version of `T-Hist` 0.30.alpha7 for DOS, OS/2, NT (win32) was released in 2003.
 After 23 years, the new `T-Hist` (and related utilities `LnkStat` and `DmpHist`) were released for Linux and Windows.
@@ -53,8 +53,7 @@ The differences between new and older versions will be discussed below.
 
 - The term `parameter` means parameter in the configuration file.
 
-- The terms `group`, `group of addresses` means an address defined in `Addr` parameter with at least one `#` character (macro).
-Addresses that use the wildcards `*` are not groups.
+- The terms `group`, `group of addresses` means an address defined in the `Addr` parameter or in the `-a` command-line option with at least one wildcard `*`.
 
 - The terms `binary log` and `history file` are equivalent.
 
@@ -164,7 +163,7 @@ And after the tables, `DmpHist` prints a more detailed description of sessions s
 - Comments in the configuration file can start not only from the character `;` inherited from old versions, but also from the `#` character,
 which is more familiar in the linux environment. A special case is the handling of a line containing the parameter `Addr`.
 To keep compatibility with old versions, such a line can be fully commented out by putting `#` before `Addr`. The character `#` after `Addr`
-will be considered a macro for specifying a group of addresses, and not the beginning of a comment.
+will be considered a part of the address.
 
 - All utilities can work without a configuration file if at least one binary log file is specified in the command line.
 Log processing parameters are determined according to the following rules:
@@ -198,14 +197,14 @@ by other command-line options will receive the values from the configuration fil
   | `TimeShift`    | `0`                       |
   | `CutHistory`   | `0` (do not cut log file) |
   | `Name`         | empty string              |
-  | `Addr`         | `#:#/#.#`                 |
+  | `Addr`         | `*:*/*.*`                 |
   | `BinkdAborted` | `In`                      |
   | `ShowValue`	   | `Ses`                     |
-  | `AdvancedCPS`, `WideScreen`,<br>`BusyHist` | `Yes` |
-  | `Group`, `KeepAll`, `MiddLine`, `NoDrawZero`,<br>`ProtectSummary`, `BrakeSesStat`,<br>`SwapInOut`, `DecimalUnits` | `No` |
+  | `AdvancedCPS`, `BusyHist`,<br>`Group`, `WideScreen` | `Yes` |
+  | `DecimalUnits`, `KeepAll`,<br>`MiddLine`, `NoDrawZero`,<br>`ProtectSummary`,`SwapInOut`, | `No` |
 
-- The parameters `Addr`, `AdvancedCPS`, `BrakeSesStat`, `BusyHist`, `DecimalUnits`, `Group`, `KeepAll`, `MiddLine`, `NoDrawZero`, `ProtectSummary`, `SwapInOut`, `WideScreen`
-in the configuration file can be used without specifying a value. In this case, the parameter `Addr` will be `#:#/#.#`, and all other listed parameters will be `Yes`.
+- The parameters `Addr`, `AdvancedCPS`, `BusyHist`, `DecimalUnits`, `Group`, `KeepAll`, `MiddLine`, `NoDrawZero`, `ProtectSummary`, `SwapInOut`, `WideScreen`
+in the configuration file can be used without specifying a value. In this case, the parameter `Addr` will be `*:*/*.*`, and all other listed parameters will be `Yes`.
 
 - Format specifiers that can be used when specifying output file names (in the `Output`, `LinkStat`, `SessionStat` parameters and corresponding command-line
 options `-o`, `-l`, `-e`, as well as in the `-o` option of the `LnkStat` utility), are matched to the `strftime()` function specifiers.
@@ -244,45 +243,41 @@ to the option with the sign `+`.
 
 ### Rules for specifying and processing addresses
 
-- When specifying addresses in the `Addr` parameters, you can omit address fields. Missing fields will be replaced with macro `#`. For example,
+- When specifying addresses in the `Addr` parameters, you can omit address fields. Missing fields will be replaced with wildcard `*`. For example,
 
   |     Specified     |     Will be used    |
   | :---------------- | :------------------ |
-  | `Addr 2:5020/378` | `Addr 2:5020/378.#` |
-  | `Addr 2:5020`     | `Addr 2:5020/#.#`   |
-  | `Addr 2:`         | `Addr 2:#/#.#`      |
-  | `Addr 2:5020.378` | `Addr 2:5020/#.378` |
-  | `Addr 2:/378`     | `Addr 2:#/378.#`    |
-  | `Addr 2:/.378`    | `Addr 2:#/#.378`    |
-  | `Addr 2:.378`     | `Addr 2:#/#.378`    |
-  | `Addr :5020/378`  | `Addr #:5020/378.#` |
-  | `Addr :5020.378`  | `Addr #:5020/#.378` |
-  | `Addr :5020`      | `Addr #:5020/#.#`   |
-  | `Addr 5020/`      | `Addr #:5020/#.#`   |
-  | `Addr 5020/378`   | `Addr #:5020/378.#` |
-  | `Addr 5020.378`   | `Addr #:#/5020.378` |
-  | `Addr /378.0`     | `Addr #:#/378.0`    |
-  | `Addr 378.0`      | `Addr #:#/378.0`    |
-  | `Addr 378`        | `Addr #:#/378.#`    |
-  | `Addr`            | `Addr #:#/#.#`      |
+  | `Addr 2:5020/378` | `Addr 2:5020/378.*` |
+  | `Addr 2:5020`     | `Addr 2:5020/*.*`   |
+  | `Addr 2:`         | `Addr 2:*/*.*`      |
+  | `Addr 2:5020.378` | `Addr 2:5020/*.378` |
+  | `Addr 2:/378`     | `Addr 2:*/378.*`    |
+  | `Addr 2:/.378`    | `Addr 2:*/*.378`    |
+  | `Addr 2:.378`     | `Addr 2:*/*.378`    |
+  | `Addr :5020/378`  | `Addr *:5020/378.*` |
+  | `Addr :5020.378`  | `Addr *:5020/*.378` |
+  | `Addr :5020`      | `Addr *:5020/*.*`   |
+  | `Addr 5020/`      | `Addr *:5020/*.*`   |
+  | `Addr 5020/378`   | `Addr *:5020/378.*` |
+  | `Addr 5020.378`   | `Addr *:*/5020.378` |
+  | `Addr /378.0`     | `Addr *:*/378.0`    |
+  | `Addr 378.0`      | `Addr *:*/378.0`    |
+  | `Addr 378`        | `Addr *:*/378.*`    |
+  | `Addr`            | `Addr *:*/*.*`      |
 
 - The order of adresses and groups of addresses in `Addr` parameters is no important. Regardless of the order, when generating statistics, they will be
 sorted from less general to more general. And the excluded addresses and groups of addresses will be placed at the beginning of the adresses list, simultaneously
 deleting all present addresses that match the excluded ones. Re-specifying the same addresses will be ignored. For example, if in the configuration file specified:
 
 	```
-	Addr 2:5020/#.#
-	Addr 2:5020/378.0
-	Addr #:#/#.#
-	Addr 2:5020/378.0
-	Addr 2:#/#.#
-	Addr 2:5020/1132.0
-	Addr 2:5020/408.0
+	Addr !2:5020/408.0
 	Addr !2:5020/1132.*
 	Addr !*:*/*.666
-	Addr 2:5020/715.#
-	Addr 2:5020/1132.0
-	Addr !2:5020/408.0
+	Addr 2:5020/378.0
+	Addr 2:5020/715.*
+	Addr 2:5020/*.*
+	Addr 2:*/*.*
+	Addr *:*/*.*
 	```
 
   then the following address list will be used:
@@ -292,29 +287,13 @@ deleting all present addresses that match the excluded ones. Re-specifying the s
 	Addr !2:5020/1132.*
 	Addr !*:*/*.666
 	Addr 2:5020/378.0
-	Addr 2:5020/715.#
-	Addr 2:5020/#.#
-	Addr 2:#/#.#
-	Addr #:#/#.#
+	Addr 2:5020/715.*
+	Addr 2:5020/*.*
+	Addr 2:*/*.*
+	Addr *:*/*.*
 	```
 
-  If there are no `Addr` parameters defined in the configuration file, the default group `Addr #:#/#.#` will be used.
-
-- If the group of addresses in `Addr` parameter have both macros `#` and wildcards `*`, then wildcards will be automatically replaced with macros.
-Wildcards can appear in non-group addresses only. For example, the address list:
-
-	```
-	Addr 2:5020/378.*
-	Addr 2:*/#.*
-	```
-
-  will be transformed to
-
-	```
-	Addr 2:5020/378.*
-	Addr 2:#/#.#
-	```
-  and the statistics will contain one common line for all points of node `2:5020/378` and separate lines for other addresses from zone&nbsp;2, with which sessions were held.
+  If there are no `Addr` parameters defined in the configuration file, the default group `Addr *:*/*.*` will be used.
 
 - New algorithm of browsing of the list of addresses specified by the `Addr` parameters. In the old versions, browsing the address list ended after the first match
 with the session address. Now, if the session address is not defined as excluded, the browsing will continue to the end of the list. Such an algorithm takes into account
@@ -323,9 +302,9 @@ sessions with a separately specified addresses also in the statistics for the gr
 	```
 	Addr !2:5020/1132.0
 	Addr 2:5020/378.0
-	Addr 2:5020/#.#
-	Addr 2:#/#.#
-	Addr #:#/#.#
+	Addr 2:5020/*.*
+	Addr 2:*/*.*
+	Addr *:*/*.*
 	```
   the sessions with address `2:5020/378.0` will be taken into account not only in separate statistics for this address, but also in group statistics of sessions
 with addresses of the net `2:5020`, in group statistics of sessions with addresses of the zone `2` and in group statistics of sessions with any addresses.
@@ -346,8 +325,8 @@ then statistics will be generated only for the addresses specified by the `-a` o
   the `-a` options specify three addresses/groups:
   ```
   Addr 2:5020/378.*
-  Addr 2:5020/#.#
-  Addr 2:#/#.#     "Group description"
+  Addr 2:5020/*.*
+  Addr 2:*/*.*     "Group description"
   ```
   If there is a configuration file with default name `t-hist.ctl` in the current directory, the binary log `/var/log/fido/binlog.bin` and the specified addresses
 will be added to ones in configuration file. If the configuration file is missing, then only the binary log `/var/log/fido/binlog.bin` will be processed,

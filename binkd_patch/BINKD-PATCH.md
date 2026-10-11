@@ -17,16 +17,16 @@ In the sample of Binkd configuration file, there are commented lines next to the
 These parameters are usually not used, so you can change the code in the `binlog.c` file so that the log specified by
 the `fdouthist`/`fdinhist` parameters is written in a different format with extended capabilities.
 
-The [binkd_patch](../binkd_patch) directory of `T-Hist` repository contains two patches for `binlog.c`:
+The [binkd_patch](../binkd_patch) directory of `T-Hist` repository contains three patches for `binlog.c`:
 
-  - [binlog-thist.patch](binlog-thist.patch) &ndash; use native `T-Hist` format (2nd version) for `fdouthist`/`fdinhist` binary log.
-  - [binlog-tmail.patch](binlog-tmail.patch) &ndash; use T-Mail new format for `fdouthist`/`fdinhist` binary log;
+  - [binlog-thist-v3.patch](binlog-thist-v3.patch) – use native `T-Hist` format (3rd version) for `fdouthist`/`fdinhist` binary log.
+  - [binlog-thist-v2.patch](binlog-thist-v2.patch) – use native `T-Hist` format (2nd version) for `fdouthist`/`fdinhist` binary log.
+  - [binlog-tmail-new.patch](binlog-tmail-new.patch) – use T-Mail new format for `fdouthist`/`fdinhist` binary log;
 
 Both of these formats have advanced capabilities to compare with the Binkd binary log format. In particular, the formats allows you to mark
 whether the session was password protected or not, allowing `T-Hist` to generate statistics on protected and unprotected sessions.
 Also, the formats allows you to mark aborted sessions without losing information about their direction. Finally, the formats allows you
-to store text information that `T-Hist` can print in wide-screen mode.
-For more information on this binary log formats, see [FORMATS.md](../FORMATS.md).
+to store text information that `T-Hist` can print in wide-screen mode. For more information on this binary log formats, see [FORMATS.md](../FORMATS.md).
 
 Patches only modify the `binlog.c` file and do not affect any other Binkd source files. With the patches applied,
 Binkd successfully compiles for Linux. The ability to compile for other systems has not been tested.
@@ -63,11 +63,15 @@ Use a patch with the T-Mail new format if:
 
 4. Apply the patch
 
-    `git apply binlog-thist.patch`
+    `git apply binlog-thist-v3.patch`
 
     or
 
-    `git apply binlog-tmail.patch`
+    `git apply binlog-thist-v2.patch`
+
+    or
+
+    `git apply binlog-tmail-new.patch`
 	
 5. Compile Binkd. To compile under Linux, run:
 
