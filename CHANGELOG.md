@@ -8,11 +8,85 @@
 
 - The term `parameter` means parameter in the configuration file.
 
-- The terms `group`, `group of addresses` means an address defined in `Addr` parameter with at least one `#` character.
+- The terms `group`, `group of addresses` means an address defined in the `Addr` parameter or in the `-a` command-line option with at least one wildcard char `*`.
 
 - The terms `binary log` and `history file` are equivalent.
 
+## [1.8.0] - 2026-10-14
+
+The binary log of the native `T-Hist` format (3rd version) is used in the qico mailer version 0.60.2 ([GitHub](https://github.com/glasslike/qico))
+by Alexey Matrosov (2:203/910). You can use `T-Hist` to get statistics for this mailer.
+
+#### Added
+
+- The sample configuration file [t-hist.ctl](t-hist.ctl) has been added with a detailed description of all parameters corresponding to the current state
+of the project (so far only in Russian).
+
+- Added predefined names of addresses and groups of addresses that can be used in the `Addr` parameters and in the `-a` command-line options
+(names are case-insensitive):
+
+  - `Addr All` – as `Addr *:*/*.*`, a group covering all sessions (both successful and unsuccessful) with all addresses;
+
+  - `Addr Failed` – like `Addr All`, but only for unsuccessful sessions (with failed handshake, aborted or ended due to any error) with any addresses;
+
+  - `Addr Unresolved`, `Addr Undefined`, `Addr Unknown`, `Addr None` – as `Addr 0:0/0.0`, an any session that fails at the handshake stage before the FTN-address
+is resolved.
+
+  The `Failed` group includes `Unresolved` / `Undefined` / `Unknown` / `None`.
+
+  To get statistics only on unsuccessful sessions (aborted sessions with resolved addresses and sessions with an address unresolved due to a failed handshake),
+use the single parameter `Addr Failed` in the configuration file or the single command-line option `-afailed` when working without a configuration file.
+
+  Add `Addr Failed` to the other `Addr` parameters in the configuration file to get the total statistics of failed sessions as part of the overall statistics
+for all sessions. The simplest option is:
+
+  ```
+  Addr All
+  Addr Failed
+  ```
+  If, on the contrary, you want to exclude all failed sessions from statistics, use:
+
+  ```
+  Addr !Failed
+  Addr All
+  ```
+  The order of the `Addr` parameters is not important.
+
+- Created patch for Binkd to add support for the 3rd version of `T-Hist` binary log format. The patch is located in the [binkd_patch](./binkd_patch) directory.
+For more information, see [BINKD-PATCH.md](./binkd_patch/BINKD-PATCH.md).
+
+#### Changed
+
+- During the development of new versions of `T-Hist`, address processing rules and statistics generation algorithms have changed so much that the difference
+in the use of the characters `*` and `#` in the `Addr` parameters and in the `-a` command-line options has disappeared. Therefore, now the characters `*` and
+`#` are considered equivalent when specifying addresses. Using any of them makes the address a group that generates a separate line on the graph and in the
+link statistics for each specific FTN-address (this previously provided the `#` character), and creates a summary line in the graph and in the group statistics
+for all addresses belonging to this group (this previously provided the `*` character).
+
+  To keep compatibility with previous versions, the `#` character will continue to be processed correctly when parsing addresses, so you do not need to change
+anything in the configuration files. But it is recommended to use the `*` character when specifying addresses groups, since it has the obvious meaning of
+a wildcard character.
+
+- The `Group` parameter now defaults to `Yes` (previous versions had `No`). If you do not need group statistics, specify `Group No` in the configuration file
+or use the `-g-` command-line option.
+
+- The parameter name `NoDrawZero` has been changed to `NoDrawEmpty`, which is more consistent with the meaning of the parameter. To keep compatibility
+with previous versions, the old parameter name `NoDrawZero` will continue to be processed correctly. But it is recommended to use the new name `NoDrawEmpty`.
+
+- The `TimeShift` parameter can now be used without specifying any value. In this case, the value `TimeShift Auto` will be used.
+
+#### Removed
+
+- When processing the binary logs of The Brake! statistics on the periods of answering calls, dialing numbers, terminal operation, BBS calls and external
+programs runs are no longer generated. Statistics are created only for session records. All other events are skipped.
+
+- The `BrakeSesStat` parameter is deprecated and ignored when reading the configuration file.
+
 ## [1.7.0] - 2026-10-10
+
+Attention users of The Brake! mailer (if there are still such users). This is the latest version of `T-Hist`, creating for The Brake! mailer statistics
+on the periods of answering calls, dialing numbers, terminal operation, BBS calls and external programs runs. Starting with the following versions,
+in the binary logs of The Brake! mailer only session records will be processed. All other events will be skipped.
 
 #### Added
 
@@ -34,7 +108,7 @@ See the section "Rules for specifying and processing addresses" of the file [REA
 for examples of automatic replacements.
 
 - `T-Hist` and `LnkStat` utilities now have the `-a` command-line option that matches the `Addr` parameter. The option can be specified multiple times.
-The rules for specifying addresses are the same as for the `Addr` parameter, including the ability to specify a comment (description) of the address.
+The rules for specifying addresses are the same as for the `Addr` parameter, including the ability to specify a description of the address.
 
   If the configuration file is specified explicitly using the `-c` command-line option, or there is a configuration file with default name `t-hist.ctl` in the
 current directory, the addresses specified by the `-a` options will be added to the addresses from the `Addr` parameters of the configuration file.
@@ -165,11 +239,11 @@ by other command-line options will receive the values from the configuration fil
 
   Examples:
   ```text
-  t-hist  /var/log/fido/binlog.bin
-  t-hist  /var/log/fido/binlog.bin -d-1 -t12-24 -bTIO$ -g -k -mg 
-  t-hist  /var/log/fido/binlog.bin -с/home/user/fido/config/t-hist.conf -w120
-  lnkstat /var/log/fido/binlog.bin -b1.9.2026 -e20.9.2026 -g 
-  dmphist /var/log/fido/binlog1.bin /var/log/fido/binlog2.bin -w- -u-
+  t-hist  /var/log/fido/binlog.dat
+  t-hist  /var/log/fido/binlog.dat -d-1 -t12-24 -bTIO$ -g -k -mg 
+  t-hist  /var/log/fido/binlog.dat -с/home/user/fido/config/t-hist.conf -w120
+  lnkstat /var/log/fido/binlog.dat -b1.9.2026 -e20.9.2026 -g 
+  dmphist /var/log/fido/binlog1.dat /var/log/fido/binlog2.dat -w- -u-
   ```
 
 - Added the ability to cut the KittenMail binary logs when the `CutHistory` parameter is not zero. At the moment, `T-Hist` can cut the binary logs of the following
@@ -329,7 +403,7 @@ in cases where the total duration of empty sessions exceeded the total duration 
 #### Added
 
 - All utilities have now a wide-screen mode that allows them to print lines longer than 80 characters. This mode is enabled by default,
-however, if you process the old-format binary logs (for example, Binkd logs) and do not use comments (descriptions) in the `Addr` parameters,
+however, if you process the old-format binary logs (for example, Binkd logs) and do not use descriptions in the `Addr` parameters,
 then the generated statistics will still be no more than 80 characters wide.
 
   But if at least one of the conditions is met:
@@ -337,10 +411,10 @@ then the generated statistics will still be no more than 80 characters wide.
   - the binary log contains text information about the FTN systems or about the protocol of connection (such logs are: logs of Internet Rex, FrontDoor,
 Bink/+, FhMail, BinkleyTerm-XE, KittenMail, The Brake!, logs of some mailers compatible with T-Mail new format);
   
-  - at least one of the parameters `Addr` has a comment (description),
+  - at least one of the parameters `Addr` has a description,
   
-  the text information about FTN systems from binary log or comments (descriptions) from `Addr` parameters will be printed in wide-screen mode
-to the right of the load graph and to the right of the tables with statistics. If both the text information from binary log and the comment (description)
+  the text information about FTN systems from binary log or from descriptions in the `Addr` parameters will be printed in wide-screen mode
+to the right of the load graph and to the right of the tables with statistics. If both the text information from binary log and the description
 in the `Addr` parameter exist for the address, then the information from binary log takes precedence.
 
 - All utilities now have the `-w` command-line option to control wide-screen mode:
@@ -354,12 +428,11 @@ This is an exact copy of the information printed after the load graph and histog
 
 #### Changed
 
-- Length of the comment (description) in the `Addr` parameters is not limited now. In previous versions, the comment was printed
-to the left of the load graph (if there is a dividing lines enabled by `MiddLine` parameters) with a length of no more than 15 characters.
-Now the comments (descriptions) of addresses are printed (only in the wide screen mode) to the right of the load graph
-and to the right of the tables with statistics, where there is no length limit.
+- Length of the description in the `Addr` parameters is not limited now. In previous versions, the description was printed to the left of the load
+graph (if there is a dividing lines enabled by `MiddLine` parameters) with a length of no more than 15 characters. Now the descriptions of addresses
+are printed (only in the wide screen mode) to the right of the load graph and to the right of the tables with statistics, where there is no length limit.
 
-- If the group of addresses in `Addr` paramter have both macros `#` and wildcards `*`, then wildcards will be automatically replaced with macros.
+- If the group of addresses in the `Addr` paramter have both macros `#` and wildcards `*`, then wildcards will be automatically replaced with macros.
 Wildcards can now appear in non-group addresses only. For example, the address list:
 
 	```
@@ -405,7 +478,7 @@ for the mailers that write the mark of a password session in the binary log.
 
 #### Changed
 
-- The order of adresses and groups of addresses in `Addr` parameters is no longer important. Regardless of the order, when generating statistics,
+- The order of adresses and groups of addresses in the `Addr` parameters is no longer important. Regardless of the order, when generating statistics,
 they will be sorted from less general to more general. And the excluded addresses and groups of addresses will be placed at the beginning of the adresses list,
 simultaneously deleting all present addresses that match the excluded ones. Re-specifying the same addresses will be ignored.
 For a more detailed description of the address sorting rules, see the section "Rules for specifying and processing addresses" of the file
@@ -432,7 +505,7 @@ as it is stored in the binary log, without any adjustments.
 
 #### Fixed
 
-- Fixed processing of addresses excluded from statistics (specified with the character `!`, for example `Addr !2: 5020/378.1`).
+- Fixed processing of addresses excluded from statistics (specified with the character `!`, for example `Addr !2:5020/378.1`).
 Previously, sessions with such addresses were mistakenly printed in sessions table, and always as aborted. Now such addresses are excluded from all types of statistics.
 
 #### Changed

@@ -325,7 +325,7 @@ due to a program crash or for some other reason. At the next start, the mailer c
 then delete it by going to the last valid record. `T-Hist`, processing binary logs of the 3rd version of the format, correctly skips broken
 records even if they are in the middle of the file.
 
-The recording structure of the third version of the format and the algorithm for calculating checksums were proposed by Alexey Matrosov `2: 203/910`,
+The recording structure of the third version of the format and the algorithm for calculating checksums were proposed by Alexey Matrosov (2:203/910),
 the developer of the `qico` mailer fork (see [GitHub](https://github.com/glasslike/qico)), that uses, starting from version 0.60.2, the binary log
 of the third version of the `T-Hist` format.
 

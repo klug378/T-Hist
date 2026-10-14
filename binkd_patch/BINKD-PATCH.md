@@ -23,7 +23,7 @@ The [binkd_patch](../binkd_patch) directory of `T-Hist` repository contains thre
   - [binlog-thist-v2.patch](binlog-thist-v2.patch) – use native `T-Hist` format (2nd version) for `fdouthist`/`fdinhist` binary log.
   - [binlog-tmail-new.patch](binlog-tmail-new.patch) – use T-Mail new format for `fdouthist`/`fdinhist` binary log;
 
-Both of these formats have advanced capabilities to compare with the Binkd binary log format. In particular, the formats allows you to mark
+All these formats have advanced capabilities to compare with the Binkd binary log format. In particular, the formats allows you to mark
 whether the session was password protected or not, allowing `T-Hist` to generate statistics on protected and unprotected sessions.
 Also, the formats allows you to mark aborted sessions without losing information about their direction. Finally, the formats allows you
 to store text information that `T-Hist` can print in wide-screen mode. For more information on this binary log formats, see [FORMATS.md](../FORMATS.md).
