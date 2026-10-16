@@ -279,6 +279,13 @@ when specifying addresses groups, since it has the obvious meaning of a wildcard
   | `Addr /378.0`     | `Addr *:*/378.0`    |
   | `Addr 378.0`      | `Addr *:*/378.0`    |
   | `Addr 378`        | `Addr *:*/378.*`    |
+  | `Addr :/.`        | `Addr *:*/*.*`      |
+  | `Addr :/`         | `Addr *:*/*.*`      |
+  | `Addr :.`         | `Addr *:*/*.*`      |
+  | `Addr /.`         | `Addr *:*/*.*`      |
+  | `Addr :`          | `Addr *:*/*.*`      |
+  | `Addr /`          | `Addr *:*/*.*`      |
+  | `Addr .`          | `Addr *:*/*.*`      |
   | `Addr`            | `Addr *:*/*.*`      |
 
 - There are predefined predefined names of addresses and groups of addresses that can be used in the `Addr` parameters and in the `-a` command-line options

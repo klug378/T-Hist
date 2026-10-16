@@ -12,6 +12,23 @@
 
 - The terms `binary log` and `history file` are equivalent.
 
+## [1.8.1] - 2026-10-16
+
+#### Added
+
+- Addresses with the `Listed` status are marked in the links statistic table for binary logs of the native `T-Hist` format of all versions. For binary logs of
+other formats, the `Listed` addresses are not marked.
+
+#### Changed
+
+- The columns width and the formatting of the links statistic table header have changed so that the `Listed` address marks can be printed.
+
+- The columns width and the formatting of the table header created by the `LnkStat` utility have changed.
+
+- Improved algorithm for printing addresses longer than 15 characters in the tables.
+
+- In the links statistic, a comment for the `Unresolved` address is not printed if other addresses do not have text information.
+
 ## [1.8.0] - 2026-10-14
 
 The binary log of the native `T-Hist` format (3rd version) is used in the qico mailer version 0.60.2 ([GitHub](https://github.com/glasslike/qico))
