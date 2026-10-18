@@ -3,14 +3,18 @@
 Данное программное обеспечение предназначено для использования в сети `FidoNet` и других FTN-сетях
 
 ---
+<div align="center">
 
-# T-Hist для Linux и Windows
+![T-Hist](t-hist.png)
 
 [![Visitors](https://visitor-badge.laobi.icu/badge?page_id=klug378.T-Hist)](https://github.com/klug378/T-Hist)
 [![GitHub Release](https://img.shields.io/github/v/release/klug378/T-Hist)](https://github.com/klug378/T-Hist)
 [![Github All Releases](https://img.shields.io/github/downloads/klug378/T-Hist/total.svg)](https://github.com/klug378/T-Hist)
 [![Github Latest Release](https://img.shields.io/github/downloads/klug378/T-Hist/latest/total.svg)](https://github.com/klug378/T-Hist)
 [![GitHub Last commit](https://img.shields.io/github/last-commit/klug378/T-Hist.svg?style=dark)](https://github.com/klug378/T-Hist)
+
+# T-Hist для Linux и Windows
+</div>
 
 Утилита `T-Hist` создаёт текстовые файлы с графиками и гистограммами загрузки узла FTN-сети и со статистикой по сессиям и линкам
 за указанный интервал суток для заданных FTN-адресов (групп адресов). Информация о загрузке берется из файлов истории (бинарных логов) мейлеров.
