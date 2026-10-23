@@ -1,6 +1,6 @@
-T-Hist 1.8.1 History Utility - Mailer load statistics
-Creates  statistics  based  on  mailer's  binary logs
+T-Hist 1.8.2 History Utility - Mailer load statistics.
+Creates  statistics  based  on  mailer's  binary  logs
 Supported mailers: Binkd, qico 0.60.2+, T-Mail, Argus,
 Internet Rex,  Bink/+, FhMail,  KittenMail, The Brake!
 BinkleyTerm-XE, DVMmail, XMail32, BasicMail. Copyright
-(c) 2026 Mikhail Markovskiy (klug) 2:5020/378
+(c) 2026 Mikhail Markovskiy (klug) 2:5020/378.

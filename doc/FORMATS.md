@@ -7,7 +7,7 @@ This document reviews the following formats:
 
   - `Binkd` binary log format, which is also the format of `T-Mail` before version 2603 (`T-Mail` old format);
   - binary log format of `T-Mail` since version 2603 (`T-Mail` new format).
-  - three versions of the native `T-Hist` format of binary log with 64-bit traffic values, ability to store multiple text strings, and other benefits.
+  - three versions of the native `T-Hist` format of binary log with 64-bit traffic values and 64-bit timestamps, ability to store multiple text strings, and other benefits.
 
 ## Table of Contents
 
@@ -24,7 +24,8 @@ This document reviews the following formats:
 |                                     | `Binkd` /<br>`T-Mail`<br>old format | `T-Mail`<br>new format | `T-Hist`<br>format<br>version 1 | `T-Hist`<br>format<br>version 2 | `T-Hist`<br>format<br>version 3 |
 | :---------------------------------- | :---------------------------------: | :---------------------:| :-----------------------------: | :-----------------------------: | :-----------------------------: |
 | Size of one record                  |               28 bytes              |        100 bytes       |            256 bytes            |          46 - 256 bytes         |           51 - 261 bytes        |
-| Ability to store<br>traffic values<br>greater than<br>4 GiB |     **No**     |         **No**         |             **Yes**             |             **Yes**             |              **Yes**            |
+| Ability to store<br>traffic values<br>greater than<br>4 GiB |   **No**    |         **No**         |             **Yes**             |             **Yes**             |              **Yes**            |
+| 64-bit timestamps                   |                **No**               |         **No**         |             **Yes**             |             **Yes**             |              **Yes**            |
 | Mark password<br>protected sessions |                **No**               |         **Yes**        |             **Yes**             |             **Yes**             |              **Yes**            |
 | Mark aborted sessions   | **Yes**<br>`Binkd` loss<br>of session direction |         **Yes**        |             **Yes**             |             **Yes**             |              **Yes**            |
 | Mark sessions<br>with `Listed`<br>addresses |        **No**               |         **No**         |             **Yes**             |             **Yes**             |              **Yes**            |
@@ -156,10 +157,10 @@ the name of FTN-system and its location.
 
 ## Native `T-Hist` formats
 
-The disadvantage of the binary log formats of all mailers supported by `T-Hist` is using 32-bit values to store information about traffic.
+The disadvantage of the binary log formats of all mailers supported by old versions of `T-Hist` is using 32-bit values to store information about traffic.
 In such binary logs, it is impossible to correctly store information if more than 4 gigabytes have been sent or received.
 
-Formats of the binary logs were developed in the dial-up era, when it was almost impossible to transfer more than 4 gigabytes in one session.
+This formats were developed developed in the dial-up era, when it was almost impossible to transfer more than 4 gigabytes in one session.
 But in the era of Fido-over-IP and high-speed networks, a session with more than 4 gigabytes of traffic is common, especially on large FTN hubs.
 
 Analysis of the `Binkd` code in the [GitHub](https://github.com/pgul/binkd) repository shows that 64-bit versions of `Binkd` process traffic data
@@ -167,10 +168,10 @@ using 64-bit variables. But when writing to a binary log, `Binkd` is forced to a
 
 Therefore, the development and use of new binary log formats with 64-bit traffic values is a relevant task.
 
-`T-Hist` implements support for several versions of its own binary log format (native `T-Hist` format) with 64-bit traffic values, which is proposed
-to be used by FTN mailer developers. In addition to correctly storing data about sessions with large volumes of traffic, the format allows you
-to save text strings that `T-Hist` will be printed in wide-screen mode. Also, the native `T-Hist` format allow to save the `Listed` mark for sessions,
-which FTN-address is specified in the configuration files of the mailer or is present in the nodlists specified in the mailer configuration.
+The new versions of `T-Hist` implement support for several versions of the own binary log format (native `T-Hist` format) with 64-bit traffic values and 64-bit
+timestamps, which is proposed to be used by FTN mailer developers. In addition to correctly storing data about sessions with large volumes of traffic,
+the format allows you to save text strings that `T-Hist` will be printed in wide-screen mode. Also, the native `T-Hist` format allow to save
+the `Listed` mark for sessions, which FTN-address is present in the nodelists specified in the mailer configuration.
 
 ### Version 1 of the native `T-Hist` format
 

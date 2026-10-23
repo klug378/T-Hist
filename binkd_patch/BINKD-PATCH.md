@@ -26,7 +26,7 @@ The [binkd_patch](../binkd_patch) directory of `T-Hist` repository contains thre
 All these formats have advanced capabilities to compare with the Binkd binary log format. In particular, the formats allows you to mark
 whether the session was password protected or not, allowing `T-Hist` to generate statistics on protected and unprotected sessions.
 Also, the formats allows you to mark aborted sessions without losing information about their direction. Finally, the formats allows you
-to store text information that `T-Hist` can print in wide-screen mode. For more information on this binary log formats, see [FORMATS.md](../FORMATS.md).
+to store text information that `T-Hist` can print in wide-screen mode. For more information on this binary log formats, see [FORMATS.md](../doc/FORMATS.md).
 
 Patches only modify the `binlog.c` file and do not affect any other Binkd source files. With the patches applied,
 Binkd successfully compiles for Linux. The ability to compile for other systems has not been tested.

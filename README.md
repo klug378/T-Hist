@@ -1,11 +1,11 @@
 [README на русском языке](README-ru.md)
 
-This software is intended for use in the `FidoNet` computer network and other FTN-style networks (FTN – FidoNet Technology Network)
+This software is intended for use in the `FidoNet` computer network and other FTN-style networks
 
 ---
 <div align="center">
 
-![T-Hist](t-hist.png)
+![T-Hist](./doc/t-hist.png)
 
 [![Visitors](https://visitor-badge.laobi.icu/badge?page_id=klug378.T-Hist)](https://github.com/klug378/T-Hist)
 [![GitHub Release](https://img.shields.io/github/v/release/klug378/T-Hist)](https://github.com/klug378/T-Hist)
@@ -13,446 +13,394 @@ This software is intended for use in the `FidoNet` computer network and other FT
 [![Github Latest Release](https://img.shields.io/github/downloads/klug378/T-Hist/latest/total.svg)](https://github.com/klug378/T-Hist)
 [![GitHub Last commit](https://img.shields.io/github/last-commit/klug378/T-Hist.svg?style=dark)](https://github.com/klug378/T-Hist)
 
-# T-Hist for Linux and Windows
+# T-Hist – History utility for FTN mailers
+Supported:<br>[Binkd](https://github.com/pgul/binkd), [qico 0.60.2+](https://github.com/glasslike/qico), T-Mail, Argus,
+Internet Rex, FrontDoor, Bink/+, FhMail,<br>BinkleyTerm-XE, The Brake!, KittenMail, DVMmail, XMail32, BasicMail<br>
+and any other FTN-mailers using the T-Hist or T-Mail binary log formats<br><br>
+Version 1.8.2<br><br>
+Linux (x86_64, i686, arm64) and Windows (Win64, Win32) executables
 </div>
 
-The `T-Hist` utility creates text files with graphs and histograms of the FTN node load and with sessions and links statistics
-based on information stored in the mailer's binary logs (history files). The `T-Hist` supports binary logs of the following mailers:
-[Binkd](https://github.com/pgul/binkd), [qico 0.60.2+](https://github.com/glasslike/qico), T-Mail, Argus, Internet Rex, FrontDoor, Bink/+,
-FhMail, BinkleyTerm-XE, The Brake!, KittenMail, DVMmail, XMail32, BasicMail, as well as its own binary log format.
-
-Development of the `T-Hist` began in 1996. The latest version of `T-Hist` 0.30.alpha7 for DOS, OS/2, NT (win32) was released in 2003.
-After 23 years, the new `T-Hist` (and related utilities `LnkStat` and `DmpHist`) were released for Linux and Windows.
+---
 
 ## Table of Contents
 
-- [Structure of ZIP archive with programs](#structure-of-zip-archive-with-programs)
-- [Capabilities and features of the new versions](#capabilities-and-features-of-the-new-versions)
-   - [Terms used](#terms-used)
-   - [Appearance](#appearance)
-   - [Configuration file, parameter values, command-line options](#configuration-file-parameter-values-command-line-options)
-   - [Rules for specifying and processing addresses](#rules-for-specifying-and-processing-addresses)
-   - [Binary log formats, format conversions, support for new mailers](#binary-log-formats-format-conversions-support-for-new-mailers)
+- [Purpose of T-Hist](#purpose-of-t-hist)
+- [Structure of distributed ZIP archive with utilities](#structure-of-distributed-zip-archive-with-utilities)
+- [Content of generated statistics](#content-of-generated-statistics)
+  - [Load graph and histograms example](#load-graph-and-histograms-example)
+  - [Link statistics example](#link-statistics-example)
+  - [Session statistics example](#session-statistics-example)
+  - [Summary information example](#summary-information-example)
+- [Wide-screen mode](#wide-screen-mode)
+- [Configuration file. Parameters. Command-line options](#configuration-file-parameters-command-line-options)
+- [Native binary log format. Format сonverter](#native-binary-log-format-format-сonverter)
+- [LnkStat utility for creating multi-day link statistics](#lnkstat-utility-for-creating-multi-day-link-statistics)
+- [DmpHist binary Log dumper](#dmphist-binary-log-dumper)
 - [Gratitudes](#gratitudes)
 
-## Structure of ZIP archive with programs
 
-The utilities are distributed as a ZIP archive containing executable files in the following directories:
-- `linux`&ensp;– Linux executables (x86_64, i686 and arm64 architectures);
-- `linux-static`&ensp;– Linux executables with static libraries (x86_64, i686 and arm64 architectures);
-- `windows`&ensp;– Windows 64-bit and 32-bit executables.
+## Purpose of T-Hist
+
+The `T-Hist utility` is designed to create text files with statistics on the operation of one or more FTN mailers during a given interval of a given
+date day for given FTN addresses. `T-Hist` receives information from binary logs, also called history files.
+
+Development of the `T-Hist` began in 1996, initially only to get T-Mail mailer statistics. Subsequently, the list of supported mailers and binary log
+formats has expanded. The latest version of `T-Hist` for DOS, OS/2, NT (win32) – `0.30.alpha7` – was released in 2003. After that, the development process
+stopped for 23 years.
+
+In 2026, work on the project was resumed. Released new versions of `T-Hist` and related utilities for Linux and Windows with new features. Support for
+older operating systems has been removed.
+
+Throughout the document, the term `old versions` means version `0.30.alpha7` and earlier versions of the utility, and the term `new versions` means
+versions `1.x.x`.
+
+
+## Structure of distributed ZIP archive with utilities
+
+The utilities are distributed as a ZIP archive containing following directories:
+- `linux` – Linux executables (x86_64, i686 and arm64 architectures);
+- `linux-static` – Linux executables with static libraries (x86_64, i686 and arm64 architectures);
+- `windows` – Windows 64-bit and 32-bit executables.
+- `doc` – documentation;
+- `binkd_patch` – Binkd patches that add support for `T-Hist` binary log format.
 
 Linux executables with static libraries are compressed by [UPX 4.2.4](https://upx.github.io) executable packer to reduce their size.
 
-As a program guide, use the sample configuration file [t-hist.ctl](t-hist.ctl) with a detailed description of all parameters (so far only in Russian),
-and this file [README.md](README.md). You can also use for reference the old documentation file (in Russian only) from the last older version
-`0.30.alpha7`, which is located in the [doc_old_2003](./doc_old_2003) directory.
+The documentation catalog contains:
+- file [T-HIST-ru.md](./doc/T-HIST-ru.md) with a description of `T-Hist` and related utilities (so far only in Russian);
+- sample configuration file [t-hist.ctl](t-hist.ctl) with detailed description of parameters (so far only in Russian);
+- files [FORMATS.md](./doc/FORMATS.md) and [FORMATS-ru.md](./doc/FORMATS-ru.md) with a description of binary log formats, including several versions
+of the native `T-Hist` format (in English and in Russian);
+- old documentation file [t-hist-old.txt](./doc/t-hist-old.txt) from version `0.30.alpha7` (in Russian) for reference.
 
-## Capabilities and features of the new versions
+## Content of generated statistics
 
-### Terms used
+`T-Hist` creates three text files:
+- file with graph and histograms of FTN-system loading for one or several simultaneously operating mailers;
+- file of link statistics with a table containing for each FTN-address included in the statistics, the number of sessions, their total duration
+and total traffic during a given time interval;
+- a file of session statistics with a table containing for each session performed during a given time interval, its duration and values of
+received/sent traffic.
 
-- The term `old versions` means `T-Hist` `0.30.alpha7` from 2003, and earlier versions.
+At the end of each files, the summary information on the number and duration of all incoming and outgoing sessions, the total number of sessions
+and their duration, the volume of received and sent traffic and the average CPS are printed. (CPS is "chars per second" or "bytes per second".)
+If the mailer marks password-protected sessions, then the values for password and non-password sessions are also printed.
 
-- The term `parameter` means parameter in the configuration file.
-
-- The terms `group`, `group of addresses` means an address defined in the `Addr` parameter or in the `-a` command-line option with at least one wildcard char `*`.
-
-- The terms `binary log` and `history file` are equivalent.
-
-### Appearance
-
-- All utilities print information and create output text files in UTF-8 encoding.
-To post statistics in FTN echo conferences or netmail, text files must be converted to the appropriate encoding.
+All files are UTF-8 encoded. To post statistics in FTN echo conferences or netmail, text files must be converted to the appropriate encoding.
 For example, for Russian-language echo conferences with CP866 encoding:
+```shell
+iconv -f UTF-8 -t CP866 in.txt -o out.txt
+```
+
+Below are examples of fragments of statistics files from the node of Alex Barinov (2:5020/715).
+
+
+### Load graph and histograms example
+```text
+              0   2   4   6   8  10  12  14  16  18  20  22  24               
+               ├─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┤Ses  Rcvd  Sent
+2:5020/101     ▐ ▐ █▌  │█ █▐▐█▐▐█▐▐▐█▐█▐█▐▐▐▐▐▐█▐█▐▐█▐▐▐ █▐▐▐▐▐│277  3.7K  202K
+2:5020/113     │▌ ▌▌▌  ▌ █ ▐ ▐ ▐ ▐ ▐ ▐ ▐ ▐ ▐ ▐ ▐ ▐ ▐ ▐ ▐ ▐ ▐ ▐▐│ 28 14.9K 53.4K
+2:5020/378     │   │   │   │▌  │  ▌│ ▐ │▌  │   ▌  ▌▌▌  ▌  ▌│ ▐ │ 11  2.4M  142K
+2:5020/556     │   █   ▐▌  │█  │▐  │▐▌ │ ▌ │ █ │ ▐▌│  ▌│  █│  ▐▌1098    0     0
+2:5020/715.100 │   │   │   │ ▌ │   │   │  ▐│   │   │   │   │   │  2     0  285K
+2:5020/830     │▌  │▌  │▌  │▌  │▌  │▌  │███▐█ ▐▐▌█ ▐█ ▐│▌██▐▌▐▐│ 50  300K  1.2M
+2:5020/1200    │   │   │   │   │   │   │   │  ▐│   │ ▌ ▌   ▐▐▐ │  6 1290M  5.7M
+2:5020/1477    │█  │▐▌ │ █▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐█▐█▐▐▐▐▐▐▐│365     0  333M
+2:5020/1668    │   │   │   │  ▐│   │▐  │▐ ▐│   │▐  │  ▐│   │▐  │  8     0 90.1K
+2:5020/3452    ▐▌  │▌  │█  │▐  │   │▐  │   │  ▐│ █ ▐   │   │   │306     0 55.3K
+2:5020/4096    ▐▌▐ ▐   │ ▐▌▐▌▐ ▐ ▐ ▐▌▐▌▐▌▐ ▐ ▐▐▐ █ ▐▌▐▐▐ █▐▐ ▐ │138     0  161K
+2:5020/9696    │▐▌ │ ▌ │ ▌ │ █▐▐ ▐▌▌▌ ▌████▐██▐▐█▐▌▐██▐▌███▐█▌▐│256     0  794M
+
+[...]
+
+                                 Busy Histogram
+           100%┬                                                  Rcvd:   1319M
+               ▐▌   ▌    ▌                                        Sent:   10.9G
+   Sessions    ▐▌   █   ▐▌                           ▌            ─────────────
+               ▐▌▐ ▐█   █▌                           ▌            Average      
+ Total: 19860  ▐▌▐ ▐█   █▌                           ▌            CPS:   706.4K
+ ────────────  ▐▌▐ ▐█   █▌  ▐                        █ ▌          ─────────────
+ In:     2563  ▐▌▐ ▐█   █▌  ▐                        █ ▌   ▐      Time Online: 
+ Out:   17297  ▐▌▐▌▐█ ▐ █▌  ▐                        █ █   ▐           17:28:12
+ ────────────  ▐██▌████▐██  █                        █ █   ▐      ─────────────
+ Aborted:12970 ▐██▌████▐██▌▐█       ▐    ▌   ▐   ▐   █▐█  ▌▐      In:   1:51:38
+ Protect:7420  ▐██▌████▐███▐█▄▄▐█▐▄▐███████▐███▐███████████████▌  Out: 15:36:34
+             0%┼─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┐  ─────────────
+               0   2   4   6   8  10  12  14  16  18  20  22  24  Usage:  14.6%
+
+```
+
+### Link statistics example
+```text
+╔══════════════════╦═══════════════════════════╦═════════╦═════════════╦══════╗
+║                  ║      Sessions / Time      ║  Time   ║   Traffic   ║  CPS ║
+║     Address      ╠═════════════╦═════════════╣ online  ╠══════╦══════╣ bytes║
+║pwd               ║   Incoming  ║   Outgoing  ║ In+Out  ║ Rcvd ║ Sent ║ /sec ║
+╠│═════════════════╬═══╤═════════╬═══╤═════════╬═════════╬══════╬══════╬══════╣
+║√ 2:5020/101      ║ 43│ 0:02:10 ║234│ 0:13:11 ║ 0:15:21 ║  3.7K║202.2K║  1.2K║
+║√ 2:5020/113      ║ 28│ 0:04:49 ║  -│ -:--:-- ║ 0:04:49 ║ 14.9K║ 53.4K║   999║
+║√ 2:5020/378      ║ 11│ 0:00:18 ║  -│ -:--:-- ║ 0:00:18 ║  2.4M║142.4K║191.8K║
+║√ 2:5020/556      ║  -│ -:--:-- ║1098 0:33:59 ║ 0:33:59 ║     0║     0║     0║
+║√ 2:5020/715.100  ║  2│ 0:00:03 ║  -│ -:--:-- ║ 0:00:03 ║     0║284.9K║ 94.9K║
+║√ 2:5020/830      ║  -│ -:--:-- ║ 50│ 0:03:26 ║ 0:03:26 ║299.6K║  1.2M║ 68.0K║
+║√ 2:5020/1200     ║  4│ 0:09:09 ║  2│ 0:00:02 ║ 0:09:11 ║ 1290M║  5.7M║  2.3M║
+║√ 2:5020/1477     ║ 39│ 0:01:08 ║326│ 0:17:30 ║ 0:18:38 ║     0║333.1M║  1.7M║
+║√ 2:5020/1668     ║  8│ 0:00:41 ║  -│ -:--:-- ║ 0:00:41 ║     0║ 90.1K║ 22.5K║
+║√ 2:5020/3452     ║  -│ -:--:-- ║306│ 0:12:20 ║ 0:12:20 ║     0║ 55.3K║ 13.8K║
+║√ 2:5020/4096     ║ 19│ 0:00:19 ║119│ 0:10:40 ║ 0:10:59 ║     0║160.5K║  2.8K║
+║√ 2:5020/9696     ║  -│ -:--:-- ║256│ 0:18:03 ║ 0:18:03 ║     0║793.7M║  1.3M║
+```
+
+### Session statistics example
+```text
+╔════════════╤═════╤════════════════════╤══════════╤═════════════════╤════════╗
+║  Session   │ Dir │      Address       │   Time   │     Traffic     │   CPS  ║
+║   start    │     │pwd             abrt│  Online  │  Rcvd     Sent  │ bytes/s║
+╠════════════╪═════╪│══════════════════│╪══════════╪════════╤════════╪════════╣
+║  00:00:04  │ Out │√  2:301/1          │  0:00:12 │   5773 │      0 │    481 ║
+║  00:00:18  │ Out │   2:5020/5452     A│  0:00:01 │      0 │      0 │      0 ║
+║  00:00:18  │ Out │√  2:5001/100       │  0:00:01 │      0 │   1462 │   1.4K ║
+║  00:00:18  │ Out │√  2:5051/44        │  0:00:01 │      0 │   1459 │   1.4K ║
+║  00:06:03  │ Out │√  2:46/49          │  0:00:02 │      0 │   2207 │   1.0K ║
+║  00:05:52  │ Out │√  2:301/1         A│  0:00:43 │      0 │   5102 │    118 ║
+║  00:10:17  │ Out │√  2:5030/115       │  0:00:01 │      0 │    678 │    678 ║
+║  00:09:40  │ Out │√  2:5020/2992     A│  0:01:07 │      0 │  11353 │    169 ║
+║  00:16:15  │ Out │√  2:6078/1         │  0:00:27 │      0 │  21312 │    789 ║
+║  00:16:37  │ Out │√  2:5030/1115      │  0:00:42 │      0 │  22459 │    534 ║
+║  00:17:24  │ Out │√  2:5020/4096      │  0:00:07 │      0 │  22448 │   3.1K ║
+║  00:17:34  │ Out │√  2:5090/138       │  0:00:16 │      0 │  23130 │   1.4K ║
+║  00:17:44  │ Out │√  2:5001/100       │  0:00:36 │      0 │  58762 │   1.5K ║
+```
+
+### Summary information example
+```text
+┌──────────────────────────┬───────────────────────┬──────────────────────────┐
+│ Total Received :  276.9M │ Total Ses In  :  3299 │ Time In      :   1:09:05 │
+│ Total Sent     :   2066M │ Total Ses Out :  8821 │ Time Out     :   3:33:57 │
+│ Total Traffic  :   2343M │ Total Sessions: 12129 │ Time Online  :   4:43:32 │
+├──────────────────────────┼───────────────────────┼──────────────────────────┤
+│ Protected Rcvd :  276.9M │ Prot Ses In   :  3296 │ Protected In :   1:09:02 │
+│ Protected Sent :   2066M │ Prot Ses Out  :  5609 │ Protected Out:   2:39:17 │
+│ Protected Total:   2343M │ Prot Ses Total:  8905 │ Protected Tot:   3:48:19 │
+├──────────────────────────┼───────────────────────┼──────────────────────────┤
+│ UnProt Received:       0 │ UnProt Ses In :     3 │ UnProt In    :   0:00:03 │
+│ UnProt Sent    :       0 │ UnProt Ses Out:  3212 │ UnProt Out   :   0:54:40 │
+│ UnProt Total   :       0 │ UnProt Ses Tot:  3224 │ UnProt Total :   0:55:13 │
+└──────────────────────────┴───────────────────────┴──────────────────────────┘
+  K is KiB (1024 bytes), M is MiB (1048576 bytes), G is GiB (1073741824 bytes)
+```
+
+
+## Wide-screen mode
+
+Old versions of `T-Hist` and related utilities created statistics files with lines that did not exceed 80 characters. New versions of utilities
+can create the statistics in the wide-screen mode, which is enabled by default. In this mode, the text information about FTN systems from binary logs
+or from descriptions in the `Addr` parameters can be printed to the right of the load graph and to the right of the tables with statistics.
+Below are examples of fragments of statistics files created in wide-screen mode.
+
+```text
+               0   2   4   6   8  10  12  14  16  18  20  22  24
+               ├─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┤Ses  Rcvd  Sent   FTN-system info
+2:5020/101     ▐ ▐ █▌  │█ █▐▐█▐▐█▐▐▐█▐█▐█▐▐▐▐▐▐█▐█▐▐█▐▐▐ █▐▐▐▐▐│277  3.7K  202K │ n5020.ru, akf, Moscow, USSR
+2:5020/113     │▌ ▌▌▌  ▌ █ ▐ ▐ ▐ ▐ ▐ ▐ ▐ ▐ ▐ ▐ ▐ ▐ ▐ ▐ ▐ ▐ ▐ ▐▐│ 28 14.9K 53.4K │ Minas Anor, Moscow, Russia
+2:5020/378     │   │   │   │▌  │  ▌│ ▐ │▌  │   ▌  ▌▌▌  ▌  ▌│ ▐ │ 11  2.4M  142K │ 92.36.120.111, klug, Moscow, Russia
+2:5020/556     │   █   ▐▌  │█  │▐  │▐▌ │ ▌ │ █ │ ▐▌│  ▌│  █│  ▐▌1098    0     0 │ fido.lushnikov.net, Moscow, Russia
+2:5020/715.100 │   │   │   │ ▌ │   │   │  ▐│   │   │   │   │   │  2     0  285K │ FidoMailMobile, Zheleznodorozhny
+2:5020/830     │▌  │▌  │▌  │▌  │▌  │▌  │███▐█ ▐▐▌█ ▐█ ▐│▌██▐▌▐▐│ 50  300K  1.2M │ 830.ru, TITANIC Station IP, Moscow, Russia
+2:5020/1200    │   │   │   │   │   │   │   │  ▐│   │ ▌ ▌   ▐▐▐ │  6 1290M  5.7M │ MetNet Information Center, Moscow, Russia
+2:5020/1477    │█  │▐▌ │ █▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐▐█▐█▐▐▐▐▐▐▐│365     0  333M │ m0d3m's_station, Moscow--Russia
+2:5020/1668    │   │   │   │  ▐│   │▐  │▐ ▐│   │▐  │  ▐│   │▐  │  8     0 90.1K │ First Encounters/Binkp, CCCP, Moscow, Russia
+2:5020/3452    ▐▌  │▌  │█  │▐  │   │▐  │   │  ▐│ █ ▐   │   │   │306     0 55.3K │ fido.babon.ru, Panzer station II, Moscow, Russia
+2:5020/4096    ▐▌▐ ▐   │ ▐▌▐▌▐ ▐ ▐ ▐▌▐▌▐▌▐ ▐ ▐▐▐ █ ▐▌▐▐▐ █▐▐ ▐ │138     0  161K │ fido.pochek.net, 4K_System, Moscow, Russia
+2:5020/9696    │▐▌ │ ▌ │ ▌ │ █▐▐ ▐▌▌▌ ▌████▐██▐▐█▐▌▐██▐▌███▐█▌▐│256     0  794M │ skovpen.org, SDS, Moscow, Russia
+[...]
+```
+
+```text
+╔══════════════════╦═══════════════════════════╦═════════╦═════════════╦══════╗
+║                  ║      Sessions / Time      ║  Time   ║   Traffic   ║  CPS ║
+║     Address      ╠═════════════╦═════════════╣ online  ╠══════╦══════╣ bytes║
+║pwd               ║   Incoming  ║   Outgoing  ║ In+Out  ║ Rcvd ║ Sent ║ /sec ║
+╠│═════════════════╬═══╤═════════╬═══╤═════════╬═════════╬══════╬══════╬══════╣
+║√ 2:5020/101      ║ 43│ 0:02:10 ║234│ 0:13:11 ║ 0:15:21 ║  3.7K║202.2K║  1.2K║ n5020.ru, akf, Moscow, USSR                     
+║√ 2:5020/113      ║ 28│ 0:04:49 ║  -│ -:--:-- ║ 0:04:49 ║ 14.9K║ 53.4K║   999║ Minas Anor, Moscow, Russia                      
+║√ 2:5020/378      ║ 11│ 0:00:18 ║  -│ -:--:-- ║ 0:00:18 ║  2.4M║142.4K║191.8K║ 92.36.120.111, klug, Moscow, Russia             
+║√ 2:5020/556      ║  -│ -:--:-- ║1098 0:33:59 ║ 0:33:59 ║     0║     0║     0║ fido.lushnikov.net, Moscow, Russia              
+║√ 2:5020/715.100  ║  2│ 0:00:03 ║  -│ -:--:-- ║ 0:00:03 ║     0║284.9K║ 94.9K║ FidoMailMobile, Zheleznodorozhny                
+║√ 2:5020/830      ║  -│ -:--:-- ║ 50│ 0:03:26 ║ 0:03:26 ║299.6K║  1.2M║ 68.0K║ 830.ru, TITANIC Station IP, Moscow, Russia      
+║√ 2:5020/1200     ║  4│ 0:09:09 ║  2│ 0:00:02 ║ 0:09:11 ║ 1290M║  5.7M║  2.3M║ MetNet Information Center, Moscow, Russia       
+║√ 2:5020/1477     ║ 39│ 0:01:08 ║326│ 0:17:30 ║ 0:18:38 ║     0║333.1M║  1.7M║ m0d3m's_station, Moscow--Russia                 
+║√ 2:5020/1668     ║  8│ 0:00:41 ║  -│ -:--:-- ║ 0:00:41 ║     0║ 90.1K║ 22.5K║ First Encounters/Binkp, CCCP, Moscow, Russia    
+║√ 2:5020/3452     ║  -│ -:--:-- ║306│ 0:12:20 ║ 0:12:20 ║     0║ 55.3K║ 13.8K║ fido.babon.ru, Panzer station II, Moscow, Russia
+║√ 2:5020/4096     ║ 19│ 0:00:19 ║119│ 0:10:40 ║ 0:10:59 ║     0║160.5K║  2.8K║ fido.pochek.net, 4K_System, Moscow, Russia      
+║√ 2:5020/9696     ║  -│ -:--:-- ║256│ 0:18:03 ║ 0:18:03 ║     0║793.7M║  1.3M║ skovpen.org, SDS, Moscow, Russia                
+[...]
+```
+
+```text
+╔════════════╤═════╤════════════════════╤══════════╤═════════════════╤════════╗
+║  Session   │ Dir │      Address       │   Time   │     Traffic     │   CPS  ║
+║   start    │     │pwd             abrt│  Online  │  Rcvd     Sent  │ bytes/s║
+╠════════════╪═════╪│══════════════════│╪══════════╪════════╤════════╪════════╣
+║  00:00:04  │ Out │√  2:301/1          │  0:00:12 │   5773 │      0 │    481 ║ fnthub.abad1dea.to, Bufferzone, Zug, Switzerlan
+║  00:00:18  │ Out │   2:5020/5452     A│  0:00:01 │      0 │      0 │      0 ║ fido.huba715.ru, New World
+║  00:00:18  │ Out │√  2:5001/100       │  0:00:01 │      0 │   1462 │   1.4K ║ f100.5001.ru, Postmortem, Kemerovo
+║  00:00:18  │ Out │√  2:5051/44        │  0:00:01 │      0 │   1459 │   1.4K ║ fido.pdp11.ru, Digital, Simbirsk--Russia
+║  00:06:03  │ Out │√  2:46/49          │  0:00:02 │      0 │   2207 │   1.0K ║ fidotallinn.ddns.net, EEStation, Tallinn, Estonia
+║  00:05:52  │ Out │√  2:301/1         A│  0:00:43 │      0 │   5102 │    118 ║ fnthub.abad1dea.to, Bufferzone, Zug, Switzerlan
+║  00:10:17  │ Out │√  2:5030/115       │  0:00:01 │      0 │    678 │    678 ║ f115.spb.ru, EdgeCity, St.Petersburg, Russia
+║  00:09:40  │ Out │√  2:5020/2992     A│  0:01:07 │      0 │  11353 │    169 ║ 2992.mooo.com, Donskoy, Haifa, Israel
+║  00:16:15  │ Out │√  2:6078/1         │  0:00:27 │      0 │  21312 │    789 ║ Techno Music BBS, Kaliningrad, Russia
+║  00:16:37  │ Out │√  2:5030/1115      │  0:00:42 │      0 │  22459 │    534 ║ f1115.n5030.z2.binkp.net, EdgeCity II, St.Petersburg, Russia
+║  00:17:24  │ Out │√  2:5020/4096      │  0:00:07 │      0 │  22448 │   3.1K ║ fido.pochek.net, 4K_System, Moscow, Russia
+║  00:17:34  │ Out │√  2:5090/138       │  0:00:16 │      0 │  23130 │   1.4K ║ f138.n5090.krnet.ru, SkyStation, Krasnoyarsk--Russia
+║  00:17:44  │ Out │√  2:5001/100       │  0:00:36 │      0 │  58762 │   1.5K ║ f100.5001.ru, Postmortem, Kemerovo, Russia
+[...]
+```
+
+Not all mailers store additional information in binary logs. For example, there is no such information in the binary logs of the Binkd mailer.
+If you do not use descriptions in the `Addr` parameters, then the statistics for Binkd will be no more than 80 characters wide even in wide-screen mode.
+
+But some of the supported mailers contain in binary logs information about the FTN systems, or about the protocol of connection, or diagnostic messages
+(such mailers are: qico 0.60.2+, Internet Rex, FrontDoor, Bink/+, FhMail, BinkleyTerm-XE, KittenMail, The Brake!, some mailers with binary logs in the
+T-Mail new format, and mailers using binary logs of the native `T-Hist` format). For these mailers, text information will be printed in wide-screen mode.
+
+To control the wide screen mode, use the `WideScreen` parameter in the configuration file or the `-w` command-line option.
+
+
+## Configuration file. Parameters. Command-line options
+
+The operation of `T-Hist` and related utilities is controlled by parameters whose values can be set in the configuration file. Some parameters can also
+be specified using command-line options. By default, the configuration file is named `t-hist.ctl` and is located in the current directory.
+Use the `-c` command-line option to specify a different configuration file or to specify to work without a configuration file.
+
+Parameter names and their values are case-insensitive, with the exception of file names in Linux. Comments can start with `#` and `;`.
+
+If any of the parameters are specified both in the configuration file and using the command-line option, then the value from the command line will be used.
+
+The descriptions of all parameters and all command-line options are given in the sample configuration file [t-hist.ctl](./doc/t-hist.ctl)
+and in the documentation file [T-HIST-ru.md](./doc/T-HIST-ru.md) (so far only in Russian), that are in the [doc](./doc) directory.
+
+
+## Native binary log format. Format сonverter
+
+The disadvantage of the binary log formats of all mailers supported by old versions of `T-Hist` is using 32-bit values to store information about traffic.
+In such binary logs, it is impossible to correctly store information if more than 4 gigabytes have been sent or received.
 
-	```shell
-	iconv -f UTF-8 -t CP866 in.txt -o out.txt
-	```
-
-  The `LnkStat` and `DmpHist` utilities (but not `T-Hist`) have the `-u` command-line option to select the encoding of the printed information:
-  - `-u`, `-u+`&ensp;– use UTF-8 encoding (default);
-  - `-u-`&ensp;&emsp;&emsp;– use ASCII 7-bit encoding without pseudo-graphics.
-
-- All utilities have a wide-screen mode that allows them to print lines longer than 80 characters. This mode is enabled by default,
-however, if you process the old-format binary logs (for example, Binkd logs) and do not use descriptions in the `Addr` parameters,
-then the generated statistics will still be no more than 80 characters wide.
-
-  But if at least one of the conditions is met:
-  
-  - the binary log contains text information about the FTN systems or about the protocol of connection (such logs are: logs of Internet Rex, FrontDoor, Bink/+,
-FhMail, BinkleyTerm-XE, KittenMail, The Brake!, logs of some mailers compatible with T-Mail new format, as well as binary logs of the native `T-Hist` format);
-  
-  - at least one of the parameters `Addr` has a description,
-  
-  the text information about FTN systems from binary log or from descriptions in the `Addr` parameters will be printed in wide-screen mode
-to the right of the load graph and to the right of the tables with statistics. If both the text information from binary log and the description
-in the `Addr` parameter exist for the address, then the information from binary log takes precedence.
-
-  To control the wide-screen mode, the `WideScreen` parameter has been added with the following valid values:
-  - `WideScreen Yes` &ensp;– enable wide-screen mode with no limit of the length of printed lines;
-  - `WideScreen No` &emsp;– disable wide-screen mode; the length of all printed lines will not exceed 80 characters;
-  - `WideScreen <N>` &ensp;– enable wide-screen mode and set the length of printed lines to no more than `N` characters (`N` is a positive integer;
-  if you set `N` to less than 80, the wide-screen mode will be disabled and length of the lines will be limited to 80 characters).
-  - `WideScreen` &emsp;&emsp;– the same as `WideScreen Yes`.
-  
-  The default setting is `WideScreen Yes`.
-
-  Also all utilities have the `-w` command-line option to control wide-screen mode:
-  - `-w`, `-w+` – as `WideScreen Yes`;
-  - `-w-` &emsp;&emsp;– as `WideScreen No`;
-  - `-w<N>` &emsp;– as `WideScreen <N>`.
-
-- All utilities can print traffic values using units based on both binary powers and decimal. In old versions, the single-letter designations `K`, `M` and `G`
-after traffic values meant units based on binary powers, i.e. `KiB` – 1,024 bytes, `MiB` – 1,048,576 bytes and `GiB` – 1,073,741,824 bytes.
-Now it is possible to print traffic values in `kB` – 1,000 bytes, `MB` – 1,000,000 bytes and `GB` – 1,000,000,000 bytes.
-
-  To select units, use `DecimalUnits` parameter in the configuration file with the following valid values:
-    - `DecimalUnits Yes` – use decimal units `kB`, `MB` и `GB`;
-    - `DecimalUnits No` &ensp;– use binary units `KiB`, `MiB` и `GiB`;
-    - `DecimalUnits` &emsp;&emsp;– the same as `DecimalUnits Yes`.
-
-  The default value is `DecimalUnits No`. Thus, if this parameter is not specified, then utilities will print traffic values in binary units.
-
-  In order to keep right formatting, the designations after traffic values in the statisticsq remain single-letter (`K`, `M`, `G`). And after the summary information,
-a decryption is printed whether they mean binary units (`KiB`, `MiB`, `GiB`) or decimal (`kB`, `MB`, `GB`).
-
-  Also all utilities have the `-r` command-line option that matches the `DecimalUnits` parameter. The option has the following values:
-  - `-r`, `-r+` – as `DecimalUnits Yes`;
-  - `-r-` &emsp;&emsp;– as `DecimalUnits No`.
-
-- FTN-nodes addresses (that have a zero value in the `Point` field) are printed without ending `.0` to improve the readability of statistics.
-The `Point` number is printed only if it is non-zero. This change does not affect the `DmpHist` utility.
-
-- Sessions that ended unsuccessfully due to handshake fail are displayed in statistics if the mailer writes information about such sessions to a binary log.
-Technically, if the handshake failed, then the FTN-address is unresolved, and the address `0:0/0.0` is written to the log. Older versions skipped records
-with this address, although it is wrong. Waiting for handshake completion can be lengthy. A session with failed handshake can last a noticeable time before the
-connection is broken. But this time has not yet been displayed in the statistics and has not been taken into account when calculating the load of the FTN-system.
-
-  New versions are printed the sessions with an unresolved address in the session table, in the last line of the link table, in the last line of the graph,
-and their duration is taken into account when building histograms. For better readability of statistics, `T-Hist` and `LnkStat` instead of `0:0/0.0` print
-the word `Unresolved` as the address. The `DmpHist` utility does not make such a replacement and prints `0:0/0.0`.
-
-  If you do not want to see such sessions in the statistics, then exclude the address `0:0/0.0` from processing:
-
-  `Addr !0:0/0.0`
-
-- On histograms, the load level that is greater than 0% but less than 3% is displayed using the `_` character. In the old versions, this load level was
-either displayed excessively large – as a level of 3-10%, or not displayed at all due to the lack of a suitable pseudo-graphic symbol.
-
-- Time intervals longer than 23 hours 59 minutes 59 seconds are displayed as: number of days, number of hours, number of minutes. Such time intervals
-in daily statistics may appear when calculating the total duration of sessions on high-load FTN-nodes that support several parallel connections.
-Also, large total sessions durations can be in the multi-day statistics generated by the `LnkStat` utility.
-
-- The session start time in the sessions table is printed with an accuracy of seconds (the old versions print it with an accuracy of minutes).
-The session end time is excluded due to redundancy – the table contains the duration of sessions.
-
-- Summary information about traffic and the number and duration of sessions is printed after the sessions tables and after tables with links and groups statistics.
-
-- The `T-Hist` and `LnkStat` utilities assign a duration of 1 second to sessions read from a binary log with a duration of 0 seconds.
-This makes it possible to correctly take into account short sessions lasting less than 1 second in statistics. The zero value of the duration of such sessions
-occurs due to the time intervals in binary logs are recorded with an accuracy of a second.
-
-  The `DmpHist` utility continues to work as before. It prints raw data from binary logs without any adjustment.
-For sessions shorter than a second, the utility will print a duration of 0 seconds, as recorded in the binary log.
-
-- The `DmpHist` utility prints before table not only the name of the binary log file, but also information about its format.
-And after the tables, `DmpHist` prints a more detailed description of sessions status bits.
-
-### Configuration file, parameter values, command-line options
-
-- Parameter names and their values in the configuration file are case-insensitive, with the exception of file names in Linux.
-
-- Comments in the configuration file can start not only from the character `;` inherited from old versions, but also from the `#` character,
-which is more familiar in the linux environment. A special case is the handling of a line containing the parameter `Addr`.
-To keep compatibility with old versions, such a line can be fully commented out by putting `#` before `Addr`. The character `#` after `Addr`
-will be considered a part of the address.
-
-- All utilities can work without a configuration file if at least one binary log file is specified in the command line.
-Log processing parameters are determined according to the following rules:
-
-  - If the configuration file is not specified explicitly using the `-c` command-line option and no configuration file with default name `t-hist.ctl` is found
-in the current directory, the specified binary logs will be processed, and all parameters that were not specified by other command-line options will receive
-default values. (See the table with the default parameter values below.)
-
-  - If the configuration file is specified explicitly using the `-c` command-line option, or there is a configuration file with default name `t-hist.ctl`
-in the current directory, the specified binary logs will be processed together with the logs from the configuration file, and parameters that were not specified
-by other command-line options will receive the values from the configuration file.
-
-  Examples:
-  ```text
-  t-hist  /var/log/fido/binlog.dat
-  t-hist  /var/log/fido/binlog.dat -d-1 -t12-24 -bTIO$ -g -k -mg 
-  t-hist  /var/log/fido/binlog.dat -с/home/user/fido/config/t-hist.conf -w120
-  lnkstat /var/log/fido/binlog.dat -b1.9.2026 -e20.9.2026 -g 
-  dmphist /var/log/fido/binlog1.dat /var/log/fido/binlog2.dat -w- -u-
-  ```
-
-- If the parameter is not specified either in the configuration file or through the command-line option, then it will receive the default value given in
-the following table:
-
-  |   Parameter    |       Default value       |
-  | :------------- | :------------------------ |
-  | `Output`       | `t-hist.out`              | 
-  | `LinkStat`     | `t-hist.lnk`              |
-  | `SessionStat`  | `t-hist.ses`              |
-  | `Date`         | today's date              |
-  | `Time`         | `0:00:00-23:59:59`        |
-  | `TimeShift`    | `0`                       |
-  | `CutHistory`   | `0` (do not cut log file) |
-  | `Name`         | empty string              |
-  | `Addr`         | `*:*/*.*`                 |
-  | `BinkdAborted` | `In`                      |
-  | `ShowValue`	   | `Ses`                     |
-  | `AdvancedCPS`, `BusyHist`, `Group`,<br>`WideScreen` | `Yes` |
-  | `DecimalUnits`, `KeepAll`,<br>`MiddLine`, `NoDrawEmpty`,<br>`ProtectSummary`,`SwapInOut`, | `No` |
-
-- Some parameters can be set without specifying their value. The list of such parameters and the values that are assigned to them if they are set without a value
-are given in the following table:
-
-  | Can be set without specifying<br>the value | Value to be used |
-  | :----------------------------------------- | :-------------------- |
-  | `Date`                                     | today's date              |
-  | `Time`                                     | `0:00:00-23:59:59`    |
-  | `TimeShift`                                | `Auto`                |
-  | `Name`                                     | empty string              |
-  | `Addr`                                     | `*:*/*.*`             |
-  | `AdvancedCPS`, `BusyHist`,<br>`DecimalUnits`, `Group`, `KeepAll`,<br>`MiddLine`, `NoDrawEmpty`,<br>`ProtectSummary`, `SwapInOut`,<br>`WideScreen` | `Yes` |
-
-- Format specifiers that can be used when specifying output file names (in the `Output`, `LinkStat`, `SessionStat` parameters and corresponding command-line
-options `-o`, `-l`, `-e`, as well as in the `-o` option of the `LnkStat` utility), are matched to the `strftime()` function specifiers.
-The following format specifiers are allowed:
-
-  - `%Y` – year as a four-digit number (e.g. 2026);
-  - `%y` – year as a number without a century (00 to 99);
-  - `%m` – month as a decimal number (range 01 to 12);
-  - `%d` – day of the month as a decimal number (range 01 to 31);
-  - `%j` – day of the year as a decimal number (range 001 to 366);
-  - `%w` – day of the week as a decimal, range 0 to 6, Sunday being 0;
-  - `%u` – day of the week as a decimal, range 1 to 7, Monday being 1, Sunday being 7;
-  - `%H` – hour as a decimal number using a 24-hour clock (range 00 to 23);
-  - `%M` – minute as a decimal number (range 00 to 59);
-  - `%S` – second as a decimal number (range 00 to 60).
-
-- The ability to cut the binary log with a non-zero value of the `CutHistory` parameter is implemented for logs of the following formats/mailers:
-Binkd, T-Mail old and new formats, KittenMail and the binary logs of all versions of the native `T-Hist` format. Other supported formats are
-not cutted and the `CutHistory` parameter is ignored.
-
-- `T-Hist` and `LnkStat` utilities have the `-z` command-line option that matches the `TimeShift` parameter.
-The option has the following values:
-  - `-z` &nbsp;&emsp;– as `TimeShift Auto` (shift the start time of each session by the difference between local time and UTC which was at the time of the session);
-  - `-z<N>` – as `TimeShift <N>` (shift the start time of each session by `N` hours; `N` can be negative).
-
-- The `DmpHist` utility does not take into account the `TimeShift` parameter if it is present in the configuration file. It prints the start time of sessions exactly
-as it is stored in the binary log, without any adjustments.
-
-- Processing logic of the command-line options `-g`, `-k`, `-n` is changed. In old versions, setting these options without the following sign `+` or `-` changed the value
-of the corresponding parameter to the opposite. Now the ability to invert parameters is removed due to low demand, and the option without the following sign `+` or `-` is equivalent
-to the option with the sign `+`.
-
-- The `-h` command-line option displays the program's help. Binary logs in the command line are set by simply specifying the file names.
-
-- The `SupportNewFormat` and `BrakeSesStat` parameters are deprecated and ignored when reading the configuration file.
-
-### Rules for specifying and processing addresses
-
-- The characters `*` and considered equivalent when specifying addresses in the `Addr` parameters and in the `-a` command-line options. Using any of them makes the address
-a group that generates a separate line on the graph and in the link statistics for each specific FTN-address (this in old versions provided the `#` character), and creates
-a summary line in the graph and in the group statistics for all addresses belonging to this group (this in old versions provided the `*` character).
-
-  To keep compatibility with old versions, the `#` character will continue to be processed correctly when parsing addresses. But it is recommended to use the `*` character
-when specifying addresses groups, since it has the obvious meaning of a wildcard character.
-
-- When specifying addresses in the `Addr` parameters, you can omit address fields. Missing fields will be replaced with wildcard `*`. For example,
-
-  |     Specified     |     Will be used    |
-  | :---------------- | :------------------ |
-  | `Addr 2:5020/378` | `Addr 2:5020/378.*` |
-  | `Addr 2:5020`     | `Addr 2:5020/*.*`   |
-  | `Addr 2:`         | `Addr 2:*/*.*`      |
-  | `Addr 2:5020.378` | `Addr 2:5020/*.378` |
-  | `Addr 2:/378`     | `Addr 2:*/378.*`    |
-  | `Addr 2:/.378`    | `Addr 2:*/*.378`    |
-  | `Addr 2:.378`     | `Addr 2:*/*.378`    |
-  | `Addr :5020/378`  | `Addr *:5020/378.*` |
-  | `Addr :5020.378`  | `Addr *:5020/*.378` |
-  | `Addr :5020`      | `Addr *:5020/*.*`   |
-  | `Addr 5020/`      | `Addr *:5020/*.*`   |
-  | `Addr 5020/378`   | `Addr *:5020/378.*` |
-  | `Addr 5020.378`   | `Addr *:*/5020.378` |
-  | `Addr /378.0`     | `Addr *:*/378.0`    |
-  | `Addr 378.0`      | `Addr *:*/378.0`    |
-  | `Addr 378`        | `Addr *:*/378.*`    |
-  | `Addr :/.`        | `Addr *:*/*.*`      |
-  | `Addr :/`         | `Addr *:*/*.*`      |
-  | `Addr :.`         | `Addr *:*/*.*`      |
-  | `Addr /.`         | `Addr *:*/*.*`      |
-  | `Addr :`          | `Addr *:*/*.*`      |
-  | `Addr /`          | `Addr *:*/*.*`      |
-  | `Addr .`          | `Addr *:*/*.*`      |
-  | `Addr`            | `Addr *:*/*.*`      |
-
-- There are predefined predefined names of addresses and groups of addresses that can be used in the `Addr` parameters and in the `-a` command-line options
-(names are case-insensitive):
-
-  - `Addr All` – as `Addr *:*/*.*`, a group covering all sessions (both successful and unsuccessful) with all addresses;
-
-  - `Addr Failed` – like `Addr All`, but only for unsuccessful sessions (with failed handshake, aborted or ended due to any error) with any addresses;
-
-  - `Addr Unresolved`, `Addr Undefined`, `Addr Unknown`, `Addr None` – as `Addr 0:0/0.0`, an any session that fails at the handshake stage before the FTN-address
-is resolved.
-
-  The `Failed` group includes `Unresolved` / `Undefined` / `Unknown` / `None`.
-
-  To get statistics only on unsuccessful sessions (aborted sessions with resolved addresses and sessions with an address unresolved due to a failed handshake),
-use the single parameter `Addr Failed` in the configuration file or the single command-line option `-afailed` when working without a configuration file.
-
-  Add `Addr Failed` to the other `Addr` parameters in the configuration file to get the total statistics of failed sessions as part of the overall statistics
-for all sessions. The simplest option is:
-
-  ```
-  Addr All
-  Addr Failed
-  ```
-  If, on the contrary, you want to exclude all failed sessions from statistics, use:
-
-  ```
-  Addr !Failed
-  Addr All
-  ```
-- The order of adresses and groups of addresses in the `Addr` parameters is no important. Regardless of the order, when generating statistics, they will be
-sorted from less general to more general. And the excluded addresses and groups of addresses will be placed at the beginning of the adresses list, simultaneously
-deleting all present addresses that match the excluded ones. Re-specifying the same addresses will be ignored. For example, if in the configuration file specified:
-
-  ```
-  Addr 2:5020/*.*
-  Addr 2:5020/378.0
-  Addr *:*/*.*
-  Addr 2:5020/378.0
-  Addr 2:*/*.*
-  Addr 2:5020/1132.0
-  Addr 2:5020/408.0
-  Addr !2:5020/1132.*
-  Addr Failed
-  Addr !*:*/*.666
-  Addr 2:5020/715.*
-  Addr All
-  Addr 2:5020/1132.0
-  Addr !2:5020/408.0
-  ```
-  then the following address list will be used:
-
-  ```
-  Addr !2:5020/408.0
-  Addr !2:5020/1132.*
-  Addr !*:*/*.666
-  Addr 2:5020/378.0
-  Addr 2:5020/715.*
-  Addr 2:5020/*.*
-  Addr 2:*/*.*
-  Addr All
-  Addr Failed
-  ```
-  If there are no `Addr` parameters defined in the configuration file, the default group `Addr All` (synonym for `Addr *:*/*.*`) will be used.
-
-- New algorithm of browsing of the list of addresses specified by the `Addr` parameters. In the old versions, browsing the address list ended after the first match
-with the session address. Now, if the session address is not defined as excluded, the browsing will continue to the end of the list. Such an algorithm takes into account
-sessions with a separately specified addresses also in the statistics for the groups to which the addresses belongs. For example, for the address list:
-
-  ```
-  Addr !2:5020/1132.0
-  Addr 2:5020/378.0
-  Addr 2:5020/*.*
-  Addr 2:*/*.*
-  Addr All
-  Addr Failed
-  ```
-  all sessions with address `2:5020/378.0` will be taken into account not only in separate statistics for this address, but also in group statistics of sessions
-with addresses of the net `2:5020`, in group statistics of sessions with addresses of the zone `2` and in group statistics of sessions with any addresses. In addition,
-failed sessions with the address `2:5020/378.0` will be taken into account in the group statistics of failed sessions. And sessions with address `2:5020/1132.0`
-will be ignored at all.
-
-- `T-Hist` and `LnkStat` utilities now have the `-a` command-line option that matches the `Addr` parameter. The option can be specified multiple times.
-The rules for specifying addresses are the same as for the `Addr` parameter, including the ability to specify a description of the address.
-
-  If the configuration file is specified explicitly using the `-c` command-line option, or there is a configuration file with default name `t-hist.ctl` in the
-current directory, the addresses specified by the `-a` options will be added to the addresses from the `Addr` parameters of the configuration file.
-If the configuration file is not specified explicitly and no file with default name `t-hist.ctl` is found, but binary log (logs) is specified in the command line,
-then statistics will be generated only for the addresses specified by the `-a` options.
-
-  In the following example,
-  ```text
-  t-hist /var/log/fido/binlog.dat -a2:5020/378.* -a"2:5020\"Group description\"" -a!failed
-  ```
-  the `-a` options specify three addresses/groups:
-  ```
-  Addr !Failed
-  Addr 2:5020/378.*
-  Addr 2:5020/*.*  "Group description"
-  ```
-  If there is a configuration file with default name `t-hist.ctl` in the current directory, the binary log `/var/log/fido/binlog.dat` and the specified addresses
-will be added to ones in configuration file. If the configuration file is missing, then only the binary log `/var/log/fido/binlog.dat` will be processed,
-and statistics will be generated for only three specified addresses/groups.
-
-  Specifying such parameters:
-  ```text
-  t-hist /var/log/fido/binlog.dat -c -anone
-  ```
-  will allow you to get statistics only for sessions with failed handshake stored in the binary log `/var/log/fido/binlog.dat`. Here the empty option '-c'
-prevents reading the configuration file even if it is present in the current directory (`T-Hist` will report that default parameter values will be used).
-Statistics will be generated for a single address `0:0/0.0` (synonymous of which is the predefined name `none`) corresponding to sessions with a failed handshake.
-
-  Similarly, the `-a` option is used in the `LnkStat` utility.
-
-### Binary log formats, format conversions, support for new mailers
-
-- Developed and fully supported by the all utilities the several versions of the new binary log format (native `T-Hist` format) with 64-bit values for
-incoming and outgoing traffic, which allows to correctly store data on traffic exceeding 4 gigabytes.
-
-  The disadvantage of the binary log formats of all mailers supported by old versionss of `T-Hist` is using 32-bit values to store information about traffic.
 This formats were developed in the dial-up era, when it was almost impossible to transfer more than 4 gigabytes in one session.
 But in the era of Fido-over-IP and high-speed networks, a session with more than 4 gigabytes of traffic is common, especially on large FTN hubs.
 
-  I suggest that FTN mailer developers use the native `T-Hist` binary log format in their software products. In addition to correctly storing data
-about sessions with large volumes of traffic, the format allows you to save text strings that `T-Hist` will be printed in wide-screen mode
-to the right of the load graph and to the right of the tables with statistics. Also, the native `T-Hist` format allow to save the `Listed` mark for sessions,
-which FTN-address is specified in the configuration files of the mailer or is present in the nodlists specified in the mailer configuration.
+The new versions of `T-Hist` implement support for several versions of the own binary log format (native `T-Hist` format) with 64-bit traffic values
+and 64-bit timestamps, which is proposed to be used by FTN mailer developers. In addition to correctly storing data about sessions with large volumes
+of traffic, the format allows you to save text strings that `T-Hist` will be printed in wide-screen mode. Also, the native `T-Hist` format allow to save
+the `Listed` mark for sessions, which FTN-address is present in the nodelists specified in the mailer configuration. In detail, all versions of the native
+`T-Hist` binary log format are considered in the file [FORMATS.md](./doc/FORMATS.md) in the [doc](./doc) directory.
 
-  In detail, all versions of the native `T-Hist` binary log format are considered in the file [FORMATS.md](FORMATS.md).
+At the time of the release of the `T-Hist` version `1.8.2`, binary log of the native `T-Hist` format is used in the qico mailer version 0.60.2
+([GitHub](https://github.com/glasslike/qico)) by Alexey Matrosov (2: 203/910).
 
-- A new utility has been created: `HistConv` binary log formats converter. The utility creates for a specified binary log file the same log in a different format.
-The source file can be the binary log file of any mailer supported by `T-Hist`. The format of the source binary log is determined automatically.
-To select a target format, use the `-f` command-line option to specify one of the following formats:
+It is possible to add support for new binary log format to Binkd by patching file [binlog.c](https://github.com/pgul/binkd/blob/master/binlog.c)
+from [Binkd repository](https://github.com/pgul/binkd). The patches are located in the [binkd_patch](./binkd_patch) directory.
+For more information see [BINKD-PATCH.md](./binkd_patch/BINKD-PATCH.md).
+
+For the convenience of working with different binary log formats, the `HistConv` converter has been created. The `HistConv` utility creates for a specified
+binary log file the same log in a different format. The source file can be the binary log file of any mailer supported by `T-Hist`. The format of the source
+binary log is determined automatically. To select a target format, use the `-f` command-line option to specify one of the following formats:
   - native `T-Hist` format of any versions;
   - format of T-Mail since version 2603 (T-Mail new format);
   - format of T-Mail before version 2603 (T-Mail old format);
   - Binkd format (T-Mail old format with inverted mark of session direction).
 
-  If the target format is not specified using the `-f` option, then the binary log will be converted to the 2nd version of the native `T-Hist` format.
+Use the program help to get valid target format names:
+```shell
+histconv --help
+```
 
-  Use the program help to get valid target format names:
-  ```shell
-  histconv -h
-  ```
-  When converting, only session records are saved in the output log. Records of other events that may be present in the binary logs of some mailers
-(for example, dialing periods, work in terminal, BBS using, etc.) are skipped.
+## LnkStat utility for creating multi-day link statistics
 
-- Created patches for Binkd to add support for the `T-Hist` binary log format. The patches is located in [binkd_patch](./binkd_patch).
-For more information see [BINKD-PATCH.md](./binkd_patch/BINKD-PATCH.md).
+The `T-Hist` package includes the `LnkStat` utility for creating multi-day link statistics.
+Unlike `T-Hist`, which creates statistics for time intervals not exceeding 24 hours, `LnkStat` creates statistics for the date range specified by
+the command-line options (by default for the date range of all sessions with specified addresses – from the date of the oldest session to the date of
+the newest session inclusive).
 
-- To use `T-Hist` with unsupported mailers, you need to convert the mailer logs to one of the binary log formats supported by `T-Hist`.
-Use the formats descriptions in the file [FORMATS.md](FORMATS.md).
+The result of `LnkStat` is a table similar to the table of link statistics generated by `T-Hist`. By default, `LnkStat` write statistics to `stdout`,
+but you can use the `-o` command-line option to specify a file name to write statistics.
+
+Like `T-Hist`, the `LnkStat` utility can work in wide-screen mode, printing text information from binary logs or address descriptions from the `Addr`
+parameters to the right of the table lines.
+
+Below is an example of a fragment of multi-day link statistics created by the `LnkStat` utility on the Alex Barinov's node (2:5020/715) for the date
+range specified in the statistics header.
+```text
+                   From: 00:05:07, 07 September 2026, Monday
+                   To  : 00:05:15, 14 September 2026, Monday
+╔════════════════╦═════════════════════════════╦═════════╦═════════════╦══════╗
+║                ║       Sessions / Time       ║  Time   ║   Traffic   ║  CPS ║
+║    Address     ╠══════════════╦══════════════╣ online  ╠══════╦══════╣ bytes║
+║                ║   Incoming   ║   Outgoing   ║ In+Out  ║ Rcvd ║ Sent ║ /sec ║
+╠════════════════╬════╤═════════╬════╤═════════╬═════════╬══════╬══════╬══════╣
+║ 2:5020/101     ║ 336│ 0:05:36 ║ 373│ 0:06:13 ║ 0:11:49 ║   747║570.4K║  2.7K║
+║ 2:5020/113     ║ 193│ 0:03:31 ║   -│ -:--:-- ║ 0:03:31 ║109.1K║337.8K║  6.4K║
+║ 2:5020/378     ║  59│ 0:01:28 ║   -│ -:--:-- ║ 0:01:28 ║   518║526.4K║  8.4K║
+║ 2:5020/715.100 ║  60│ 0:01:04 ║   -│ -:--:-- ║ 0:01:04 ║  4.2K║651.8K║ 21.8K║
+║ 2:5020/830     ║   -│ -:--:-- ║ 160│ 0:02:42 ║ 0:02:42 ║     0║415.5K║  6.2K║
+║ 2:5020/1200    ║  28│ 0:04:08 ║  52│ 0:00:55 ║ 0:05:03 ║822.5M║  3.1M║  3.0M║
+║ 2:5020/1477    ║ 336│ 0:05:36 ║ 104│ 0:02:02 ║ 0:07:38 ║     0║261.8M║  3.4M║
+║ 2:5020/1668    ║  61│ 0:05:04 ║   -│ -:--:-- ║ 0:05:04 ║     0║357.6K║  2.3K║
+║ 2:5020/3452    ║   -│ -:--:-- ║ 103│ 0:01:43 ║ 0:01:43 ║     0║274.4K║  4.7K║
+║ 2:5020/4096    ║ 167│ 0:02:47 ║ 332│ 0:05:32 ║ 0:08:19 ║     0║589.3K║  3.3K║
+║ 2:5020/9696    ║   3│ 0:00:04 ║ 689│ 0:20:06 ║ 0:20:10 ║     0║504.9M║481.8K║
+[...]
+```
+
+## DmpHist binary Log dumper
+
+The `T-Hist` package includes the `DmpHist` utility, which prints the table with all records from binary log to `stdout`. The table contains:
+- FTN-address of the session (`0:0/0.0` for sessions with failed handshake);
+- session timestamp;
+- session duration in seconds;
+- received and sent traffic;
+- session status bits.
+
+Like `T-Hist` and `LnkStat`, the `DmpHist` utility can work in wide-screen mode, printing text information from binary logs or address descriptions from
+the `Addr` to the right of the table lines.
+
+Below is an example of a fragment of Binkd binary log dump created by the `DmpHist` utility on the Alex Barinov's node (2:5020/715).
+```text
+File   : /var/log/fido/binkd.sts
+Format : Binkd (T-Mail old)
+┌───────────────────┬──────────────────────────┬───────┬────────┬────────┬────┐
+│      Address      │     Session timestamp    │Time(s)│Received│  Sent  │PNOI│
+├───────────────────┼──────────────────────────┼───────┼────────┼────────┼────┤
+│ 2:5095/20.0       │ Thu Aug  6 06:00:01 2026 │     0 │      0 │      0 │0010│
+│ 2:5020/570.0      │ Thu Aug  6 06:00:02 2026 │     4 │   1289 │      0 │0010│
+│ 2:5020/1146.0     │ Thu Aug  6 06:00:07 2026 │     1 │      0 │   1273 │0001│
+│ 2:5001/100.0      │ Thu Aug  6 06:00:07 2026 │    13 │      0 │   1275 │0001│
+│ 2:5020/290.0      │ Thu Aug  6 06:00:11 2026 │    12 │      0 │      0 │0010│
+│ 0:0/0.0           │ Thu Aug  6 05:59:58 2026 │    57 │      0 │      0 │0011│
+│ 2:5020/921.0      │ Thu Aug  6 06:01:02 2026 │     3 │      0 │      0 │0010│
+[...]
+│ 2:463/68.0        │ Fri Aug  7 00:15:39 2026 │     1 │   2323 │      0 │0010│
+│ 2:5051/44.0       │ Fri Aug  7 00:15:41 2026 │     0 │      0 │   2328 │0001│
+│ 2:5019/40.0       │ Fri Aug  7 00:15:46 2026 │     0 │      0 │      0 │0010│
+└───────────────────┴──────────────────────────┴───────┴────────┴────────┴────┘
+               Password protected session; not all mailers mark it ───────┘│││
+               No-error session (not aborted); not all mailers mark it ────┘││
+                                                      Outgoing session ─────┘│
+                                                      Incoming session ──────┘
+```
+
 
 ## Gratitudes
 
-I would like to thank Alex Barinov (2:5020/715, 2:50/0) for testing the new versions of `T-Hist` on its FTN-system, Alexey Matrosov (2:203/910) for
-binary log format suggestions, help with timestapms processing and new ideas for `T-Hist`, as well as everyone whose ideas, suggestions and tests
-allowed me to create and develop this project. The names of some of these people are listed in the old documentation file.
+I would like to thank Andy Elkin (2:5030/15) for the T-Mail mailer; Slawa Olhovchenkov (2:5030/57.570) and Jury Fradkin (2:5030/339) for the T-Mail API;
+Mikel Lavrentyev (2:5020/35) for the bink/+ links statistics utility, which was the prototype for load graph; John Gladkih (2:5051/16) for the source code
+of The Brake! binary log processing; Eugine Tukin (2:5020/324) for the BTSV utility, which was the prototype for link statistics; Alex Barinov (2:5020/715)
+for testing the new versions of `T-Hist` on its node; Alexey Matrosov (2:203/910) for binary log format suggestions, help with timestapms processing and
+new ideas for `T-Hist`; as well as everyone whose ideas, suggestions and tests allowed me to create and develop this project.
 
 ---
 
 Mikhail Markovskiy (klug), 2:5020/378
-
-https://klug-photo.dreamwidth.org/709558.html
-
-https://klug.livejournal.com/1102966.html
