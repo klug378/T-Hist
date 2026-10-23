@@ -69,10 +69,13 @@ Linux executables with static libraries are compressed by [UPX 4.2.4](https://up
 
 The documentation catalog contains:
 - file [T-HIST-ru.md](./doc/T-HIST-ru.md) with a description of `T-Hist` and related utilities (so far only in Russian);
-- sample configuration file [t-hist.ctl](t-hist.ctl) with detailed description of parameters (so far only in Russian);
+- sample configuration file [t-hist.ctl](./doc/t-hist.ctl) with detailed description of parameters (so far only in Russian);
 - files [FORMATS.md](./doc/FORMATS.md) and [FORMATS-ru.md](./doc/FORMATS-ru.md) with a description of binary log formats, including several versions
 of the native `T-Hist` format (in English and in Russian);
 - old documentation file [t-hist-old.txt](./doc/t-hist-old.txt) from version `0.30.alpha7` (in Russian) for reference.
+
+Text files are UTF-8 encoded.
+
 
 ## Content of generated statistics
 

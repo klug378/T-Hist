@@ -65,7 +65,7 @@ have convert it to the second version of the format).
 
 #### Fixed
 
-- Fixed typos in the sample configuration file [t-hist.ctl](t-hist.ctl).
+- Fixed typos in the sample configuration file [t-hist.ctl](./doc/t-hist.ctl).
 
 ## [1.8.1] - 2026-10-16
 
@@ -91,7 +91,7 @@ by Alexey Matrosov (2:203/910). You can use `T-Hist` to get statistics for this 
 
 #### Added
 
-- The sample configuration file [t-hist.ctl](t-hist.ctl) has been added with a detailed description of all parameters corresponding to the current state
+- The sample configuration file [t-hist.ctl](./doc/t-hist.ctl) has been added with a detailed description of all parameters corresponding to the current state
 of the project (so far only in Russian).
 
 - Added predefined names of addresses and groups of addresses that can be used in the `Addr` parameters and in the `-a` command-line options
