@@ -100,7 +100,7 @@ Below are examples of fragments of statistics files from the node of Alex Barino
 
 
 ### Load graph and histograms example
-```text
+<pre style="white-space: pre; overflow-x: auto; font-family: monospace;">
               0   2   4   6   8  10  12  14  16  18  20  22  24               
                ├─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┤Ses  Rcvd  Sent
 2:5020/101     ▐ ▐ █▌  │█ █▐▐█▐▐█▐▐▐█▐█▐█▐▐▐▐▐▐█▐█▐▐█▐▐▐ █▐▐▐▐▐│277  3.7K  202K
@@ -133,10 +133,11 @@ Below are examples of fragments of statistics files from the node of Alex Barino
              0%┼─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┐  ─────────────
                0   2   4   6   8  10  12  14  16  18  20  22  24  Usage:  14.6%
 
-```
+[...]
+</pre>
 
 ### Link statistics example
-```text
+<pre style="white-space: pre; overflow-x: auto; font-family: monospace;">
 ╔══════════════════╦═══════════════════════════╦═════════╦═════════════╦══════╗
 ║                  ║      Sessions / Time      ║  Time   ║   Traffic   ║  CPS ║
 ║     Address      ╠═════════════╦═════════════╣ online  ╠══════╦══════╣ bytes║
@@ -154,10 +155,12 @@ Below are examples of fragments of statistics files from the node of Alex Barino
 ║√ 2:5020/3452     ║  -│ -:--:-- ║306│ 0:12:20 ║ 0:12:20 ║     0║ 55.3K║ 13.8K║
 ║√ 2:5020/4096     ║ 19│ 0:00:19 ║119│ 0:10:40 ║ 0:10:59 ║     0║160.5K║  2.8K║
 ║√ 2:5020/9696     ║  -│ -:--:-- ║256│ 0:18:03 ║ 0:18:03 ║     0║793.7M║  1.3M║
-```
+
+[...]
+</pre>
 
 ### Session statistics example
-```text
+<pre style="white-space: pre; overflow-x: auto; font-family: monospace;">
 ╔════════════╤═════╤════════════════════╤══════════╤═════════════════╤════════╗
 ║  Session   │ Dir │      Address       │   Time   │     Traffic     │   CPS  ║
 ║   start    │     │pwd             abrt│  Online  │  Rcvd     Sent  │ bytes/s║
@@ -175,10 +178,12 @@ Below are examples of fragments of statistics files from the node of Alex Barino
 ║  00:17:24  │ Out │√  2:5020/4096      │  0:00:07 │      0 │  22448 │   3.1K ║
 ║  00:17:34  │ Out │√  2:5090/138       │  0:00:16 │      0 │  23130 │   1.4K ║
 ║  00:17:44  │ Out │√  2:5001/100       │  0:00:36 │      0 │  58762 │   1.5K ║
-```
+
+[...]
+</pre>
 
 ### Summary information example
-```text
+<pre style="white-space: pre; overflow-x: auto; font-family: monospace;">
 ┌──────────────────────────┬───────────────────────┬──────────────────────────┐
 │ Total Received :  276.9M │ Total Ses In  :  3299 │ Time In      :   1:09:05 │
 │ Total Sent     :   2066M │ Total Ses Out :  8821 │ Time Out     :   3:33:57 │
@@ -193,7 +198,7 @@ Below are examples of fragments of statistics files from the node of Alex Barino
 │ UnProt Total   :       0 │ UnProt Ses Tot:  3224 │ UnProt Total :   0:55:13 │
 └──────────────────────────┴───────────────────────┴──────────────────────────┘
   K is KiB (1024 bytes), M is MiB (1048576 bytes), G is GiB (1073741824 bytes)
-```
+</pre>
 
 
 ## Wide-screen mode
@@ -203,7 +208,7 @@ can create the statistics in the wide-screen mode, which is enabled by default. 
 or from descriptions in the `Addr` parameters can be printed to the right of the load graph and to the right of the tables with statistics.
 Below are examples of fragments of statistics files created in wide-screen mode.
 
-```text
+<pre style="white-space: pre; overflow-x: auto; font-family: monospace;">
                0   2   4   6   8  10  12  14  16  18  20  22  24
                ├─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┤Ses  Rcvd  Sent   FTN-system info
 2:5020/101     ▐ ▐ █▌  │█ █▐▐█▐▐█▐▐▐█▐█▐█▐▐▐▐▐▐█▐█▐▐█▐▐▐ █▐▐▐▐▐│277  3.7K  202K │ n5020.ru, akf, Moscow, USSR
@@ -218,10 +223,11 @@ Below are examples of fragments of statistics files created in wide-screen mode.
 2:5020/3452    ▐▌  │▌  │█  │▐  │   │▐  │   │  ▐│ █ ▐   │   │   │306     0 55.3K │ fido.babon.ru, Panzer station II, Moscow, Russia
 2:5020/4096    ▐▌▐ ▐   │ ▐▌▐▌▐ ▐ ▐ ▐▌▐▌▐▌▐ ▐ ▐▐▐ █ ▐▌▐▐▐ █▐▐ ▐ │138     0  161K │ fido.pochek.net, 4K_System, Moscow, Russia
 2:5020/9696    │▐▌ │ ▌ │ ▌ │ █▐▐ ▐▌▌▌ ▌████▐██▐▐█▐▌▐██▐▌███▐█▌▐│256     0  794M │ skovpen.org, SDS, Moscow, Russia
-[...]
-```
 
-```text
+[...]
+</pre>
+
+<pre style="white-space: pre; overflow-x: auto; font-family: monospace;">
 ╔══════════════════╦═══════════════════════════╦═════════╦═════════════╦══════╗
 ║                  ║      Sessions / Time      ║  Time   ║   Traffic   ║  CPS ║
 ║     Address      ╠═════════════╦═════════════╣ online  ╠══════╦══════╣ bytes║
@@ -239,10 +245,11 @@ Below are examples of fragments of statistics files created in wide-screen mode.
 ║√ 2:5020/3452     ║  -│ -:--:-- ║306│ 0:12:20 ║ 0:12:20 ║     0║ 55.3K║ 13.8K║ fido.babon.ru, Panzer station II, Moscow, Russia
 ║√ 2:5020/4096     ║ 19│ 0:00:19 ║119│ 0:10:40 ║ 0:10:59 ║     0║160.5K║  2.8K║ fido.pochek.net, 4K_System, Moscow, Russia      
 ║√ 2:5020/9696     ║  -│ -:--:-- ║256│ 0:18:03 ║ 0:18:03 ║     0║793.7M║  1.3M║ skovpen.org, SDS, Moscow, Russia                
-[...]
-```
 
-```text
+[...]
+</pre>
+
+<pre style="white-space: pre; overflow-x: auto; font-family: monospace;">
 ╔════════════╤═════╤════════════════════╤══════════╤═════════════════╤════════╗
 ║  Session   │ Dir │      Address       │   Time   │     Traffic     │   CPS  ║
 ║   start    │     │pwd             abrt│  Online  │  Rcvd     Sent  │ bytes/s║
@@ -260,8 +267,9 @@ Below are examples of fragments of statistics files created in wide-screen mode.
 ║  00:17:24  │ Out │√  2:5020/4096      │  0:00:07 │      0 │  22448 │   3.1K ║ fido.pochek.net, 4K_System, Moscow, Russia
 ║  00:17:34  │ Out │√  2:5090/138       │  0:00:16 │      0 │  23130 │   1.4K ║ f138.n5090.krnet.ru, SkyStation, Krasnoyarsk--Russia
 ║  00:17:44  │ Out │√  2:5001/100       │  0:00:36 │      0 │  58762 │   1.5K ║ f100.5001.ru, Postmortem, Kemerovo, Russia
+
 [...]
-```
+</pre>
 
 Not all mailers store additional information in binary logs. For example, there is no such information in the binary logs of the Binkd mailer.
 If you do not use descriptions in the `Addr` parameters, then the statistics for Binkd will be no more than 80 characters wide even in wide-screen mode.
@@ -336,7 +344,8 @@ parameters to the right of the table lines.
 
 Below is an example of a fragment of multi-day link statistics created by the `LnkStat` utility on the Alex Barinov's node (2:5020/715) for the date
 range specified in the statistics header.
-```text
+
+<pre style="white-space: pre; overflow-x: auto; font-family: monospace;">
                    From: 00:05:07, 07 September 2026, Monday
                    To  : 00:05:15, 14 September 2026, Monday
 ╔════════════════╦═════════════════════════════╦═════════╦═════════════╦══════╗
@@ -355,8 +364,9 @@ range specified in the statistics header.
 ║ 2:5020/3452    ║   -│ -:--:-- ║ 103│ 0:01:43 ║ 0:01:43 ║     0║274.4K║  4.7K║
 ║ 2:5020/4096    ║ 167│ 0:02:47 ║ 332│ 0:05:32 ║ 0:08:19 ║     0║589.3K║  3.3K║
 ║ 2:5020/9696    ║   3│ 0:00:04 ║ 689│ 0:20:06 ║ 0:20:10 ║     0║504.9M║481.8K║
+
 [...]
-```
+</pre>
 
 ## DmpHist binary Log dumper
 
@@ -371,7 +381,8 @@ Like `T-Hist` and `LnkStat`, the `DmpHist` utility can work in wide-screen mode,
 the `Addr` to the right of the table lines.
 
 Below is an example of a fragment of Binkd binary log dump created by the `DmpHist` utility on the Alex Barinov's node (2:5020/715).
-```text
+
+<pre style="white-space: pre; overflow-x: auto; font-family: monospace;">
 File   : /var/log/fido/binkd.sts
 Format : Binkd (T-Mail old)
 ┌───────────────────┬──────────────────────────┬───────┬────────┬────────┬────┐
@@ -393,7 +404,7 @@ Format : Binkd (T-Mail old)
                No-error session (not aborted); not all mailers mark it ────┘││
                                                       Outgoing session ─────┘│
                                                       Incoming session ──────┘
-```
+</pre>
 
 
 ## Gratitudes
