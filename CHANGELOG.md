@@ -10,6 +10,25 @@
 
 - The terms `group`, `group of addresses` means an address defined in the `Addr` parameter or in the `-a` command-line option with at least one wildcard char `*`.
 
+## [1.8.3] - 2026-10-31
+
+#### Added
+
+- `T-Hist` now has the `-p` command-line option that matches the `ProtectSummary` parameter. The option has the following values:
+  - `-p`, `-p+` – as `ProtectSummary Yes`;
+  - `-p-` &emsp;&emsp;– as `ProtectSummary No`.
+
+- Added the file [T-HIST-ru.html](./doc/T-HIST-ru.html) to the [doc](./doc) directory with a full description of the current version of `T-Hist` and related utilities.
+The file is automatically generated from [T-HIST-ru.md](./doc/T-HIST-ru.md).
+
+#### Changed
+
+- Linux executables with static libraries are compressed by [UPX](https://upx.github.io) 5.2.1 executable packer. (Previous versions were compressed by UPX 4.2.4.)
+
+#### Fixed
+
+- Fixed typos in documentation.
+
 ## [1.8.2] - 2026-10-24
 
 #### Added

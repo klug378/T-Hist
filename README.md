@@ -1,6 +1,6 @@
 [README на русском языке](README-ru.md)
 
-This software is intended for use in the `FidoNet` computer network and other FTN-style networks
+This software is intended for use in the FidoNet computer network and other FTN-style networks
 
 ---
 <div align="center">
@@ -17,11 +17,11 @@ This software is intended for use in the `FidoNet` computer network and other FT
 Supported:<br>[Binkd](https://github.com/pgul/binkd), [qico 0.60.2+](https://github.com/glasslike/qico), T-Mail, Argus,
 Internet Rex, FrontDoor, Bink/+, FhMail,<br>BinkleyTerm-XE, The Brake!, KittenMail, DVMmail, XMail32, BasicMail<br>
 and any other FTN-mailers using the T-Hist or T-Mail binary log formats<br><br>
-Version 1.8.2<br><br>
+Version 1.8.3<br><br>
 Linux (x86_64, i686, arm64) and Windows (Win64, Win32) executables
-</div>
 
 ---
+</div>
 
 ## Table of Contents
 
@@ -42,15 +42,15 @@ Linux (x86_64, i686, arm64) and Windows (Win64, Win32) executables
 
 ## Purpose of T-Hist
 
-The `T-Hist utility` is designed to create text files with statistics on the operation of one or more FTN mailers during a given interval of a given
-date day for given FTN addresses. `T-Hist` receives information from binary logs, also called history files.
+The `T-Hist` utility is designed to create text files with statistics on the operation of one or more FTN mailers during a given time interval
+of a given date for given FTN addresses. `T-Hist` receives information from binary logs, also called history files.
 
 Development of the `T-Hist` began in 1996, initially only to get T-Mail mailer statistics. Subsequently, the list of supported mailers and binary log
 formats has expanded. The latest version of `T-Hist` for DOS, OS/2, NT (win32) – `0.30.alpha7` – was released in 2003. After that, the development process
 stopped for 23 years.
 
-In 2026, work on the project was resumed. Released new versions of `T-Hist` and related utilities for Linux and Windows with new features. Support for
-older operating systems has been removed.
+In 2026, work on the project was resumed. Released new versions of `T-Hist` and related utilities for Linux and Windows. Support for older operating systems
+has been removed.
 
 Throughout the document, the term `old versions` means version `0.30.alpha7` and earlier versions of the utility, and the term `new versions` means
 versions `1.x.x`.
@@ -65,10 +65,10 @@ The utilities are distributed as a ZIP archive containing following directories:
 - `doc` – documentation;
 - `binkd_patch` – Binkd patches that add support for `T-Hist` binary log format.
 
-Linux executables with static libraries are compressed by [UPX 4.2.4](https://upx.github.io) executable packer to reduce their size.
+Linux executables with static libraries are compressed by [UPX 5.2.1](https://upx.github.io) executable packer to reduce their size.
 
 The documentation catalog contains:
-- file [T-HIST-ru.md](./doc/T-HIST-ru.md) with a description of `T-Hist` and related utilities (so far only in Russian);
+- files [T-HIST-ru.md](./doc/T-HIST-ru.md) and [T-HIST-ru.html](./doc/T-HIST-ru.html) with a description of `T-Hist` and related utilities (so far only in Russian);
 - sample configuration file [t-hist.ctl](./doc/t-hist.ctl) with detailed description of parameters (so far only in Russian);
 - files [FORMATS.md](./doc/FORMATS.md) and [FORMATS-ru.md](./doc/FORMATS-ru.md) with a description of binary log formats, including several versions
 of the native `T-Hist` format (in English and in Russian);
@@ -81,7 +81,7 @@ Text files are UTF-8 encoded.
 
 `T-Hist` creates three text files:
 - file with graph and histograms of FTN-system loading for one or several simultaneously operating mailers;
-- file of link statistics with a table containing for each FTN-address included in the statistics, the number of sessions, their total duration
+- file of link statistics with a table containing for each FTN-address included in the statistics: the number of sessions, their total duration
 and total traffic during a given time interval;
 - a file of session statistics with a table containing for each session performed during a given time interval, its duration and values of
 received/sent traffic.
@@ -309,8 +309,8 @@ of traffic, the format allows you to save text strings that `T-Hist` will be pri
 the `Listed` mark for sessions, which FTN-address is present in the nodelists specified in the mailer configuration. In detail, all versions of the native
 `T-Hist` binary log format are considered in the file [FORMATS.md](./doc/FORMATS.md) in the [doc](./doc) directory.
 
-At the time of the release of the `T-Hist` version `1.8.2`, binary log of the native `T-Hist` format is used in the qico mailer version 0.60.2
-([GitHub](https://github.com/glasslike/qico)) by Alexey Matrosov (2: 203/910).
+Binary log of the native `T-Hist` format is used in the [qico](https://github.com/glasslike/qico) mailer by Alexey Matrosov (2:203/910),
+starting from version 0.60.2.
 
 It is possible to add support for new binary log format to Binkd by patching file [binlog.c](https://github.com/pgul/binkd/blob/master/binlog.c)
 from [Binkd repository](https://github.com/pgul/binkd). The patches are located in the [binkd_patch](./binkd_patch) directory.
@@ -342,8 +342,7 @@ but you can use the `-o` command-line option to specify a file name to write sta
 Like `T-Hist`, the `LnkStat` utility can work in wide-screen mode, printing text information from binary logs or address descriptions from the `Addr`
 parameters to the right of the table lines.
 
-Below is an example of a fragment of multi-day link statistics created by the `LnkStat` utility on the Alex Barinov's node (2:5020/715) for the date
-range specified in the statistics header.
+Below is an example of a fragment of multi-day link statistics created by the `LnkStat` utility on the Alex Barinov's node (2:5020/715).
 
 <pre style="white-space: pre; overflow-x: auto; font-family: monospace;">
                    From: 00:05:07, 07 September 2026, Monday
@@ -368,7 +367,7 @@ range specified in the statistics header.
 [...]
 </pre>
 
-## DmpHist binary Log dumper
+## DmpHist binary logs dumper
 
 The `T-Hist` package includes the `DmpHist` utility, which prints the table with all records from binary log to `stdout`. The table contains:
 - FTN-address of the session (`0:0/0.0` for sessions with failed handshake);
@@ -395,7 +394,9 @@ Format : Binkd (T-Mail old)
 │ 2:5020/290.0      │ Thu Aug  6 06:00:11 2026 │    12 │      0 │      0 │0010│
 │ 0:0/0.0           │ Thu Aug  6 05:59:58 2026 │    57 │      0 │      0 │0011│
 │ 2:5020/921.0      │ Thu Aug  6 06:01:02 2026 │     3 │      0 │      0 │0010│
+
 [...]
+
 │ 2:463/68.0        │ Fri Aug  7 00:15:39 2026 │     1 │   2323 │      0 │0010│
 │ 2:5051/44.0       │ Fri Aug  7 00:15:41 2026 │     0 │      0 │   2328 │0001│
 │ 2:5019/40.0       │ Fri Aug  7 00:15:46 2026 │     0 │      0 │      0 │0010│

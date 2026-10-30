@@ -19,9 +19,9 @@ the `fdouthist`/`fdinhist` parameters is written in a different format with exte
 
 The [binkd_patch](../binkd_patch) directory of `T-Hist` repository contains three patches for `binlog.c`:
 
-  - [binlog-thist-v3.patch](binlog-thist-v3.patch) – use native `T-Hist` format (3rd version) for `fdouthist`/`fdinhist` binary log.
-  - [binlog-thist-v2.patch](binlog-thist-v2.patch) – use native `T-Hist` format (2nd version) for `fdouthist`/`fdinhist` binary log.
-  - [binlog-tmail-new.patch](binlog-tmail-new.patch) – use T-Mail new format for `fdouthist`/`fdinhist` binary log;
+  - [binlog-thist-v3.patch](binlog-thist-v3.patch) – use native `T-Hist` format (3rd version) for `fdouthist`/`fdinhist` binary log;
+  - [binlog-thist-v2.patch](binlog-thist-v2.patch) – use native `T-Hist` format (2nd version) for `fdouthist`/`fdinhist` binary log;
+  - [binlog-tmail-new.patch](binlog-tmail-new.patch) – use T-Mail new format for `fdouthist`/`fdinhist` binary log.
 
 All these formats have advanced capabilities to compare with the Binkd binary log format. In particular, the formats allows you to mark
 whether the session was password protected or not, allowing `T-Hist` to generate statistics on protected and unprotected sessions.
@@ -39,7 +39,7 @@ Use a patch with the native `T-Hist` format if:
 
   - you want to see more text information about FTN systems that `T-Hist` can printed in wide-screen mode;
 
-  - you want to see in the session status whether the address was `Listed` or not.
+  - you want to see whether the address was `Listed` or not.
 
 Use a patch with the T-Mail new format if:
 
