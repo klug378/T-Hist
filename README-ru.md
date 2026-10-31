@@ -1,6 +1,6 @@
 [README in English](README.md)
 
-This software is intended for use in the FidoNet computer network and other FTN-style networks
+Данное программное обеспечение предназначено для использования в сети FidoNet и других FTN-сетях
 
 ---
 <div align="center">
