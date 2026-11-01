@@ -7,6 +7,7 @@ from Binkd repository on [GitHub](https://github.com/pgul/binkd). At the same ti
 `binlog` parameter will not be affected.
 
 In the sample of Binkd configuration file, there are commented lines next to the `binlog` parameter:
+
 ```
 # Uncomment if you want FrontDoor-style binary log
 #
@@ -19,9 +20,9 @@ the `fdouthist`/`fdinhist` parameters is written in a different format with exte
 
 The [binkd_patch](../binkd_patch) directory of `T-Hist` repository contains three patches for `binlog.c`:
 
-  - [binlog-thist-v3.patch](binlog-thist-v3.patch) – use native `T-Hist` format (3rd version) for `fdouthist`/`fdinhist` binary log;
-  - [binlog-thist-v2.patch](binlog-thist-v2.patch) – use native `T-Hist` format (2nd version) for `fdouthist`/`fdinhist` binary log;
-  - [binlog-tmail-new.patch](binlog-tmail-new.patch) – use T-Mail new format for `fdouthist`/`fdinhist` binary log.
+- [binlog-thist-v3.patch](binlog-thist-v3.patch) – use native `T-Hist` format (3rd version) for `fdouthist`/`fdinhist` binary log;
+- [binlog-thist-v2.patch](binlog-thist-v2.patch) – use native `T-Hist` format (2nd version) for `fdouthist`/`fdinhist` binary log;
+- [binlog-tmail-new.patch](binlog-tmail-new.patch) – use T-Mail new format for `fdouthist`/`fdinhist` binary log.
 
 All these formats have advanced capabilities to compare with the Binkd binary log format. In particular, the formats allows you to mark
 whether the session was password protected or not, allowing `T-Hist` to generate statistics on protected and unprotected sessions.
@@ -35,57 +36,57 @@ Binkd successfully compiles for Linux. The ability to compile for other systems 
 
 Use a patch with the native `T-Hist` format if:
 
-  - you have sessions with more than 4 gigabytes sent or received (native `T-Hist` format has 64-bit values for incoming and outgoing traffic);
+- you have sessions with more than 4 gigabytes sent or received (native `T-Hist` format has 64-bit values for incoming and outgoing traffic);
 
-  - you want to see more text information about FTN systems that `T-Hist` can printed in wide-screen mode;
+- you want to see more text information about FTN systems that `T-Hist` can printed in wide-screen mode;
 
-  - you want to see whether the address was `Listed` or not.
+- you want to see whether the address was `Listed` or not.
 
 Use a patch with the T-Mail new format if:
 
-  - you have no sessions with more than 4 gigabytes sent or received;
+- you have no sessions with more than 4 gigabytes sent or received;
 
-  - you need no more than 63 characters to display information about FTN systems, or you disable wide-screen mode in `T-Hist`;
+- you need no more than 63 characters to display information about FTN systems, or you disable wide-screen mode in `T-Hist`;
 
-  - you want to use any other utilities that process T-Mail binary logs.
+- you want to use any other utilities that process T-Mail binary logs.
 
 ### Using the patch
 
 1. Clone the Binkd repo:
 
-    `git clone https://github.com/pgul/binkd`
+   `git clone https://github.com/pgul/binkd`
 
 2. Change into the new binkd source directory:
 
-    `cd binkd`
-	
+   `cd binkd`
+
 3. Copy the selected patch here.
 
 4. Apply the patch
 
-    `git apply binlog-thist-v3.patch`
+   `git apply binlog-thist-v3.patch`
 
-    or
+   or
 
-    `git apply binlog-thist-v2.patch`
+   `git apply binlog-thist-v2.patch`
 
-    or
+   or
 
-    `git apply binlog-tmail-new.patch`
-	
+   `git apply binlog-tmail-new.patch`
+
 5. Compile Binkd. To compile under Linux, run:
 
-    `cp mkfls/unix/* .`
+   `cp mkfls/unix/* .`
 
-    `./configure`
+   `./configure`
 
-    `make`
+   `make`
 
-    To compile for other systems, see the instructions in the Binkd repository.
-	
+   To compile for other systems, see the instructions in the Binkd repository.
+
 6. In the Binkd configuration file, uncomment one of the two parameters `fdouthist`/`fdinhist` (no matter which one)
-and specify the file name of the new binary log. If both parameters are uncomment, then the file name from `fdouthist` will be used.
+   and specify the file name of the new binary log. If both parameters are uncomment, then the file name from `fdouthist` will be used.
 
-    Now, if you have not commented out the `binlog` parameter, Binkd will write the session history to both the native binary log and the new one.
-	
+   Now, if you have not commented out the `binlog` parameter, Binkd will write the session history to both the native binary log and the new one.
+
 7. Specify a new binary log in the `T-Hist` configuration file to create statistics on it.

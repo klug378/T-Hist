@@ -3,6 +3,7 @@
 This software is intended for use in the FidoNet computer network and other FTN-style networks
 
 ---
+
 <div align="center">
 
 ![T-Hist](./doc/t-hist.png)
@@ -14,6 +15,7 @@ This software is intended for use in the FidoNet computer network and other FTN-
 [![GitHub Last commit](https://img.shields.io/github/last-commit/klug378/T-Hist.svg?style=dark)](https://github.com/klug378/T-Hist)
 
 # T-Hist – History utility for FTN mailers
+
 Supported:<br>[Binkd](https://github.com/pgul/binkd), [qico 0.60.2+](https://github.com/glasslike/qico), T-Mail, Argus,
 Internet Rex, FrontDoor, Bink/+, FhMail,<br>BinkleyTerm-XE, The Brake!, KittenMail, DVMmail, XMail32, BasicMail<br>
 and any other FTN-mailers using the T-Hist or T-Mail binary log formats<br><br>
@@ -21,6 +23,7 @@ Version 1.8.3<br><br>
 Linux (x86_64, i686, arm64) and Windows (Win64, Win32) executables
 
 ---
+
 </div>
 
 ## Table of Contents
@@ -39,7 +42,6 @@ Linux (x86_64, i686, arm64) and Windows (Win64, Win32) executables
 - [DmpHist binary Log dumper](#dmphist-binary-log-dumper)
 - [Gratitudes](#gratitudes)
 
-
 ## Purpose of T-Hist
 
 The `T-Hist` utility is designed to create text files with statistics on the operation of one or more FTN mailers during a given time interval
@@ -55,10 +57,10 @@ has been removed.
 Throughout the document, the term `old versions` means version `0.30.alpha7` and earlier versions of the utility, and the term `new versions` means
 versions `1.x.x`.
 
-
 ## Structure of distributed ZIP archive with utilities
 
 The utilities are distributed as a ZIP archive containing following directories:
+
 - `linux` – Linux executables (x86_64, i686 and arm64 architectures);
 - `linux-static` – Linux executables with static libraries (x86_64, i686 and arm64 architectures);
 - `windows` – Windows 64-bit and 32-bit executables.
@@ -68,23 +70,24 @@ The utilities are distributed as a ZIP archive containing following directories:
 Linux executables with static libraries are compressed by [UPX 5.2.1](https://upx.github.io) executable packer to reduce their size.
 
 The documentation catalog contains:
+
 - files [T-HIST-ru.md](./doc/T-HIST-ru.md) and [T-HIST-ru.html](./doc/T-HIST-ru.html) with a description of `T-Hist` and related utilities (so far only in Russian);
 - sample configuration file [t-hist.ctl](./doc/t-hist.ctl) with detailed description of parameters (so far only in Russian);
 - files [FORMATS.md](./doc/FORMATS.md) and [FORMATS-ru.md](./doc/FORMATS-ru.md) with a description of binary log formats, including several versions
-of the native `T-Hist` format (in English and in Russian);
+  of the native `T-Hist` format (in English and in Russian);
 - old documentation file [t-hist-old.txt](./doc/t-hist-old.txt) from version `0.30.alpha7` (in Russian) for reference.
 
 Text files are UTF-8 encoded.
 
-
 ## Content of generated statistics
 
 `T-Hist` creates three text files:
+
 - file with graph and histograms of FTN-system loading for one or several simultaneously operating mailers;
 - file of link statistics with a table containing for each FTN-address included in the statistics: the number of sessions, their total duration
-and total traffic during a given time interval;
+  and total traffic during a given time interval;
 - a file of session statistics with a table containing for each session performed during a given time interval, its duration and values of
-received/sent traffic.
+  received/sent traffic.
 
 At the end of each files, the summary information on the number and duration of all incoming and outgoing sessions, the total number of sessions
 and their duration, the volume of received and sent traffic and the average CPS are printed. (CPS is "chars per second" or "bytes per second".)
@@ -92,14 +95,15 @@ If the mailer marks password-protected sessions, then the values for password an
 
 All files are UTF-8 encoded. To post statistics in FTN echo conferences or netmail, text files must be converted to the appropriate encoding.
 For example, for Russian-language echo conferences with CP866 encoding:
+
 ```shell
 iconv -f UTF-8 -t CP866 in.txt -o out.txt
 ```
 
 Below are examples of fragments of statistics files from the node of Alex Barinov (2:5020/715).
 
-
 ### Load graph and histograms example
+
 <pre style="white-space: pre; overflow-x: auto; font-family: monospace;">
               0   2   4   6   8  10  12  14  16  18  20  22  24               
                ├─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┼─┴─┤Ses  Rcvd  Sent
@@ -137,6 +141,7 @@ Below are examples of fragments of statistics files from the node of Alex Barino
 </pre>
 
 ### Link statistics example
+
 <pre style="white-space: pre; overflow-x: auto; font-family: monospace;">
 ╔══════════════════╦═══════════════════════════╦═════════╦═════════════╦══════╗
 ║                  ║      Sessions / Time      ║  Time   ║   Traffic   ║  CPS ║
@@ -160,6 +165,7 @@ Below are examples of fragments of statistics files from the node of Alex Barino
 </pre>
 
 ### Session statistics example
+
 <pre style="white-space: pre; overflow-x: auto; font-family: monospace;">
 ╔════════════╤═════╤════════════════════╤══════════╤═════════════════╤════════╗
 ║  Session   │ Dir │      Address       │   Time   │     Traffic     │   CPS  ║
@@ -183,6 +189,7 @@ Below are examples of fragments of statistics files from the node of Alex Barino
 </pre>
 
 ### Summary information example
+
 <pre style="white-space: pre; overflow-x: auto; font-family: monospace;">
 ┌──────────────────────────┬───────────────────────┬──────────────────────────┐
 │ Total Received :  276.9M │ Total Ses In  :  3299 │ Time In      :   1:09:05 │
@@ -199,7 +206,6 @@ Below are examples of fragments of statistics files from the node of Alex Barino
 └──────────────────────────┴───────────────────────┴──────────────────────────┘
   K is KiB (1024 bytes), M is MiB (1048576 bytes), G is GiB (1073741824 bytes)
 </pre>
-
 
 ## Wide-screen mode
 
@@ -280,7 +286,6 @@ T-Mail new format, and mailers using binary logs of the native `T-Hist` format).
 
 To control the wide screen mode, use the `WideScreen` parameter in the configuration file or the `-w` command-line option.
 
-
 ## Configuration file. Parameters. Command-line options
 
 The operation of `T-Hist` and related utilities is controlled by parameters whose values can be set in the configuration file. Some parameters can also
@@ -293,7 +298,6 @@ If any of the parameters are specified both in the configuration file and using 
 
 The descriptions of all parameters and all command-line options are given in the sample configuration file [t-hist.ctl](./doc/t-hist.ctl)
 and in the documentation file [T-HIST-ru.md](./doc/T-HIST-ru.md) (so far only in Russian), that are in the [doc](./doc) directory.
-
 
 ## Native binary log format. Format сonverter
 
@@ -319,12 +323,14 @@ For more information see [BINKD-PATCH.md](./binkd_patch/BINKD-PATCH.md).
 For the convenience of working with different binary log formats, the `HistConv` converter has been created. The `HistConv` utility creates for a specified
 binary log file the same log in a different format. The source file can be the binary log file of any mailer supported by `T-Hist`. The format of the source
 binary log is determined automatically. To select a target format, use the `-f` command-line option to specify one of the following formats:
-  - native `T-Hist` format of any versions;
-  - format of T-Mail since version 2603 (T-Mail new format);
-  - format of T-Mail before version 2603 (T-Mail old format);
-  - Binkd format (T-Mail old format with inverted mark of session direction).
+
+- native `T-Hist` format of any versions;
+- format of T-Mail since version 2603 (T-Mail new format);
+- format of T-Mail before version 2603 (T-Mail old format);
+- Binkd format (T-Mail old format with inverted mark of session direction).
 
 Use the program help to get valid target format names:
+
 ```shell
 histconv --help
 ```
@@ -370,6 +376,7 @@ Below is an example of a fragment of multi-day link statistics created by the `L
 ## DmpHist binary logs dumper
 
 The `T-Hist` package includes the `DmpHist` utility, which prints the table with all records from binary log to `stdout`. The table contains:
+
 - FTN-address of the session (`0:0/0.0` for sessions with failed handshake);
 - session timestamp;
 - session duration in seconds;
@@ -406,7 +413,6 @@ Format : Binkd (T-Mail old)
                                                       Outgoing session ─────┘│
                                                       Incoming session ──────┘
 </pre>
-
 
 ## Gratitudes
 

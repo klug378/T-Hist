@@ -5,9 +5,9 @@
 To use `T-Hist` with unsupported mailers, you need to convert the mailer logs to one of the binary log formats supported by `T-Hist`.
 This document reviews the following formats:
 
-  - `Binkd` binary log format, which is also the format of `T-Mail` before version 2603 (`T-Mail` old format);
-  - binary log format of `T-Mail` since version 2603 (`T-Mail` new format).
-  - three versions of the native `T-Hist` format of binary log with 64-bit traffic values and 64-bit timestamps, ability to store multiple text strings, and other benefits.
+- `Binkd` binary log format, which is also the format of `T-Mail` before version 2603 (`T-Mail` old format);
+- binary log format of `T-Mail` since version 2603 (`T-Mail` new format).
+- three versions of the native `T-Hist` format of binary log with 64-bit traffic values and 64-bit timestamps, ability to store multiple text strings, and other benefits.
 
 ## Table of Contents
 
@@ -15,12 +15,12 @@ This document reviews the following formats:
 - [Binkd binary log format (T-Mail old format)](#binkd-binary-log-format-t-mail-old-format)
 - [T-Mail new binary log format](#t-mail-new-binary-log-format)
 - [Native T-Hist formats](#native-t-hist-formats)
-   - [Version 1 of the native T-Hist format](#version-1-of-the-native-t-hist-format)
-   - [Version 2 of the native T-Hist format](#version-2-of-the-native-t-hist-format)
-   - [Version 3 of the native T-Hist format](#version-3-of-the-native-t-hist-format)
+  - [Version 1 of the native T-Hist format](#version-1-of-the-native-t-hist-format)
+  - [Version 2 of the native T-Hist format](#version-2-of-the-native-t-hist-format)
+  - [Version 3 of the native T-Hist format](#version-3-of-the-native-t-hist-format)
 
 ## Comparison of the binary log formats
-  
+
 |                                     | `Binkd` /<br>`T-Mail`<br>old format | `T-Mail`<br>new format | `T-Hist`<br>format<br>version 1 | `T-Hist`<br>format<br>version 2 | `T-Hist`<br>format<br>version 3 |
 | :---------------------------------- | :---------------------------------: | :---------------------:| :-----------------------------: | :-----------------------------: | :-----------------------------: |
 | Size of one record                  |               28 bytes              |        100 bytes       |            256 bytes            |          46 - 256 bytes         |           51 - 261 bytes        |
@@ -179,7 +179,7 @@ Supported since `T-Hist` `1.4.0`.
 
 The first 5 bytes of the binary log of the first version of the `T-Hist` format contain a signature consisting of four characters `H`, `I`, `S`, `T`
 and one byte with the format version number. Signature as a sequence of hexadecimal values: `0x48`, `0x49`, `0x53`, `0x54`, `0x01`.
-  
+
 Next are records 256 bytes long. Each record has the following structure:
 
 ```C
@@ -228,7 +228,7 @@ string 2 – name of FTN system, string 3 – location of FTN system, string 4 �
 Below is an example of a dump of `T-Hist` format (version 1) binary log file containing one record. At the beginning of the file are
 five bytes of the signature: `0x48`, `0x49`, `0x53`, `0x54`, `0x01`. Next is a 256 byte record with information about the session
 with node 2:5020/715.0, started at 2026-09-14 22:15:06, with a duration of 4 seconds, during which 2528361 bytes were received
-by three files and 336 bytes were sent by one file. The session was ougoing, password protected, and ended normally. 
+by three files and 336 bytes were sent by one file. The session was ougoing, password protected, and ended normally.
 The record also contains 5 null-terminated strings with IP address, domain name, name of FTN system, location of FTN system and sysop name.
 
 ```
@@ -252,8 +252,9 @@ The record also contains 5 null-terminated strings with IP address, domain name,
 ```
 
 As a drawback of the first version of `T-Hist` format, a noticeable increase in the size of the binary log file should be noted:
-  - more than 2 and a half times compared to `T-Mail` new format (256 bytes per record versus 100 bytes per record);
-  - more than 9 times compared to `Binkd` format (256 bytes per record versus 28 bytes per record).
+
+- more than 2 and a half times compared to `T-Mail` new format (256 bytes per record versus 100 bytes per record);
+- more than 9 times compared to `Binkd` format (256 bytes per record versus 28 bytes per record).
 
 This disadvantage is significantly reduced in next versions of the format due to the use of variable-length records.
 
@@ -270,30 +271,36 @@ and one byte with the format version number. Signature as a sequence of hexadeci
 Next are records of variable length, but not more than 256 bytes each. Each record begins with a byte containing its length (excluding this byte itself).
 Next are the record fields in the same order as the records of the first version of the format. The algorithm for constructing a record is:
 
-  1. Fill the 256-byte buffer with zeros.
-  ```C
-  uint8_t* buffer[256];
-  memset(buffer, 0, 256);
-  ```
-  2. Starting with the byte at index 1, create a record of the first version of the format, with the only difference: the `Strings` array has a size
-of 205 bytes, not 206. (Do not touch the byte at index 0 yet.)
-  ```C
-  struct THistLogRecord* pRecord = (struct THistLogRecord*)&buffer[1];
-  /* fill in the record fields, for example:
-  pRecord->Zone  = 2;
-  pRecord->Net   = 5020;
-  pRecord->Node  = 378;
-  pRecord->Point = 0;
-  ...
-  */
-  ```
-  3. Determine the index of the last non-zero byte - this will be the length of the record - and place it in the buffer at index 0:
-  ```C
-  uint8_t len = 255;
-  while( (len > 1) && (buffer[len] == 0) ) len--;
-  buffer[0] = len;
-  ```
-  4. Write to the binary log file `len + 1` bytes, starting with the address `buffer`.
+1. Fill the 256-byte buffer with zeros.
+
+   ```C
+   uint8_t* buffer[256];
+   memset(buffer, 0, 256);
+   ```
+
+2. Starting with the byte at index 1, create a record of the first version of the format, with the only difference: the `Strings` array has a size
+   of 205 bytes, not 206. (Do not touch the byte at index 0 yet.)
+
+   ```C
+   struct THistLogRecord* pRecord = (struct THistLogRecord*)&buffer[1];
+   /* fill in the record fields, for example:
+   pRecord->Zone  = 2;
+   pRecord->Net   = 5020;
+   pRecord->Node  = 378;
+   pRecord->Point = 0;
+   ...
+   */
+   ```
+
+3. Determine the index of the last non-zero byte - this will be the length of the record - and place it in the buffer at index 0:
+
+   ```C
+   uint8_t len = 255;
+   while( (len > 1) && (buffer[len] == 0) ) len--;
+   buffer[0] = len;
+   ```
+
+4. Write to the binary log file `len + 1` bytes, starting with the address `buffer`.
 
 When reading records from a binary log, one byte of the record length `len` is first read, and then `len` bytes of the record itself are read
 into a pre-zeroed buffer.
@@ -312,7 +319,7 @@ location of FTN system and sysop name.
 0000000030: 00 00 0E 00 0F 1F 29 35 │ 39 35 2E 31 34 33 2E 32  ......)595.143.2
 0000000040: 31 37 2E 32 34 36 00 66 │ 69 64 6F 2E 68 75 62 61  17.246 fido.huba
 0000000050: 37 31 35 2E 72 75 00 4E │ 65 77 20 57 6F 72 6C 64  715.ru New World
-0000000060: 00 4D 6F 73 63 6F 77 2C │ 55 53 53 52 00 41 6C 65   Moscow,USSR Ale
+0000000060: 00 4D 6F 73 63 6F 77 2C │ 55 53 53 52 00 41 6C 65  .Moscow,USSR Ale
 0000000070: 78 20 42 61 72 69 6E 6F │ 76                       x Barinov
 ```
 
@@ -335,6 +342,7 @@ and one byte with the format version number. Signature as a sequence of hexadeci
 
 Next are records of variable length, but not more than 261 bytes each. Records of the third version of the format are obtained from records
 of the second version by adding an additional 5 bytes:
+
 - 4 bytes checksum;
 - 1 byte equal to the starting byte of the record (its length).
 
@@ -342,51 +350,59 @@ The `CRC-32/ISO-HDLC` algorithm is used to calculate the checksum. In C/C++ prog
 
 The algorithm for constructing a record is:
 
-  1. Fill the 261-byte buffer with zeros.
-  ```C
-  uint8_t* buffer[261];
-  memset(buffer, 0, 261);
-  ```
-  2. Create in this buffer a record exactly according to the algorithm for the second version of the format without any changes.
-As a result, `buffer [0]` will contain the length of the record, and starting with `buffer[1]` there will be record fields with
-the last non-zero byte `buffer[buffer[0]]`:
-  ```C
-  struct THistLogRecord* pRecord = (struct THistLogRecord*)&buffer[1];
-  /* fill in the record fields, for example:
-  pRecord->Zone  = 2;
-  pRecord->Net   = 5020;
-  pRecord->Node  = 378;
-  pRecord->Point = 0;
-  ...
-  */
-  uint8_t len = 255;
-  while( (len > 1) && (buffer[len] == 0) ) len--;
-  buffer[0] = len;
-  ```
-  3. Using the `CRC-32/ISO-HDLC` algorithm, calculate the checksum of the memory section from the beginning of the `buffer` array
-with a length of `len + 1` bytes (that is, the checksum of the entire record, including the initial byte of its length).
-When using the `zlib` library, this can be done like this:
-  ```C
-  uLong crc = crc32(0L, Z_NULL, 0); 
-  crc = crc32(crc, buffer, len + 1);
-  ```
-  4. Save 4 bytes of the checksum to the `buffer` array, starting with the index `len + 1`. And in byte with index `len + 5`,
-save the record length `len` again.
-  ```C
-  memcpy(&buffer[len + 1], &crc, 4);
-  buffer[len + 5] = len;
-  ```
-  5. Write to the binary log file `len + 6` bytes, starting with the address `buffer`.
+1. Fill the 261-byte buffer with zeros.
+
+   ```C
+   uint8_t* buffer[261];
+   memset(buffer, 0, 261);
+   ```
+
+2. Create in this buffer a record exactly according to the algorithm for the second version of the format without any changes.
+   As a result, `buffer [0]` will contain the length of the record, and starting with `buffer[1]` there will be record fields with
+   the last non-zero byte `buffer[buffer[0]]`:
+
+   ```C
+   struct THistLogRecord* pRecord = (struct THistLogRecord*)&buffer[1];
+   /* fill in the record fields, for example:
+   pRecord->Zone  = 2;
+   pRecord->Net   = 5020;
+   pRecord->Node  = 378;
+   pRecord->Point = 0;
+   ...
+   */
+   uint8_t len = 255;
+   while( (len > 1) && (buffer[len] == 0) ) len--;
+   buffer[0] = len;
+   ```
+
+3. Using the `CRC-32/ISO-HDLC` algorithm, calculate the checksum of the memory section from the beginning of the `buffer` array
+   with a length of `len + 1` bytes (that is, the checksum of the entire record, including the initial byte of its length).
+   When using the `zlib` library, this can be done like this:
+
+   ```C
+   uLong crc = crc32(0L, Z_NULL, 0); 
+   crc = crc32(crc, buffer, len + 1);
+   ```
+
+4. Save 4 bytes of the checksum to the `buffer` array, starting with the index `len + 1`. And in byte with index `len + 5`,
+   save the record length `len` again.
+
+   ```C
+   memcpy(&buffer[len + 1], &crc, 4);
+   buffer[len + 5] = len;
+   ```
+
+5. Write to the binary log file `len + 6` bytes, starting with the address `buffer`.
 
 Reading records from the binary log of the third version of the format is performed as follows:
 
-  1. Read one byte of the record length `len` and save it to `buffer [0]`.
-  2. Read `len + 5` bytes and save them starting with `buffer [1]`.
-  3. Compare `buffer[0]` and `buffer[len + 5]`. If they are not equal, the record is considered a broken due to mismatched start and end lengths.
-  4. Calculate the checksum from the beginning of the array `buffer` with a length of `len + 1` bytes. If it is not equal to 4 checksum bytes
-located starting with `buffer [len + 1]`, then the entry is considered a broken due to a checksum mismatch.
-  5. If both the length bytes and the checksum match, then put zero in `buffer[len + 1]` and process the record. (`buffer[len + 1]` must contain
-zero to handle strings correctly.)
+1. Read one byte of the record length `len` and save it to `buffer [0]`.
+2. Read `len + 5` bytes and save them starting with `buffer [1]`.
+3. Compare `buffer[0]` and `buffer[len + 5]`. If they are not equal, the record is considered a broken due to mismatched start and end lengths.
+4. Calculate the checksum from the beginning of the array `buffer` with a length of `len + 1` bytes. If it is not equal to 4 checksum bytes
+   located starting with `buffer [len + 1]`, then the entry is considered a broken due to a checksum mismatch.
+5. If both the length bytes and the checksum match, then put zero in `buffer[len + 1]` and process the record. (`buffer[len + 1]` must contain
+   zero to handle strings correctly.)
 
 The presence of a byte with a record length not only at the beginning, but also at the end of the record, allows you to process the binary log
 both from beginning to end and from end to beginning.
@@ -403,9 +419,10 @@ the value of the record length (`0x73`).
 0000000030: 00 00 0E 00 0F 1F 29 35 │ 39 35 2E 31 34 33 2E 32  ......)595.143.2
 0000000040: 31 37 2E 32 34 36 00 66 │ 69 64 6F 2E 68 75 62 61  17.246 fido.huba
 0000000050: 37 31 35 2E 72 75 00 4E │ 65 77 20 57 6F 72 6C 64  715.ru New World
-0000000060: 00 4D 6F 73 63 6F 77 2C │ 55 53 53 52 00 41 6C 65   Moscow,USSR Ale
+0000000060: 00 4D 6F 73 63 6F 77 2C │ 55 53 53 52 00 41 6C 65  .Moscow,USSR Ale
 0000000070: 78 20 42 61 72 69 6E 6F │ 76 67 96 DC 7E 73        x Barinovg..~s
 ```
+
 ---
 
 Mikhail Markovskiy (klug), 2:5020/378
