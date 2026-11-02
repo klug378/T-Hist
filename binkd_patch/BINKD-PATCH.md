@@ -2,9 +2,9 @@
 
 # Adding support for new binary log formats to Binkd by patching `binlog.c` file from Binkd source
 
-It is possible to add support for new binary log formats to Binkd by patching file https://github.com/pgul/binkd/blob/master/binlog.c
-from Binkd repository on [GitHub](https://github.com/pgul/binkd). At the same time, the functioning of the native Binkd binary log specified by
-`binlog` parameter will not be affected.
+It is possible to add support for new binary log formats to Binkd by patching file `binlog.c` from Binkd repository
+[https://github.com/pgul/binkd](https://github.com/pgul/binkd) or [https://github.com/shadowlmd/binkd](https://github.com/shadowlmd/binkd).
+At the same time, the functioning of the native Binkd binary log specified by `binlog` parameter will not be affected.
 
 In the sample of Binkd configuration file, there are commented lines next to the `binlog` parameter:
 
@@ -30,7 +30,7 @@ Also, the formats allows you to mark aborted sessions without losing information
 to store text information that `T-Hist` can print in wide-screen mode. For more information on this binary log formats, see [FORMATS.md](../doc/FORMATS.md).
 
 Patches only modify the `binlog.c` file and do not affect any other Binkd source files. With the patches applied,
-Binkd successfully compiles for Linux. The ability to compile for other systems has not been tested.
+Binkd successfully compiles for Linux and Windows.
 
 ### Select the patch
 
@@ -55,6 +55,10 @@ Use a patch with the T-Mail new format if:
 1. Clone the Binkd repo:
 
    `git clone https://github.com/pgul/binkd`
+
+   or
+
+   `git clone https://github.com/shadowlmd/binkd`
 
 2. Change into the new binkd source directory:
 

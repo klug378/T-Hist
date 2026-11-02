@@ -47,8 +47,9 @@ binlog /var/log/fido/binkd.sts
 #fdouthist out.his
 ```
 
-Чтобы разобраться, как именно происходит запись таких логов, если эти параметры раскомментировать, я изучил файл `binlog.c` из репозитория
-[Binkd](https://github.com/pgul/binkd) на GitHub (https://github.com/pgul/binkd/blob/master/binlog.c). Мои выводы следующие:
+Чтобы разобраться, как именно происходит запись таких логов, если эти параметры раскомментировать, я изучил файл
+[binlog.c](https://github.com/pgul/binkd/blob/master/binlog.c) из репозитория [https://github.com/pgul/binkd](https://github.com/pgul/binkd).
+Мои выводы следующие:
 
 1. Это не формат лога FrontDoor, а формат лога Bink/+. Программный код в функции `FDLogStat()` записывает в бинарный лог данные в формате,
    описанном в FAQ по Bink/+ ([http://faqs.org.ru/softw/fidosoft/bink_pls.htm](http://faqs.org.ru/softw/fidosoft/bink_pls.htm)),
@@ -69,8 +70,8 @@ binlog /var/log/fido/binkd.sts
 
 ## Патчи для файла `binlog.c`
 
-В итоге я сделал патчи для файла `binlog.c` (находятся в каталоге [binkd_patch](../binkd_patch)), позволяющие использовать следующие форматы для бинарного лога,
-заданного параметром `fdouthist`/`fdinhist`:
+В итоге я сделал патчи для файла `binlog.c`, которые находятся в каталоге [binkd_patch](../binkd_patch). Патчи позволяют использовать следующие форматы
+для бинарного лога, заданного параметром `fdouthist`/`fdinhist`:
 
 - [binlog-thist-v3.patch](binlog-thist-v3.patch) – использовать бинарный лог третьей версии собственного формата `T-Hist`;
 - [binlog-thist-v2.patch](binlog-thist-v2.patch) – использовать бинарный лог второй версии собственного формата `T-Hist`;
@@ -80,8 +81,9 @@ binlog /var/log/fido/binkd.sts
 могут содержать текстовую информацию о FTN системах, которую `T-Hist` способен выводить в режиме широкого экрана. Подробнее об особенностях этих форматов
 можно прочитать в файле [FORMATS-ru.md](../doc/FORMATS-ru.md).
 
-Патчи изменяют только файл `binlog.c` и не затрагивают никакие другие исходные файлы Binkd. С применёнными патчами Binkd успешно компилируется под Linux.
-Возможность компиляции под другие системы я не проверял.
+Патчи изменяют только файл `binlog.c` и не затрагивают никакие другие исходные файлы Binkd. Проверка патчей производилась на исходниках Binkd из репозиториев
+[https://github.com/pgul/binkd](https://github.com/pgul/binkd) и [https://github.com/shadowlmd/binkd](https://github.com/shadowlmd/binkd). После применения патчей
+к обоим репозиториями, Binkd был успешно скомпилирован для Linux и Windows.
 
 Корректность работы Binkd, скомплированного с применением патча [binlog-tmail-new.patch](binlog-tmail-new.patch), проверена на узле 2:5020/715 (Alex Barinov).
 Примеры статистики, созданной на основе бинарного лога патченного Binkd, находятся в файлах [example.out](example.out) и [example.lnk](example.lnk) в каталоге
@@ -115,6 +117,10 @@ binlog /var/log/fido/binkd.sts
 
    `git clone https://github.com/pgul/binkd`
 
+   или
+
+   `git clone https://github.com/shadowlmd/binkd`
+
 2. Перейдите в каталог с исходниками:
 
    `cd binkd`
@@ -133,8 +139,6 @@ binlog /var/log/fido/binkd.sts
 
    `git apply binlog-tmail-new.patch`
 
-   При желании посмотрите пропатченный файл `binlog.c`
-
 5. Скомпилируйте Binkd. Для компиляции под Linux выполните:
 
    `cp mkfls/unix/* .`
@@ -143,7 +147,7 @@ binlog /var/log/fido/binkd.sts
 
    `make`
 
-   Для компиляции под другие системы смотрите инструкции в репозитории Binkd.
+   Для компиляции под другие системы смотрите инструкции в репозиториях Binkd.
 
 6. В конфигурационном файле Binkd раскомментируйте один из двух параметров `fdouthist`/`fdinhist` (неважно какой) и укажите имя файла нового бинарного лога.
    Если будут раскомментированы оба параметра, то будет использовано имя файла из `fdouthist`.

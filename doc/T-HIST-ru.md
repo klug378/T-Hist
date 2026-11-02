@@ -7,7 +7,7 @@
 
 # T-Hist – History utility for FTN mailers
 
-Supported:<br>[Binkd](https://github.com/pgul/binkd), [qico 0.60.2+](https://github.com/glasslike/qico), T-Mail, Argus,
+Supported:<br>[Binkd](https://github.com/shadowlmd/binkd), [qico 0.60.2+](https://github.com/glasslike/qico), T-Mail, Argus,
 Internet Rex, FrontDoor, Bink/+, FhMail,<br>BinkleyTerm-XE, The Brake!, KittenMail, DVMmail, XMail32, BasicMail<br>
 and any other FTN-mailers using the T-Hist or T-Mail binary log formats<br><br>
 Version 1.8.2<br><br>

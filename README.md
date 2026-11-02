@@ -16,7 +16,7 @@ This software is intended for use in the FidoNet computer network and other FTN-
 
 # T-Hist – History utility for FTN mailers
 
-Supported:<br>[Binkd](https://github.com/pgul/binkd), [qico 0.60.2+](https://github.com/glasslike/qico), T-Mail, Argus,
+Supported:<br>[Binkd](https://github.com/shadowlmd/binkd), [qico 0.60.2+](https://github.com/glasslike/qico), T-Mail, Argus,
 Internet Rex, FrontDoor, Bink/+, FhMail,<br>BinkleyTerm-XE, The Brake!, KittenMail, DVMmail, XMail32, BasicMail<br>
 and any other FTN-mailers using the T-Hist or T-Mail binary log formats<br><br>
 Version 1.8.3<br><br>
@@ -316,9 +316,8 @@ the `Listed` mark for sessions, which FTN-address is present in the nodelists sp
 Binary log of the native `T-Hist` format is used in the [qico](https://github.com/glasslike/qico) mailer by Alexey Matrosov (2:203/910),
 starting from version 0.60.2.
 
-It is possible to add support for new binary log format to Binkd by patching file [binlog.c](https://github.com/pgul/binkd/blob/master/binlog.c)
-from [Binkd repository](https://github.com/pgul/binkd). The patches are located in the [binkd_patch](./binkd_patch) directory.
-For more information see [BINKD-PATCH.md](./binkd_patch/BINKD-PATCH.md).
+It is possible to add support for new binary log format to Binkd by patching file `binlog.c` from Binkd repository. The patches are located in the
+[binkd_patch](./binkd_patch) directory. For more information see [BINKD-PATCH.md](./binkd_patch/BINKD-PATCH.md).
 
 For the convenience of working with different binary log formats, the `HistConv` converter has been created. The `HistConv` utility creates for a specified
 binary log file the same log in a different format. The source file can be the binary log file of any mailer supported by `T-Hist`. The format of the source
