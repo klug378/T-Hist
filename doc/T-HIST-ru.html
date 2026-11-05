@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>T-Hist 1.8.3 – History utility for FTN mailers</title>
+  <title>T-Hist 1.8.4 – History utility for FTN mailers</title>
   <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -138,7 +138,7 @@ vertical-align: middle;
 </head>
 <body>
 <header id="title-block-header">
-<h1 class="title">T-Hist 1.8.3 – History utility for FTN mailers</h1>
+<h1 class="title">T-Hist 1.8.4 – History utility for FTN mailers</h1>
 </header>
 <hr />
 <div align="center">
@@ -151,7 +151,7 @@ utility for FTN mailers</h1>
 Argus, Internet Rex, FrontDoor, Bink/+, FhMail,<br>BinkleyTerm-XE, The
 Brake!, KittenMail, DVMmail, XMail32, BasicMail<br> and any other
 FTN-mailers using the T-Hist or T-Mail binary log formats<br><br>
-Version 1.8.2<br><br> Linux (x86_64, i686, arm64) and Windows (Win64,
+Version 1.8.4<br><br> Linux (x86_64, i686, arm64) and Windows (Win64,
 Win32) executables</p>
 </div>
 
@@ -1699,8 +1699,11 @@ ASCII без символов псевдографики).</li>
 <li><p><strong>Опция <code>-o</code></strong>. Позволяет задать имя
 выходного файла. Правила задания имени файла такие же, как у параметра
 <code>Output</code>, включая возможность подстановки в имя файла полей
-даты и времени с помощью соответствующих спецификаторов форматов.
-Допустимые варианты:</p>
+даты и времени с помощью соответствующих спецификаторов форматов. При
+этом спецификатор формата <code>%f</code> у <code>LnkStat</code>
+соответствует дате самой первой сессии, включаемой в статистику, а все
+остальные спецификаторы имеют такое же значение, как у
+<code>T-Hist</code>. Допустимые варианты опции:</p>
 <ul>
 <li><code>-o&lt;output-file&gt;</code> – задаёт имя выходного файла
 статистики;</li>

@@ -10,7 +10,7 @@
 Supported:<br>[Binkd](https://github.com/shadowlmd/binkd), [qico 0.60.2+](https://github.com/glasslike/qico), T-Mail, Argus,
 Internet Rex, FrontDoor, Bink/+, FhMail,<br>BinkleyTerm-XE, The Brake!, KittenMail, DVMmail, XMail32, BasicMail<br>
 and any other FTN-mailers using the T-Hist or T-Mail binary log formats<br><br>
-Version 1.8.2<br><br>
+Version 1.8.4<br><br>
 Linux (x86_64, i686, arm64) and Windows (Win64, Win32) executables
 
 </div>
@@ -1156,7 +1156,8 @@ Alex Barinov (2:5020/715).
 
 - **Опция `-o`**. Позволяет задать имя выходного файла. Правила задания имени файла такие же, как у параметра `Output`,
   включая возможность подстановки в имя файла полей даты и времени с помощью соответствующих спецификаторов форматов.
-  Допустимые варианты:
+  При этом спецификатор формата `%f` у `LnkStat` соответствует дате самой первой сессии, включаемой в статистику, а все
+  остальные спецификаторы имеют такое же значение, как у `T-Hist`. Допустимые варианты опции:
 
   - `-o<output-file>` – задаёт имя выходного файла статистики;
   - `-o` – выводить статистику в `stdout` (значение по умолчанию);

@@ -10,6 +10,17 @@
 
 - The terms `group`, `group of addresses` means an address defined in the `Addr` parameter or in the `-a` command-line option with at least one wildcard char `*`.
 
+## [1.8.4] - 2026-11-05
+
+#### Added
+
+- Two new specifiers have been added to format specifiers that allow you to substitute date and time fields in file names (for `T-Hist`: in the `Output`,
+  `LinkStat`, `SessionStat` parameters and corresponding command-line options `-o`, `-l`, `-e`; for `LnkStat`: in the `-o` option):
+
+  - `%F` – equivalent to `%Y-%m-%d`, that is, the year, month and day of the current date, separated by hyphens;
+  - `%f` – like `%F`, but the year, month and day in `T-Hist` are taken from the value of the `Date` parameter or the `-d` option, and in `LnkStat` from the date
+    of the oldest session taken into account in the statistics.
+
 ## [1.8.3] - 2026-10-31
 
 #### Added

@@ -19,7 +19,7 @@
 Supported:<br>[Binkd](https://github.com/shadowlmd/binkd), [qico 0.60.2+](https://github.com/glasslike/qico), T-Mail, Argus,
 Internet Rex, FrontDoor, Bink/+, FhMail,<br>BinkleyTerm-XE, The Brake!, KittenMail, DVMmail, XMail32, BasicMail<br>
 and any other FTN-mailers using the T-Hist or T-Mail binary log formats<br><br>
-Version 1.8.3<br><br>
+Version 1.8.4<br><br>
 Linux (x86_64, i686, arm64) and Windows (Win64, Win32) executables
 
 ---
